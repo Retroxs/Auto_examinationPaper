@@ -5,10 +5,10 @@ var mongoose = require('mongoose');
 var config = require('./config.js');
 
 module.exports=function () {
-    console.log(config.mongodb)
-
     var db = mongoose.connect(config.mongodb);
-    require('../models/user.server.model');
+    console.log('mongodb connected:',config.mongodb);
 
+    require('../models/user.server.model');
+    require('../models/bank.server.model');
     return db;
 }
