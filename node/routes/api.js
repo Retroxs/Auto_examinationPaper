@@ -4,17 +4,35 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var crypto = require('crypto');
 var Joi = require('joi');
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
 
 var User = mongoose.model('User');
 var Bank = mongoose.model('Bank');
-/* GET apis listing. */
-router.get('/', function (req, res, next) {
-    res.send('respond with a resource');
-});
-/*用户接口*/
 
+router.use(cookieParser());
+router.use(session({
+    secret: '12345',
+    name: 'testapp',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
+    cookie: {maxAge: 800000},  //设置maxAge是80000ms，即80s后session和相应的cookie失效过期
+    resave: false,
+    saveUninitialized: true,
+}))
+
+/* GET apis listing. */
+router.get('/test', function (req, res, next) {
+    if(req.session.user){
+        res.send(req.session.user.username+req.session.cookie.maxAge);
+
+    }else{
+        res.send('error');
+    }
+});
+
+/*用户接口*/
 //注册
 router.post('/register', function (req, res, next) {
+    console.log(req.session.user)
     var md5 = crypto.createHash('md5');
     md5.update(req.body.password);
     var a = md5.digest('hex');
@@ -64,6 +82,10 @@ router.post('/login', function (req, res, next) {
     var md5 = crypto.createHash('md5');
     md5.update(req.body.password);
     var d = md5.digest('hex');
+    var user_session = {
+        username: req.body.username,
+        password: req.body.password
+    }
     User.find({username: req.body.username, password: d}, function (err, docs) {
         if (err) {
             res.end(err);
@@ -76,8 +98,8 @@ router.post('/login', function (req, res, next) {
                 //         res.end(err);
                 //         return next();
                 //     }
+                req.session.user=user_session;
                 res.status(200).send(docs);
-
                 // })
 
             }
@@ -85,29 +107,49 @@ router.post('/login', function (req, res, next) {
 
     })
 })
+//登录认证
+router.get('/auth',function (req,res,next) {
+    if(req.session.user){
+        res.status(200).send({message:"logon",username:req.session.user.username})
+    }else{
+        res.status(400).send({error:"please to login"})
+    }
+
+});
+//注销登录
+router.get('/logout',function (req,res,next) {
+    req.session.user=null;
+
+    if(req.session.user==null){
+        res.status(200).send({message:"user has logout"});
+    }
+    else{
+        res.status(400).send({error:"fail"})
+    }
+});
 //更改密码
-router.post('/:id/set-password',function (req,res,next) {
+router.post('/:id/set-password', function (req, res, next) {
     var md5 = crypto.createHash('md5');
     md5.update(req.body.oldPassword);
     var b = md5.digest('hex');
 
-    var md5_1= crypto.createHash('md5');
+    var md5_1 = crypto.createHash('md5');
     md5_1.update(req.body.newPassword);
     var c = md5_1.digest('hex');
-User.find({_id:req.params.id},function (err,doc) {
-    if(doc[0].password==b){
-        User.update({_id:req.params.id},{$set:{password:c}},function (err,next) {
-            if(err){
-                res.end('err',err);
-                return next();
-            }
-            res.status(200).send({message:"change password success"})
-        })
-    }else{
-        res.status(400).send({error:"password is error"})
+    User.find({_id: req.params.id}, function (err, doc) {
+        if (doc[0].password == b) {
+            User.update({_id: req.params.id}, {$set: {password: c}}, function (err, next) {
+                if (err) {
+                    res.end('err', err);
+                    return next();
+                }
+                res.status(200).send({message: "change password success"})
+            })
+        } else {
+            res.status(400).send({error: "password is error"})
 
-    }
-})
+        }
+    })
 })
 /*ending*/
 
