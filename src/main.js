@@ -10,6 +10,9 @@ import App from './app.vue';
 import home from './components/home.vue';
 import login from './components/login.vue';
 import register from './components/register.vue';
+import list from './components/list.vue';
+import create from './components/create.vue';
+import markdown from './components/markbook.vue';
 Vue.use(VueRouter);
 
 var app=Vue.extend(App);
@@ -19,12 +22,26 @@ router.map({
     '/home':{
         name:home,
         component:home,
+        subRoutes:{
+            '/list': {
+                name: 'list',
+                component: list
+            },
+            '/create': {
+                name: 'create',
+                component: create
+            }
+        }
     },
     '/login':{
+        name:'login',
         component:login,
     },
     '/register':{
         component:register,
+    },
+    '/markdown':{
+        component:markdown,
     }
 
 

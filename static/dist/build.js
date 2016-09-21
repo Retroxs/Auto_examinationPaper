@@ -66,13 +66,25 @@
 
 	var _home2 = _interopRequireDefault(_home);
 
-	var _login = __webpack_require__(19);
+	var _login = __webpack_require__(25);
 
 	var _login2 = _interopRequireDefault(_login);
 
-	var _register = __webpack_require__(24);
+	var _register = __webpack_require__(30);
 
 	var _register2 = _interopRequireDefault(_register);
+
+	var _list = __webpack_require__(35);
+
+	var _list2 = _interopRequireDefault(_list);
+
+	var _create = __webpack_require__(40);
+
+	var _create2 = _interopRequireDefault(_create);
+
+	var _markbook = __webpack_require__(45);
+
+	var _markbook2 = _interopRequireDefault(_markbook);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -88,13 +100,27 @@
 	router.map({
 	    '/home': {
 	        name: _home2.default,
-	        component: _home2.default
+	        component: _home2.default,
+	        subRoutes: {
+	            '/list': {
+	                name: 'list',
+	                component: _list2.default
+	            },
+	            '/create': {
+	                name: 'create',
+	                component: _create2.default
+	            }
+	        }
 	    },
 	    '/login': {
+	        name: 'login',
 	        component: _login2.default
 	    },
 	    '/register': {
 	        component: _register2.default
+	    },
+	    '/markdown': {
+	        component: _markbook2.default
 	    }
 
 	});
@@ -14445,7 +14471,7 @@
 	    __vue_script__.__esModule &&
 	    Object.keys(__vue_script__).length > 1) {
 	  console.warn("[vue-loader] src/components/home.vue: named exports in *.vue files are ignored.")}
-	__vue_template__ = __webpack_require__(18)
+	__vue_template__ = __webpack_require__(24)
 	module.exports = __vue_script__ || {}
 	if (module.exports.__esModule) module.exports = module.exports.default
 	if (__vue_template__) {
@@ -14498,7 +14524,7 @@
 
 
 	// module
-	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+	exports.push([module.id, "\n\n\n\n\n\n.content {\n    width: 80%;\n    height: 600px;\n    float: left;\n    overflow: auto;\n}\n", ""]);
 
 	// exports
 
@@ -14795,8 +14821,26 @@
 
 	var _headLine2 = _interopRequireDefault(_headLine);
 
+	var _sidebar = __webpack_require__(18);
+
+	var _sidebar2 = _interopRequireDefault(_sidebar);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	// <template>
+	//         <headline :username=username></headline>
+	//         <sidebar :username=username></sidebar>
+	//         <router-view></router-view>
+	// </template>
+	// <style>
+	//     .content {
+	//         width: 80%;
+	//         height: 600px;
+	//         float: left;
+	//         overflow: auto;
+	//     }
+	// </style>
+	// <script>
 	exports.default = {
 	    data: function data() {
 	        return {
@@ -14807,20 +14851,14 @@
 	    },
 
 	    components: {
-	        "headline": _headLine2.default
+	        "headline": _headLine2.default,
+	        'sidebar': _sidebar2.default
 	    },
 	    ready: function ready() {
 	        this.$http.get('/api/auth').then(function (res) {
 	            var user = res.data.username;
 	            this.username = user;
 	            //                router.go({path:'/home'})
-	            this.$http.get('/api/bank/' + localStorage.user_id + '/list').then(function (res) {
-	                var data = res.data;
-	                this.items = data;
-	            }, function (res) {
-	                var data = res.data;
-	                this.bank = data;
-	            });
 	        }, function (res) {
 	            router.go({ path: '/login' });
 	        });
@@ -14828,24 +14866,6 @@
 	};
 	// </script>
 	//
-	// <template>
-	//     <headline :username=username></headline>
-	//     <div>
-	//     <ul>
-	//         <li v-for="item in items">
-	//             <span>{{item.type}}</span><br>
-	//             <span>{{item.subject}}</span><br>
-	//             <span>{{item.question}}</span><br>
-	//             <span>{{item.answer}}</span><br>
-	//             <span>{{item.level}}</span><br>
-	//         </li>
-	//
-	//     </ul>
-	//         </div>
-	// </template>
-	// <style>
-	// </style>
-	// <script>
 
 /***/ },
 /* 13 */
@@ -14928,7 +14948,7 @@
 	// <template>
 	//     <div class="headline">
 	//         <span class="headline_title">云题库</span>
-	//         <a class="headline_title" style="float:right" @click="logout">{{username}}/logout</a>
+	//         <a class="headline_title" style="float:right" @click="logout"><span style="color:green">{{username}}&nbsp&nbsp&nbsp&nbsp</span>/logout</a>
 	//     </div>
 	// </template>
 	// <style>
@@ -14957,9 +14977,9 @@
 	    methods: {
 	        logout: function logout() {
 	            this.$http.get('/api/logout').then(function (res) {
-	                router.go({ path: 'login' });
+	                router.go({ name: 'login' });
 	            }, function (res) {
-	                router.go({ path: "login" });
+	                router.go({ name: "login" });
 	            });
 	        }
 	    },
@@ -14971,26 +14991,165 @@
 /* 17 */
 /***/ function(module, exports) {
 
-	module.exports = "\n<div class=\"headline\">\n    <span class=\"headline_title\">云题库</span>\n    <a class=\"headline_title\" style=\"float:right\" @click=\"logout\">{{username}}/logout</a>\n</div>\n";
+	module.exports = "\n<div class=\"headline\">\n    <span class=\"headline_title\">云题库</span>\n    <a class=\"headline_title\" style=\"float:right\" @click=\"logout\"><span style=\"color:green\">{{username}}&nbsp&nbsp&nbsp&nbsp</span>/logout</a>\n</div>\n";
 
 /***/ },
 /* 18 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "\n<headline :username=username></headline>\n<div>\n<ul>\n    <li v-for=\"item in items\">\n        <span>{{item.type}}</span><br>\n        <span>{{item.subject}}</span><br>\n        <span>{{item.question}}</span><br>\n        <span>{{item.answer}}</span><br>\n        <span>{{item.level}}</span><br>\n    </li>\n\n</ul>\n    </div>\n";
+	var __vue_script__, __vue_template__
+	__webpack_require__(19)
+	__vue_script__ = __webpack_require__(21)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] src/components/sidebar.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(22)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./sidebar.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
 
 /***/ },
 /* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(20);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(11)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./sidebar.vue", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./sidebar.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(10)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n.sidebar{\n    width: 15%;\n    height: 600px;\n    border-right: 2px solid #000;\n    float: left;\n    text-align: center;\n}\n.user_img{\n    display: block;\n    margin: 20px auto;\n}\n.user_info{\n    display: block;\n    margin: 0 auto;\n    margin-bottom: 20px;\n}\nli{\n    line-height: 30px;\n}\na:focus{\n    color: #e96153;\n}\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 21 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	// <template>
+	//     <div class="sidebar">
+	//         <img class="user_img" src="../../static/images/user_icon.png">
+	//         <span class="user_info">{{username}}</span>
+	//         <ul>
+	//             <li><a v-link="{name:'list'}">我的题库</a></li>
+	//             <li><a v-link="{name:'create'}">录入题目</a></li>
+	//             <li><a v-link="{name:'list'}">智能组卷</a></li>
+	//             <li><a v-link="{name:'list'}">手动组卷</a></li>
+	//         </ul>
+	//     </div>
+	// </template>
+	// <style>
+	//     .sidebar{
+	//         width: 15%;
+	//         height: 600px;
+	//         border-right: 2px solid #000;
+	//         float: left;
+	//         text-align: center;
+	//     }
+	//     .user_img{
+	//         display: block;
+	//         margin: 20px auto;
+	//     }
+	//     .user_info{
+	//         display: block;
+	//         margin: 0 auto;
+	//         margin-bottom: 20px;
+	//     }
+	//     li{
+	//         line-height: 30px;
+	//     }
+	//     a:focus{
+	//         color: #e96153;
+	//     }
+	// </style>
+	// <script>
+	exports.default = {
+	    data: function data() {
+	        return {
+	            msg: 'hello vue'
+	        };
+	    },
+
+	    components: {},
+	    props: ['username']
+	};
+	// </script>
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = "\n<div class=\"sidebar\">\n    <img class=\"user_img\" src=\"" + __webpack_require__(23) + "\">\n    <span class=\"user_info\">{{username}}</span>\n    <ul>\n        <li><a v-link=\"{name:'list'}\">我的题库</a></li>\n        <li><a v-link=\"{name:'create'}\">录入题目</a></li>\n        <li><a v-link=\"{name:'list'}\">智能组卷</a></li>\n        <li><a v-link=\"{name:'list'}\">手动组卷</a></li>\n    </ul>\n</div>\n";
+
+/***/ },
+/* 23 */
+/***/ function(module, exports) {
+
+	module.exports = "data:image/png;base64,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"
+
+/***/ },
+/* 24 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<headline :username=username></headline>\n<sidebar :username=username></sidebar>\n<router-view></router-view>\n";
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var __vue_script__, __vue_template__
-	__webpack_require__(20)
-	__vue_script__ = __webpack_require__(22)
+	__webpack_require__(26)
+	__vue_script__ = __webpack_require__(28)
 	if (__vue_script__ &&
 	    __vue_script__.__esModule &&
 	    Object.keys(__vue_script__).length > 1) {
 	  console.warn("[vue-loader] src/components/login.vue: named exports in *.vue files are ignored.")}
-	__vue_template__ = __webpack_require__(23)
+	__vue_template__ = __webpack_require__(29)
 	module.exports = __vue_script__ || {}
 	if (module.exports.__esModule) module.exports = module.exports.default
 	if (__vue_template__) {
@@ -15009,13 +15168,13 @@
 	})()}
 
 /***/ },
-/* 20 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(21);
+	var content = __webpack_require__(27);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(11)(content, {});
@@ -15035,7 +15194,7 @@
 	}
 
 /***/ },
-/* 21 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(10)();
@@ -15049,7 +15208,7 @@
 
 
 /***/ },
-/* 22 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15160,23 +15319,23 @@
 	// <script>
 
 /***/ },
-/* 23 */
+/* 29 */
 /***/ function(module, exports) {
 
 	module.exports = "\n<headline></headline>\n<div class=\"login_lg\">\n    <div class=\"login_header\">\n        <span class=\"login_title\">登&nbsp&nbsp&nbsp陆</span>\n    </div>\n    <div class=\"login_content\">\n        <div class=\"login_common\">\n            <span class=\"span_md\">账号:</span>\n            <input class=\"login_input\" style=\"margin-top:60px\" type=\"text\" placeholder=\"\" v-model=\"username\">\n        </div>\n        <div class=\"login_common\">\n            <span class=\"span_md\">密码:</span>\n            <input class=\"login_input\" type=\"password\" placeholder=\"\" v-model=\"password\"></div>\n        <div class=\"login_common\">\n            <button @click=\"login\">sign in</button>\n            <a v-link=\"{path:'register'}\"><button>sign up</button></a>\n        </div>\n        <p>{{msg}}</p>\n    </div>\n</div>\n";
 
 /***/ },
-/* 24 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_script__, __vue_template__
-	__webpack_require__(25)
-	__vue_script__ = __webpack_require__(27)
+	__webpack_require__(31)
+	__vue_script__ = __webpack_require__(33)
 	if (__vue_script__ &&
 	    __vue_script__.__esModule &&
 	    Object.keys(__vue_script__).length > 1) {
 	  console.warn("[vue-loader] src/components/register.vue: named exports in *.vue files are ignored.")}
-	__vue_template__ = __webpack_require__(28)
+	__vue_template__ = __webpack_require__(34)
 	module.exports = __vue_script__ || {}
 	if (module.exports.__esModule) module.exports = module.exports.default
 	if (__vue_template__) {
@@ -15195,13 +15354,13 @@
 	})()}
 
 /***/ },
-/* 25 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(26);
+	var content = __webpack_require__(32);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(11)(content, {});
@@ -15221,7 +15380,7 @@
 	}
 
 /***/ },
-/* 26 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(10)();
@@ -15235,7 +15394,7 @@
 
 
 /***/ },
-/* 27 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -15306,10 +15465,1763 @@
 	// <script>
 
 /***/ },
-/* 28 */
+/* 34 */
 /***/ function(module, exports) {
 
 	module.exports = "\n<headline></headline>\n<div class=\"login_lg\">\n    <div class=\"login_header\">\n        <span class=\"login_title\">注&nbsp&nbsp&nbsp册</span>\n    </div>\n    <div class=\"login_content\">\n        <div class=\"login_common\">\n            <span class=\"span_md\">用户名:</span>\n            <input class=\"login_input\" style=\"margin-top:60px\" type=\"text\" placeholder=\"\" v-model=\"username\">\n        </div>\n        <div class=\"login_common\">\n            <span class=\"span_md\">密码:</span>\n            <input class=\"login_input\" type=\"password\" placeholder=\"\" v-model=\"password\"></div>\n        <div class=\"login_common\">\n            <span class=\"span_md\">确认密码:</span>\n            <input class=\"login_input\" type=\"password\" placeholder=\"\"></div>\n        <div class=\"login_common\">\n            <a v-link=\"{path:'login'}\"><button><-back</button></a>\n            <button @click=\"register\">continue</button>\n        </div>\n        <p>{{msg}}</p>\n    </div>\n</div>\n\n";
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(36)
+	__vue_script__ = __webpack_require__(38)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] src/components/list.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(39)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./list.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(37);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(11)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./list.vue", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./list.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(10)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n.listBox{\n    margin-left: 10%;\n    width: 75%;\n    height: 100px;\n    background-color: #fff;\n    margin-top: 10px;\n}\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 38 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	// <template>
+	//     <div class="content">
+	//         <!--<ul>-->
+	//             <!--<li v-for="item in items">-->
+	//                 <!--<span>类型</span><span>{{item.type}}</span><br>-->
+	//                 <!--<span>课程</span><span>{{item.subject}}</span><br>-->
+	//                 <!--<span>题目</span><span>{{item.question}}</span><br>-->
+	//                 <!--<span>答案</span><span>{{item.answer}}</span><br>-->
+	//                 <!--<span>难度</span><span>{{item.level}}</span><br>-->
+	//                 <!--<button @click="deleteQ(item._id,item)">删除</button>-->
+	//             <!--</li>-->
+	//         <!--</ul>-->
+	//
+	//         <div class="listBox" v-for="item in items">
+	//             <span>{{$index+1}}</span>
+	//             <span>[{{item.type}}]</span>
+	//             <span>{{item.question}}</span><br>
+	//             <span>答案:</span><span>{{item.answer}}</span><br>
+	//             <span>难度:</span><span>{{item.level}}</span><br>
+	//             <button @click="deleteQ(item._id,item)">删除</button>
+	//         </div>
+	//     </div>
+	// </template>
+	// <style>
+	//     .listBox{
+	//         margin-left: 10%;
+	//         width: 75%;
+	//         height: 100px;
+	//         background-color: #fff;
+	//         margin-top: 10px;
+	//     }
+	// </style>
+	// <script>
+	exports.default = {
+	    data: function data() {
+	        return {
+	            msg: 'hello vue',
+	            items: ''
+	        };
+	    },
+
+	    components: {},
+	    ready: function ready() {
+	        this.$http.get('/api/bank/' + localStorage.user_id + '/list').then(function (res) {
+	            var data = res.data;
+	            this.items = data;
+	        }, function (res) {
+	            var data = res.data;
+	            this.bank = data;
+	        });
+	    },
+
+
+	    methods: {
+	        deleteQ: function deleteQ(id, item) {
+	            this.$http.get('/api/bank/' + id + '/delete').then(function (res) {
+	                var data = res.data;
+	                this.msg = data;
+	                this.items.$remove(item);
+	            }, function (res) {
+	                var data = res.data;
+	                this.msg = data;
+	            });
+	        }
+	    }
+	};
+	// </script>
+
+/***/ },
+/* 39 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<div class=\"content\">\n    <!--<ul>-->\n        <!--<li v-for=\"item in items\">-->\n            <!--<span>类型</span><span>{{item.type}}</span><br>-->\n            <!--<span>课程</span><span>{{item.subject}}</span><br>-->\n            <!--<span>题目</span><span>{{item.question}}</span><br>-->\n            <!--<span>答案</span><span>{{item.answer}}</span><br>-->\n            <!--<span>难度</span><span>{{item.level}}</span><br>-->\n            <!--<button @click=\"deleteQ(item._id,item)\">删除</button>-->\n        <!--</li>-->\n    <!--</ul>-->\n\n    <div class=\"listBox\" v-for=\"item in items\">\n        <span>{{$index+1}}</span>\n        <span>[{{item.type}}]</span>\n        <span>{{item.question}}</span><br>\n        <span>答案:</span><span>{{item.answer}}</span><br>\n        <span>难度:</span><span>{{item.level}}</span><br>\n        <button @click=\"deleteQ(item._id,item)\">删除</button>\n    </div>\n</div>\n";
+
+/***/ },
+/* 40 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(41)
+	__vue_script__ = __webpack_require__(43)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] src/components/create.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(44)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./create.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 41 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(42);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(11)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./create.vue", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./create.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 42 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(10)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 43 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	// <template>
+	//     <div class="content">
+	//         <span>题目类型</span>
+	//         <select v-model="type">
+	//             <option value="选择" selected="selected">选择</option>
+	//             <option value="判断">判断</option>
+	//             <option value="填空">填空</option>
+	//             <option value="简答">简答</option>
+	//             <option value="解答">解答</option>
+	//             <option value="计算">计算</option>
+	//         </select><br>
+	//         <span>课程</span><input type="text" value="高数" v-model="subject"><br>
+	//         <span>是否选择题</span><span>是</span><input type="radio" v-model="isOption" name="isOption" value="true">
+	//         <span>不是</span><input type="radio" v-model="isOption" name="isOption" value="false" checked><br>
+	//         <span>题目</span><textarea rows="3" cols="20" v-model="question"></textarea><br>
+	//         <span>选项</span><input type="text" v-model="options"><br>
+	//         <span>答案</span><input type="text" v-model="answer"><br>
+	//         <span>难度</span><input type="text" v-model="level"><br>
+	//         {{msg}}
+	//         <button @click="create">提交</button>
+	//     </div>
+	// </template>
+	// <style>
+	// </style>
+	// <script>
+	exports.default = {
+	    data: function data() {
+	        return {
+	            msg: 'hello vue'
+	        };
+	    },
+
+	    components: {},
+	    methods: {
+	        create: function create() {
+	            this.$http.post('/api/bank/' + localStorage.user_id + '/create', {
+	                "type": this.type,
+	                "subject": this.subject,
+	                "isOption": this.isOption,
+	                "question": this.question,
+	                "options": this.options,
+	                "answer": this.answer,
+	                "level": this.level
+	            }).then(function (res) {
+	                var data = res.data;
+	                this.msg = data.message;
+	            }, function (res) {
+	                var data = res.data;
+	                this.msg = data;
+	            });
+	        }
+	    }
+	};
+	// </script>
+
+/***/ },
+/* 44 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<div class=\"content\">\n    <span>题目类型</span>\n    <select v-model=\"type\">\n        <option value=\"选择\" selected=\"selected\">选择</option>\n        <option value=\"判断\">判断</option>\n        <option value=\"填空\">填空</option>\n        <option value=\"简答\">简答</option>\n        <option value=\"解答\">解答</option>\n        <option value=\"计算\">计算</option>\n    </select><br>\n    <span>课程</span><input type=\"text\" value=\"高数\" v-model=\"subject\"><br>\n    <span>是否选择题</span><span>是</span><input type=\"radio\" v-model=\"isOption\" name=\"isOption\" value=\"true\">\n    <span>不是</span><input type=\"radio\" v-model=\"isOption\" name=\"isOption\" value=\"false\" checked><br>\n    <span>题目</span><textarea rows=\"3\" cols=\"20\" v-model=\"question\"></textarea><br>\n    <span>选项</span><input type=\"text\" v-model=\"options\"><br>\n    <span>答案</span><input type=\"text\" v-model=\"answer\"><br>\n    <span>难度</span><input type=\"text\" v-model=\"level\"><br>\n    {{msg}}\n    <button @click=\"create\">提交</button>\n</div>\n";
+
+/***/ },
+/* 45 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(49)
+	__vue_script__ = __webpack_require__(46)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] src/components/markbook.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(48)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./markbook.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _marked = __webpack_require__(47);
+
+	var _marked2 = _interopRequireDefault(_marked);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	    data: function data() {
+	        return {
+	            // note: changing this line won't causes changes
+	            // with hot-reload because the reloaded component
+	            // preserves its current state and we are modifying
+	            // its initial state.
+	            input: '# Helzzz World!'
+	        };
+	    },
+
+	    //        filters: {
+	    //            marked_html: marked,
+	    //            marked_json: marked.lexer,
+	    //
+	    //        },
+	    computed: {
+	        output_html: function output_html() {
+	            return (0, _marked2.default)(this.input);
+	        },
+	        output_json: function output_json() {
+	            return _marked2.default.lexer(this.input);
+	        }
+	    },
+
+	    methods: {
+	        cc: function cc() {
+	            var a = this.output_json;
+	            console.log(a);
+	        }
+	    }
+
+	};
+	// </script>
+	// <style>
+	//     #editor {
+	//         margin: 0;
+	//         height: 700px;
+	//         font-family: 'Helvetica Neue', Arial, sans-serif;
+	//         color: #333;
+	//     }
+	//     textarea, #editor div {
+	//         display: inline-block;
+	//         width: 49%;
+	//         height: 100%;
+	//         vertical-align: top;
+	//         -webkit-box-sizing: border-box;
+	//         -moz-box-sizing: border-box;
+	//         box-sizing: border-box;
+	//         padding: 0 20px;
+	//     }
+	//
+	//     textarea {
+	//         border: none;
+	//         border-right: 1px solid #ccc;
+	//         resize: none;
+	//         outline: none;
+	//         background-color: #f6f6f6;
+	//         font-size: 14px;
+	//         font-family: 'Monaco', courier, monospace;
+	//         padding: 20px;
+	//     }
+	//
+	//     code {
+	//         color: #f66;
+	//     }
+	// </style>
+	// <template>
+	//     <div id="editor">
+	//         <textarea v-model="input" debounce=500></textarea>
+	//         <div v-html="output_html"></div>
+	//     </div>
+	//     {{output_json}}
+	//     <button @click="cc">aa</button>
+	// </template>
+	//
+	// <script>
+
+/***/ },
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {/**
+	 * marked - a markdown parser
+	 * Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
+	 * https://github.com/chjj/marked
+	 */
+
+	;(function() {
+
+	/**
+	 * Block-Level Grammar
+	 */
+
+	var block = {
+	  newline: /^\n+/,
+	  code: /^( {4}[^\n]+\n*)+/,
+	  fences: noop,
+	  hr: /^( *[-*_]){3,} *(?:\n+|$)/,
+	  heading: /^ *(#{1,6}) *([^\n]+?) *#* *(?:\n+|$)/,
+	  nptable: noop,
+	  lheading: /^([^\n]+)\n *(=|-){2,} *(?:\n+|$)/,
+	  blockquote: /^( *>[^\n]+(\n(?!def)[^\n]+)*\n*)+/,
+	  list: /^( *)(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?!\1bull )\n*|\s*$)/,
+	  html: /^ *(?:comment *(?:\n|\s*$)|closed *(?:\n{2,}|\s*$)|closing *(?:\n{2,}|\s*$))/,
+	  def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +["(]([^\n]+)[")])? *(?:\n+|$)/,
+	  table: noop,
+	  paragraph: /^((?:[^\n]+\n?(?!hr|heading|lheading|blockquote|tag|def))+)\n*/,
+	  text: /^[^\n]+/
+	};
+
+	block.bullet = /(?:[*+-]|\d+\.)/;
+	block.item = /^( *)(bull) [^\n]*(?:\n(?!\1bull )[^\n]*)*/;
+	block.item = replace(block.item, 'gm')
+	  (/bull/g, block.bullet)
+	  ();
+
+	block.list = replace(block.list)
+	  (/bull/g, block.bullet)
+	  ('hr', '\\n+(?=\\1?(?:[-*_] *){3,}(?:\\n+|$))')
+	  ('def', '\\n+(?=' + block.def.source + ')')
+	  ();
+
+	block.blockquote = replace(block.blockquote)
+	  ('def', block.def)
+	  ();
+
+	block._tag = '(?!(?:'
+	  + 'a|em|strong|small|s|cite|q|dfn|abbr|data|time|code'
+	  + '|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo'
+	  + '|span|br|wbr|ins|del|img)\\b)\\w+(?!:/|[^\\w\\s@]*@)\\b';
+
+	block.html = replace(block.html)
+	  ('comment', /<!--[\s\S]*?-->/)
+	  ('closed', /<(tag)[\s\S]+?<\/\1>/)
+	  ('closing', /<tag(?:"[^"]*"|'[^']*'|[^'">])*?>/)
+	  (/tag/g, block._tag)
+	  ();
+
+	block.paragraph = replace(block.paragraph)
+	  ('hr', block.hr)
+	  ('heading', block.heading)
+	  ('lheading', block.lheading)
+	  ('blockquote', block.blockquote)
+	  ('tag', '<' + block._tag)
+	  ('def', block.def)
+	  ();
+
+	/**
+	 * Normal Block Grammar
+	 */
+
+	block.normal = merge({}, block);
+
+	/**
+	 * GFM Block Grammar
+	 */
+
+	block.gfm = merge({}, block.normal, {
+	  fences: /^ *(`{3,}|~{3,})[ \.]*(\S+)? *\n([\s\S]*?)\s*\1 *(?:\n+|$)/,
+	  paragraph: /^/,
+	  heading: /^ *(#{1,6}) +([^\n]+?) *#* *(?:\n+|$)/
+	});
+
+	block.gfm.paragraph = replace(block.paragraph)
+	  ('(?!', '(?!'
+	    + block.gfm.fences.source.replace('\\1', '\\2') + '|'
+	    + block.list.source.replace('\\1', '\\3') + '|')
+	  ();
+
+	/**
+	 * GFM + Tables Block Grammar
+	 */
+
+	block.tables = merge({}, block.gfm, {
+	  nptable: /^ *(\S.*\|.*)\n *([-:]+ *\|[-| :]*)\n((?:.*\|.*(?:\n|$))*)\n*/,
+	  table: /^ *\|(.+)\n *\|( *[-:]+[-| :]*)\n((?: *\|.*(?:\n|$))*)\n*/
+	});
+
+	/**
+	 * Block Lexer
+	 */
+
+	function Lexer(options) {
+	  this.tokens = [];
+	  this.tokens.links = {};
+	  this.options = options || marked.defaults;
+	  this.rules = block.normal;
+
+	  if (this.options.gfm) {
+	    if (this.options.tables) {
+	      this.rules = block.tables;
+	    } else {
+	      this.rules = block.gfm;
+	    }
+	  }
+	}
+
+	/**
+	 * Expose Block Rules
+	 */
+
+	Lexer.rules = block;
+
+	/**
+	 * Static Lex Method
+	 */
+
+	Lexer.lex = function(src, options) {
+	  var lexer = new Lexer(options);
+	  return lexer.lex(src);
+	};
+
+	/**
+	 * Preprocessing
+	 */
+
+	Lexer.prototype.lex = function(src) {
+	  src = src
+	    .replace(/\r\n|\r/g, '\n')
+	    .replace(/\t/g, '    ')
+	    .replace(/\u00a0/g, ' ')
+	    .replace(/\u2424/g, '\n');
+
+	  return this.token(src, true);
+	};
+
+	/**
+	 * Lexing
+	 */
+
+	Lexer.prototype.token = function(src, top, bq) {
+	  var src = src.replace(/^ +$/gm, '')
+	    , next
+	    , loose
+	    , cap
+	    , bull
+	    , b
+	    , item
+	    , space
+	    , i
+	    , l;
+
+	  while (src) {
+	    // newline
+	    if (cap = this.rules.newline.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      if (cap[0].length > 1) {
+	        this.tokens.push({
+	          type: 'space'
+	        });
+	      }
+	    }
+
+	    // code
+	    if (cap = this.rules.code.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      cap = cap[0].replace(/^ {4}/gm, '');
+	      this.tokens.push({
+	        type: 'code',
+	        text: !this.options.pedantic
+	          ? cap.replace(/\n+$/, '')
+	          : cap
+	      });
+	      continue;
+	    }
+
+	    // fences (gfm)
+	    if (cap = this.rules.fences.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      this.tokens.push({
+	        type: 'code',
+	        lang: cap[2],
+	        text: cap[3] || ''
+	      });
+	      continue;
+	    }
+
+	    // heading
+	    if (cap = this.rules.heading.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      this.tokens.push({
+	        type: 'heading',
+	        depth: cap[1].length,
+	        text: cap[2]
+	      });
+	      continue;
+	    }
+
+	    // table no leading pipe (gfm)
+	    if (top && (cap = this.rules.nptable.exec(src))) {
+	      src = src.substring(cap[0].length);
+
+	      item = {
+	        type: 'table',
+	        header: cap[1].replace(/^ *| *\| *$/g, '').split(/ *\| */),
+	        align: cap[2].replace(/^ *|\| *$/g, '').split(/ *\| */),
+	        cells: cap[3].replace(/\n$/, '').split('\n')
+	      };
+
+	      for (i = 0; i < item.align.length; i++) {
+	        if (/^ *-+: *$/.test(item.align[i])) {
+	          item.align[i] = 'right';
+	        } else if (/^ *:-+: *$/.test(item.align[i])) {
+	          item.align[i] = 'center';
+	        } else if (/^ *:-+ *$/.test(item.align[i])) {
+	          item.align[i] = 'left';
+	        } else {
+	          item.align[i] = null;
+	        }
+	      }
+
+	      for (i = 0; i < item.cells.length; i++) {
+	        item.cells[i] = item.cells[i].split(/ *\| */);
+	      }
+
+	      this.tokens.push(item);
+
+	      continue;
+	    }
+
+	    // lheading
+	    if (cap = this.rules.lheading.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      this.tokens.push({
+	        type: 'heading',
+	        depth: cap[2] === '=' ? 1 : 2,
+	        text: cap[1]
+	      });
+	      continue;
+	    }
+
+	    // hr
+	    if (cap = this.rules.hr.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      this.tokens.push({
+	        type: 'hr'
+	      });
+	      continue;
+	    }
+
+	    // blockquote
+	    if (cap = this.rules.blockquote.exec(src)) {
+	      src = src.substring(cap[0].length);
+
+	      this.tokens.push({
+	        type: 'blockquote_start'
+	      });
+
+	      cap = cap[0].replace(/^ *> ?/gm, '');
+
+	      // Pass `top` to keep the current
+	      // "toplevel" state. This is exactly
+	      // how markdown.pl works.
+	      this.token(cap, top, true);
+
+	      this.tokens.push({
+	        type: 'blockquote_end'
+	      });
+
+	      continue;
+	    }
+
+	    // list
+	    if (cap = this.rules.list.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      bull = cap[2];
+
+	      this.tokens.push({
+	        type: 'list_start',
+	        ordered: bull.length > 1
+	      });
+
+	      // Get each top-level item.
+	      cap = cap[0].match(this.rules.item);
+
+	      next = false;
+	      l = cap.length;
+	      i = 0;
+
+	      for (; i < l; i++) {
+	        item = cap[i];
+
+	        // Remove the list item's bullet
+	        // so it is seen as the next token.
+	        space = item.length;
+	        item = item.replace(/^ *([*+-]|\d+\.) +/, '');
+
+	        // Outdent whatever the
+	        // list item contains. Hacky.
+	        if (~item.indexOf('\n ')) {
+	          space -= item.length;
+	          item = !this.options.pedantic
+	            ? item.replace(new RegExp('^ {1,' + space + '}', 'gm'), '')
+	            : item.replace(/^ {1,4}/gm, '');
+	        }
+
+	        // Determine whether the next list item belongs here.
+	        // Backpedal if it does not belong in this list.
+	        if (this.options.smartLists && i !== l - 1) {
+	          b = block.bullet.exec(cap[i + 1])[0];
+	          if (bull !== b && !(bull.length > 1 && b.length > 1)) {
+	            src = cap.slice(i + 1).join('\n') + src;
+	            i = l - 1;
+	          }
+	        }
+
+	        // Determine whether item is loose or not.
+	        // Use: /(^|\n)(?! )[^\n]+\n\n(?!\s*$)/
+	        // for discount behavior.
+	        loose = next || /\n\n(?!\s*$)/.test(item);
+	        if (i !== l - 1) {
+	          next = item.charAt(item.length - 1) === '\n';
+	          if (!loose) loose = next;
+	        }
+
+	        this.tokens.push({
+	          type: loose
+	            ? 'loose_item_start'
+	            : 'list_item_start'
+	        });
+
+	        // Recurse.
+	        this.token(item, false, bq);
+
+	        this.tokens.push({
+	          type: 'list_item_end'
+	        });
+	      }
+
+	      this.tokens.push({
+	        type: 'list_end'
+	      });
+
+	      continue;
+	    }
+
+	    // html
+	    if (cap = this.rules.html.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      this.tokens.push({
+	        type: this.options.sanitize
+	          ? 'paragraph'
+	          : 'html',
+	        pre: !this.options.sanitizer
+	          && (cap[1] === 'pre' || cap[1] === 'script' || cap[1] === 'style'),
+	        text: cap[0]
+	      });
+	      continue;
+	    }
+
+	    // def
+	    if ((!bq && top) && (cap = this.rules.def.exec(src))) {
+	      src = src.substring(cap[0].length);
+	      this.tokens.links[cap[1].toLowerCase()] = {
+	        href: cap[2],
+	        title: cap[3]
+	      };
+	      continue;
+	    }
+
+	    // table (gfm)
+	    if (top && (cap = this.rules.table.exec(src))) {
+	      src = src.substring(cap[0].length);
+
+	      item = {
+	        type: 'table',
+	        header: cap[1].replace(/^ *| *\| *$/g, '').split(/ *\| */),
+	        align: cap[2].replace(/^ *|\| *$/g, '').split(/ *\| */),
+	        cells: cap[3].replace(/(?: *\| *)?\n$/, '').split('\n')
+	      };
+
+	      for (i = 0; i < item.align.length; i++) {
+	        if (/^ *-+: *$/.test(item.align[i])) {
+	          item.align[i] = 'right';
+	        } else if (/^ *:-+: *$/.test(item.align[i])) {
+	          item.align[i] = 'center';
+	        } else if (/^ *:-+ *$/.test(item.align[i])) {
+	          item.align[i] = 'left';
+	        } else {
+	          item.align[i] = null;
+	        }
+	      }
+
+	      for (i = 0; i < item.cells.length; i++) {
+	        item.cells[i] = item.cells[i]
+	          .replace(/^ *\| *| *\| *$/g, '')
+	          .split(/ *\| */);
+	      }
+
+	      this.tokens.push(item);
+
+	      continue;
+	    }
+
+	    // top-level paragraph
+	    if (top && (cap = this.rules.paragraph.exec(src))) {
+	      src = src.substring(cap[0].length);
+	      this.tokens.push({
+	        type: 'paragraph',
+	        text: cap[1].charAt(cap[1].length - 1) === '\n'
+	          ? cap[1].slice(0, -1)
+	          : cap[1]
+	      });
+	      continue;
+	    }
+
+	    // text
+	    if (cap = this.rules.text.exec(src)) {
+	      // Top-level should never reach here.
+	      src = src.substring(cap[0].length);
+	      this.tokens.push({
+	        type: 'text',
+	        text: cap[0]
+	      });
+	      continue;
+	    }
+
+	    if (src) {
+	      throw new
+	        Error('Infinite loop on byte: ' + src.charCodeAt(0));
+	    }
+	  }
+
+	  return this.tokens;
+	};
+
+	/**
+	 * Inline-Level Grammar
+	 */
+
+	var inline = {
+	  escape: /^\\([\\`*{}\[\]()#+\-.!_>])/,
+	  autolink: /^<([^ >]+(@|:\/)[^ >]+)>/,
+	  url: noop,
+	  tag: /^<!--[\s\S]*?-->|^<\/?\w+(?:"[^"]*"|'[^']*'|[^'">])*?>/,
+	  link: /^!?\[(inside)\]\(href\)/,
+	  reflink: /^!?\[(inside)\]\s*\[([^\]]*)\]/,
+	  nolink: /^!?\[((?:\[[^\]]*\]|[^\[\]])*)\]/,
+	  strong: /^__([\s\S]+?)__(?!_)|^\*\*([\s\S]+?)\*\*(?!\*)/,
+	  em: /^\b_((?:[^_]|__)+?)_\b|^\*((?:\*\*|[\s\S])+?)\*(?!\*)/,
+	  code: /^(`+)\s*([\s\S]*?[^`])\s*\1(?!`)/,
+	  br: /^ {2,}\n(?!\s*$)/,
+	  del: noop,
+	  text: /^[\s\S]+?(?=[\\<!\[_*`]| {2,}\n|$)/
+	};
+
+	inline._inside = /(?:\[[^\]]*\]|[^\[\]]|\](?=[^\[]*\]))*/;
+	inline._href = /\s*<?([\s\S]*?)>?(?:\s+['"]([\s\S]*?)['"])?\s*/;
+
+	inline.link = replace(inline.link)
+	  ('inside', inline._inside)
+	  ('href', inline._href)
+	  ();
+
+	inline.reflink = replace(inline.reflink)
+	  ('inside', inline._inside)
+	  ();
+
+	/**
+	 * Normal Inline Grammar
+	 */
+
+	inline.normal = merge({}, inline);
+
+	/**
+	 * Pedantic Inline Grammar
+	 */
+
+	inline.pedantic = merge({}, inline.normal, {
+	  strong: /^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,
+	  em: /^_(?=\S)([\s\S]*?\S)_(?!_)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/
+	});
+
+	/**
+	 * GFM Inline Grammar
+	 */
+
+	inline.gfm = merge({}, inline.normal, {
+	  escape: replace(inline.escape)('])', '~|])')(),
+	  url: /^(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/,
+	  del: /^~~(?=\S)([\s\S]*?\S)~~/,
+	  text: replace(inline.text)
+	    (']|', '~]|')
+	    ('|', '|https?://|')
+	    ()
+	});
+
+	/**
+	 * GFM + Line Breaks Inline Grammar
+	 */
+
+	inline.breaks = merge({}, inline.gfm, {
+	  br: replace(inline.br)('{2,}', '*')(),
+	  text: replace(inline.gfm.text)('{2,}', '*')()
+	});
+
+	/**
+	 * Inline Lexer & Compiler
+	 */
+
+	function InlineLexer(links, options) {
+	  this.options = options || marked.defaults;
+	  this.links = links;
+	  this.rules = inline.normal;
+	  this.renderer = this.options.renderer || new Renderer;
+	  this.renderer.options = this.options;
+
+	  if (!this.links) {
+	    throw new
+	      Error('Tokens array requires a `links` property.');
+	  }
+
+	  if (this.options.gfm) {
+	    if (this.options.breaks) {
+	      this.rules = inline.breaks;
+	    } else {
+	      this.rules = inline.gfm;
+	    }
+	  } else if (this.options.pedantic) {
+	    this.rules = inline.pedantic;
+	  }
+	}
+
+	/**
+	 * Expose Inline Rules
+	 */
+
+	InlineLexer.rules = inline;
+
+	/**
+	 * Static Lexing/Compiling Method
+	 */
+
+	InlineLexer.output = function(src, links, options) {
+	  var inline = new InlineLexer(links, options);
+	  return inline.output(src);
+	};
+
+	/**
+	 * Lexing/Compiling
+	 */
+
+	InlineLexer.prototype.output = function(src) {
+	  var out = ''
+	    , link
+	    , text
+	    , href
+	    , cap;
+
+	  while (src) {
+	    // escape
+	    if (cap = this.rules.escape.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      out += cap[1];
+	      continue;
+	    }
+
+	    // autolink
+	    if (cap = this.rules.autolink.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      if (cap[2] === '@') {
+	        text = cap[1].charAt(6) === ':'
+	          ? this.mangle(cap[1].substring(7))
+	          : this.mangle(cap[1]);
+	        href = this.mangle('mailto:') + text;
+	      } else {
+	        text = escape(cap[1]);
+	        href = text;
+	      }
+	      out += this.renderer.link(href, null, text);
+	      continue;
+	    }
+
+	    // url (gfm)
+	    if (!this.inLink && (cap = this.rules.url.exec(src))) {
+	      src = src.substring(cap[0].length);
+	      text = escape(cap[1]);
+	      href = text;
+	      out += this.renderer.link(href, null, text);
+	      continue;
+	    }
+
+	    // tag
+	    if (cap = this.rules.tag.exec(src)) {
+	      if (!this.inLink && /^<a /i.test(cap[0])) {
+	        this.inLink = true;
+	      } else if (this.inLink && /^<\/a>/i.test(cap[0])) {
+	        this.inLink = false;
+	      }
+	      src = src.substring(cap[0].length);
+	      out += this.options.sanitize
+	        ? this.options.sanitizer
+	          ? this.options.sanitizer(cap[0])
+	          : escape(cap[0])
+	        : cap[0]
+	      continue;
+	    }
+
+	    // link
+	    if (cap = this.rules.link.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      this.inLink = true;
+	      out += this.outputLink(cap, {
+	        href: cap[2],
+	        title: cap[3]
+	      });
+	      this.inLink = false;
+	      continue;
+	    }
+
+	    // reflink, nolink
+	    if ((cap = this.rules.reflink.exec(src))
+	        || (cap = this.rules.nolink.exec(src))) {
+	      src = src.substring(cap[0].length);
+	      link = (cap[2] || cap[1]).replace(/\s+/g, ' ');
+	      link = this.links[link.toLowerCase()];
+	      if (!link || !link.href) {
+	        out += cap[0].charAt(0);
+	        src = cap[0].substring(1) + src;
+	        continue;
+	      }
+	      this.inLink = true;
+	      out += this.outputLink(cap, link);
+	      this.inLink = false;
+	      continue;
+	    }
+
+	    // strong
+	    if (cap = this.rules.strong.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      out += this.renderer.strong(this.output(cap[2] || cap[1]));
+	      continue;
+	    }
+
+	    // em
+	    if (cap = this.rules.em.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      out += this.renderer.em(this.output(cap[2] || cap[1]));
+	      continue;
+	    }
+
+	    // code
+	    if (cap = this.rules.code.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      out += this.renderer.codespan(escape(cap[2], true));
+	      continue;
+	    }
+
+	    // br
+	    if (cap = this.rules.br.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      out += this.renderer.br();
+	      continue;
+	    }
+
+	    // del (gfm)
+	    if (cap = this.rules.del.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      out += this.renderer.del(this.output(cap[1]));
+	      continue;
+	    }
+
+	    // text
+	    if (cap = this.rules.text.exec(src)) {
+	      src = src.substring(cap[0].length);
+	      out += this.renderer.text(escape(this.smartypants(cap[0])));
+	      continue;
+	    }
+
+	    if (src) {
+	      throw new
+	        Error('Infinite loop on byte: ' + src.charCodeAt(0));
+	    }
+	  }
+
+	  return out;
+	};
+
+	/**
+	 * Compile Link
+	 */
+
+	InlineLexer.prototype.outputLink = function(cap, link) {
+	  var href = escape(link.href)
+	    , title = link.title ? escape(link.title) : null;
+
+	  return cap[0].charAt(0) !== '!'
+	    ? this.renderer.link(href, title, this.output(cap[1]))
+	    : this.renderer.image(href, title, escape(cap[1]));
+	};
+
+	/**
+	 * Smartypants Transformations
+	 */
+
+	InlineLexer.prototype.smartypants = function(text) {
+	  if (!this.options.smartypants) return text;
+	  return text
+	    // em-dashes
+	    .replace(/---/g, '\u2014')
+	    // en-dashes
+	    .replace(/--/g, '\u2013')
+	    // opening singles
+	    .replace(/(^|[-\u2014/(\[{"\s])'/g, '$1\u2018')
+	    // closing singles & apostrophes
+	    .replace(/'/g, '\u2019')
+	    // opening doubles
+	    .replace(/(^|[-\u2014/(\[{\u2018\s])"/g, '$1\u201c')
+	    // closing doubles
+	    .replace(/"/g, '\u201d')
+	    // ellipses
+	    .replace(/\.{3}/g, '\u2026');
+	};
+
+	/**
+	 * Mangle Links
+	 */
+
+	InlineLexer.prototype.mangle = function(text) {
+	  if (!this.options.mangle) return text;
+	  var out = ''
+	    , l = text.length
+	    , i = 0
+	    , ch;
+
+	  for (; i < l; i++) {
+	    ch = text.charCodeAt(i);
+	    if (Math.random() > 0.5) {
+	      ch = 'x' + ch.toString(16);
+	    }
+	    out += '&#' + ch + ';';
+	  }
+
+	  return out;
+	};
+
+	/**
+	 * Renderer
+	 */
+
+	function Renderer(options) {
+	  this.options = options || {};
+	}
+
+	Renderer.prototype.code = function(code, lang, escaped) {
+	  if (this.options.highlight) {
+	    var out = this.options.highlight(code, lang);
+	    if (out != null && out !== code) {
+	      escaped = true;
+	      code = out;
+	    }
+	  }
+
+	  if (!lang) {
+	    return '<pre><code>'
+	      + (escaped ? code : escape(code, true))
+	      + '\n</code></pre>';
+	  }
+
+	  return '<pre><code class="'
+	    + this.options.langPrefix
+	    + escape(lang, true)
+	    + '">'
+	    + (escaped ? code : escape(code, true))
+	    + '\n</code></pre>\n';
+	};
+
+	Renderer.prototype.blockquote = function(quote) {
+	  return '<blockquote>\n' + quote + '</blockquote>\n';
+	};
+
+	Renderer.prototype.html = function(html) {
+	  return html;
+	};
+
+	Renderer.prototype.heading = function(text, level, raw) {
+	  return '<h'
+	    + level
+	    + ' id="'
+	    + this.options.headerPrefix
+	    + raw.toLowerCase().replace(/[^\w]+/g, '-')
+	    + '">'
+	    + text
+	    + '</h'
+	    + level
+	    + '>\n';
+	};
+
+	Renderer.prototype.hr = function() {
+	  return this.options.xhtml ? '<hr/>\n' : '<hr>\n';
+	};
+
+	Renderer.prototype.list = function(body, ordered) {
+	  var type = ordered ? 'ol' : 'ul';
+	  return '<' + type + '>\n' + body + '</' + type + '>\n';
+	};
+
+	Renderer.prototype.listitem = function(text) {
+	  return '<li>' + text + '</li>\n';
+	};
+
+	Renderer.prototype.paragraph = function(text) {
+	  return '<p>' + text + '</p>\n';
+	};
+
+	Renderer.prototype.table = function(header, body) {
+	  return '<table>\n'
+	    + '<thead>\n'
+	    + header
+	    + '</thead>\n'
+	    + '<tbody>\n'
+	    + body
+	    + '</tbody>\n'
+	    + '</table>\n';
+	};
+
+	Renderer.prototype.tablerow = function(content) {
+	  return '<tr>\n' + content + '</tr>\n';
+	};
+
+	Renderer.prototype.tablecell = function(content, flags) {
+	  var type = flags.header ? 'th' : 'td';
+	  var tag = flags.align
+	    ? '<' + type + ' style="text-align:' + flags.align + '">'
+	    : '<' + type + '>';
+	  return tag + content + '</' + type + '>\n';
+	};
+
+	// span level renderer
+	Renderer.prototype.strong = function(text) {
+	  return '<strong>' + text + '</strong>';
+	};
+
+	Renderer.prototype.em = function(text) {
+	  return '<em>' + text + '</em>';
+	};
+
+	Renderer.prototype.codespan = function(text) {
+	  return '<code>' + text + '</code>';
+	};
+
+	Renderer.prototype.br = function() {
+	  return this.options.xhtml ? '<br/>' : '<br>';
+	};
+
+	Renderer.prototype.del = function(text) {
+	  return '<del>' + text + '</del>';
+	};
+
+	Renderer.prototype.link = function(href, title, text) {
+	  if (this.options.sanitize) {
+	    try {
+	      var prot = decodeURIComponent(unescape(href))
+	        .replace(/[^\w:]/g, '')
+	        .toLowerCase();
+	    } catch (e) {
+	      return '';
+	    }
+	    if (prot.indexOf('javascript:') === 0 || prot.indexOf('vbscript:') === 0) {
+	      return '';
+	    }
+	  }
+	  var out = '<a href="' + href + '"';
+	  if (title) {
+	    out += ' title="' + title + '"';
+	  }
+	  out += '>' + text + '</a>';
+	  return out;
+	};
+
+	Renderer.prototype.image = function(href, title, text) {
+	  var out = '<img src="' + href + '" alt="' + text + '"';
+	  if (title) {
+	    out += ' title="' + title + '"';
+	  }
+	  out += this.options.xhtml ? '/>' : '>';
+	  return out;
+	};
+
+	Renderer.prototype.text = function(text) {
+	  return text;
+	};
+
+	/**
+	 * Parsing & Compiling
+	 */
+
+	function Parser(options) {
+	  this.tokens = [];
+	  this.token = null;
+	  this.options = options || marked.defaults;
+	  this.options.renderer = this.options.renderer || new Renderer;
+	  this.renderer = this.options.renderer;
+	  this.renderer.options = this.options;
+	}
+
+	/**
+	 * Static Parse Method
+	 */
+
+	Parser.parse = function(src, options, renderer) {
+	  var parser = new Parser(options, renderer);
+	  return parser.parse(src);
+	};
+
+	/**
+	 * Parse Loop
+	 */
+
+	Parser.prototype.parse = function(src) {
+	  this.inline = new InlineLexer(src.links, this.options, this.renderer);
+	  this.tokens = src.reverse();
+
+	  var out = '';
+	  while (this.next()) {
+	    out += this.tok();
+	  }
+
+	  return out;
+	};
+
+	/**
+	 * Next Token
+	 */
+
+	Parser.prototype.next = function() {
+	  return this.token = this.tokens.pop();
+	};
+
+	/**
+	 * Preview Next Token
+	 */
+
+	Parser.prototype.peek = function() {
+	  return this.tokens[this.tokens.length - 1] || 0;
+	};
+
+	/**
+	 * Parse Text Tokens
+	 */
+
+	Parser.prototype.parseText = function() {
+	  var body = this.token.text;
+
+	  while (this.peek().type === 'text') {
+	    body += '\n' + this.next().text;
+	  }
+
+	  return this.inline.output(body);
+	};
+
+	/**
+	 * Parse Current Token
+	 */
+
+	Parser.prototype.tok = function() {
+	  switch (this.token.type) {
+	    case 'space': {
+	      return '';
+	    }
+	    case 'hr': {
+	      return this.renderer.hr();
+	    }
+	    case 'heading': {
+	      return this.renderer.heading(
+	        this.inline.output(this.token.text),
+	        this.token.depth,
+	        this.token.text);
+	    }
+	    case 'code': {
+	      return this.renderer.code(this.token.text,
+	        this.token.lang,
+	        this.token.escaped);
+	    }
+	    case 'table': {
+	      var header = ''
+	        , body = ''
+	        , i
+	        , row
+	        , cell
+	        , flags
+	        , j;
+
+	      // header
+	      cell = '';
+	      for (i = 0; i < this.token.header.length; i++) {
+	        flags = { header: true, align: this.token.align[i] };
+	        cell += this.renderer.tablecell(
+	          this.inline.output(this.token.header[i]),
+	          { header: true, align: this.token.align[i] }
+	        );
+	      }
+	      header += this.renderer.tablerow(cell);
+
+	      for (i = 0; i < this.token.cells.length; i++) {
+	        row = this.token.cells[i];
+
+	        cell = '';
+	        for (j = 0; j < row.length; j++) {
+	          cell += this.renderer.tablecell(
+	            this.inline.output(row[j]),
+	            { header: false, align: this.token.align[j] }
+	          );
+	        }
+
+	        body += this.renderer.tablerow(cell);
+	      }
+	      return this.renderer.table(header, body);
+	    }
+	    case 'blockquote_start': {
+	      var body = '';
+
+	      while (this.next().type !== 'blockquote_end') {
+	        body += this.tok();
+	      }
+
+	      return this.renderer.blockquote(body);
+	    }
+	    case 'list_start': {
+	      var body = ''
+	        , ordered = this.token.ordered;
+
+	      while (this.next().type !== 'list_end') {
+	        body += this.tok();
+	      }
+
+	      return this.renderer.list(body, ordered);
+	    }
+	    case 'list_item_start': {
+	      var body = '';
+
+	      while (this.next().type !== 'list_item_end') {
+	        body += this.token.type === 'text'
+	          ? this.parseText()
+	          : this.tok();
+	      }
+
+	      return this.renderer.listitem(body);
+	    }
+	    case 'loose_item_start': {
+	      var body = '';
+
+	      while (this.next().type !== 'list_item_end') {
+	        body += this.tok();
+	      }
+
+	      return this.renderer.listitem(body);
+	    }
+	    case 'html': {
+	      var html = !this.token.pre && !this.options.pedantic
+	        ? this.inline.output(this.token.text)
+	        : this.token.text;
+	      return this.renderer.html(html);
+	    }
+	    case 'paragraph': {
+	      return this.renderer.paragraph(this.inline.output(this.token.text));
+	    }
+	    case 'text': {
+	      return this.renderer.paragraph(this.parseText());
+	    }
+	  }
+	};
+
+	/**
+	 * Helpers
+	 */
+
+	function escape(html, encode) {
+	  return html
+	    .replace(!encode ? /&(?!#?\w+;)/g : /&/g, '&amp;')
+	    .replace(/</g, '&lt;')
+	    .replace(/>/g, '&gt;')
+	    .replace(/"/g, '&quot;')
+	    .replace(/'/g, '&#39;');
+	}
+
+	function unescape(html) {
+		// explicitly match decimal, hex, and named HTML entities 
+	  return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/g, function(_, n) {
+	    n = n.toLowerCase();
+	    if (n === 'colon') return ':';
+	    if (n.charAt(0) === '#') {
+	      return n.charAt(1) === 'x'
+	        ? String.fromCharCode(parseInt(n.substring(2), 16))
+	        : String.fromCharCode(+n.substring(1));
+	    }
+	    return '';
+	  });
+	}
+
+	function replace(regex, opt) {
+	  regex = regex.source;
+	  opt = opt || '';
+	  return function self(name, val) {
+	    if (!name) return new RegExp(regex, opt);
+	    val = val.source || val;
+	    val = val.replace(/(^|[^\[])\^/g, '$1');
+	    regex = regex.replace(name, val);
+	    return self;
+	  };
+	}
+
+	function noop() {}
+	noop.exec = noop;
+
+	function merge(obj) {
+	  var i = 1
+	    , target
+	    , key;
+
+	  for (; i < arguments.length; i++) {
+	    target = arguments[i];
+	    for (key in target) {
+	      if (Object.prototype.hasOwnProperty.call(target, key)) {
+	        obj[key] = target[key];
+	      }
+	    }
+	  }
+
+	  return obj;
+	}
+
+
+	/**
+	 * Marked
+	 */
+
+	function marked(src, opt, callback) {
+	  if (callback || typeof opt === 'function') {
+	    if (!callback) {
+	      callback = opt;
+	      opt = null;
+	    }
+
+	    opt = merge({}, marked.defaults, opt || {});
+
+	    var highlight = opt.highlight
+	      , tokens
+	      , pending
+	      , i = 0;
+
+	    try {
+	      tokens = Lexer.lex(src, opt)
+	    } catch (e) {
+	      return callback(e);
+	    }
+
+	    pending = tokens.length;
+
+	    var done = function(err) {
+	      if (err) {
+	        opt.highlight = highlight;
+	        return callback(err);
+	      }
+
+	      var out;
+
+	      try {
+	        out = Parser.parse(tokens, opt);
+	      } catch (e) {
+	        err = e;
+	      }
+
+	      opt.highlight = highlight;
+
+	      return err
+	        ? callback(err)
+	        : callback(null, out);
+	    };
+
+	    if (!highlight || highlight.length < 3) {
+	      return done();
+	    }
+
+	    delete opt.highlight;
+
+	    if (!pending) return done();
+
+	    for (; i < tokens.length; i++) {
+	      (function(token) {
+	        if (token.type !== 'code') {
+	          return --pending || done();
+	        }
+	        return highlight(token.text, token.lang, function(err, code) {
+	          if (err) return done(err);
+	          if (code == null || code === token.text) {
+	            return --pending || done();
+	          }
+	          token.text = code;
+	          token.escaped = true;
+	          --pending || done();
+	        });
+	      })(tokens[i]);
+	    }
+
+	    return;
+	  }
+	  try {
+	    if (opt) opt = merge({}, marked.defaults, opt);
+	    return Parser.parse(Lexer.lex(src, opt), opt);
+	  } catch (e) {
+	    e.message += '\nPlease report this to https://github.com/chjj/marked.';
+	    if ((opt || marked.defaults).silent) {
+	      return '<p>An error occured:</p><pre>'
+	        + escape(e.message + '', true)
+	        + '</pre>';
+	    }
+	    throw e;
+	  }
+	}
+
+	/**
+	 * Options
+	 */
+
+	marked.options =
+	marked.setOptions = function(opt) {
+	  merge(marked.defaults, opt);
+	  return marked;
+	};
+
+	marked.defaults = {
+	  gfm: true,
+	  tables: true,
+	  breaks: false,
+	  pedantic: false,
+	  sanitize: false,
+	  sanitizer: null,
+	  mangle: true,
+	  smartLists: false,
+	  silent: false,
+	  highlight: null,
+	  langPrefix: 'lang-',
+	  smartypants: false,
+	  headerPrefix: '',
+	  renderer: new Renderer,
+	  xhtml: false
+	};
+
+	/**
+	 * Expose
+	 */
+
+	marked.Parser = Parser;
+	marked.parser = Parser.parse;
+
+	marked.Renderer = Renderer;
+
+	marked.Lexer = Lexer;
+	marked.lexer = Lexer.lex;
+
+	marked.InlineLexer = InlineLexer;
+	marked.inlineLexer = InlineLexer.output;
+
+	marked.parse = marked;
+
+	if (true) {
+	  module.exports = marked;
+	} else if (typeof define === 'function' && define.amd) {
+	  define(function() { return marked; });
+	} else {
+	  this.marked = marked;
+	}
+
+	}).call(function() {
+	  return this || (typeof window !== 'undefined' ? window : global);
+	}());
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 48 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<div id=\"editor\">\n    <textarea v-model=\"input\" debounce=500></textarea>\n    <div v-html=\"output_html\"></div>\n</div>\n{{output_json}}\n<button @click=\"cc\">aa</button>\n";
+
+/***/ },
+/* 49 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(50);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(11)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./markbook.vue", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./markbook.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 50 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(10)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n#editor {\n    margin: 0;\n    height: 700px;\n    font-family: 'Helvetica Neue', Arial, sans-serif;\n    color: #333;\n}\ntextarea, #editor div {\n    display: inline-block;\n    width: 49%;\n    height: 100%;\n    vertical-align: top;\n    box-sizing: border-box;\n    padding: 0 20px;\n}\n\ntextarea {\n    border: none;\n    border-right: 1px solid #ccc;\n    resize: none;\n    outline: none;\n    background-color: #f6f6f6;\n    font-size: 14px;\n    font-family: 'Monaco', courier, monospace;\n    padding: 20px;\n}\n\ncode {\n    color: #f66;\n}\n", ""]);
+
+	// exports
+
 
 /***/ }
 /******/ ]);

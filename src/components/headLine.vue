@@ -1,7 +1,7 @@
 <template>
     <div class="headline">
         <span class="headline_title">云题库</span>
-        <a class="headline_title" style="float:right" @click="logout">{{username}}/logout</a>
+        <a class="headline_title" style="float:right" @click="logout"><span style="color:green">{{username}}&nbsp&nbsp&nbsp&nbsp</span>/logout</a>
     </div>
 </template>
 <style>
@@ -30,9 +30,9 @@
         methods:{
             logout:function () {
                 this.$http.get('/api/logout').then(function (res) {
-                    router.go({path:'login'})
+                    router.go({name:'login'})
                 },function (res) {
-                    router.go({path:"login"})
+                    router.go({name:"login"})
                 })
             }
         },
