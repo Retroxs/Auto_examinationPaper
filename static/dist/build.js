@@ -58,42 +58,68 @@
 
 	var _vueResource2 = _interopRequireDefault(_vueResource);
 
-	var _app = __webpack_require__(5);
+	var _marked = __webpack_require__(5);
+
+	var _marked2 = _interopRequireDefault(_marked);
+
+	var _app = __webpack_require__(6);
 
 	var _app2 = _interopRequireDefault(_app);
 
-	var _home = __webpack_require__(7);
+	var _home = __webpack_require__(8);
 
 	var _home2 = _interopRequireDefault(_home);
 
-	var _login = __webpack_require__(25);
+	var _login = __webpack_require__(26);
 
 	var _login2 = _interopRequireDefault(_login);
 
-	var _register = __webpack_require__(30);
+	var _register = __webpack_require__(31);
 
 	var _register2 = _interopRequireDefault(_register);
 
-	var _list = __webpack_require__(35);
+	var _list = __webpack_require__(36);
 
 	var _list2 = _interopRequireDefault(_list);
 
-	var _create = __webpack_require__(40);
+	var _create = __webpack_require__(41);
 
 	var _create2 = _interopRequireDefault(_create);
 
-	var _markbook = __webpack_require__(45);
+	var _markbook = __webpack_require__(46);
 
 	var _markbook2 = _interopRequireDefault(_markbook);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	_vue2.default.use(_vueResource2.default); /**
-	                                           * Created by HUI on 16/9/9.
-	                                           */
+	/**
+	 * Created by HUI on 16/9/9.
+	 */
+	_vue2.default.use(_vueResource2.default);
 
 	_vue2.default.use(_vueRouter2.default);
+	var renderer = new _marked2.default.Renderer();
+	_marked2.default.setOptions({
+	    renderer: renderer,
+	    gfm: true,
+	    tables: true,
+	    breaks: false,
+	    pedantic: false,
+	    sanitize: false,
+	    smartLists: true,
+	    smartypants: false
+	});
+	renderer.paragraph = function (text) {
+	    if (text.match(/^\[(选择|判断|填空|解答|简答|计算)]\[知识点]\[(易|中|难)]/)) {
 
+	        // var a =text.toLowerCase().(/^\[(选择|判断|填空|解答|简答|计算)]\[知识点]\[(易|中|难)]/);
+	        var b = text.split(/\n/);
+	        var c = text.split(/答案(:|：)/);
+	        return '<span style="color: #ccc;">' + b[0] + '</span><br><span>' + b[1] + '</span><br><span>' + b[2] + '</span><br><span>' + b[3] + '</span><br><span>' + b[4] + '</span><br><span>' + b[5] + '</span><br><span>答案:' + c[2] + '</span><hr>';
+	    } else {
+	        return '<span style="color: #ccc;">error</span>';
+	    }
+	};
 	var app = _vue2.default.extend(_app2.default);
 	var router = new _vueRouter2.default();
 
@@ -14435,1459 +14461,6 @@
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __vue_script__, __vue_template__
-	__vue_template__ = __webpack_require__(6)
-	module.exports = __vue_script__ || {}
-	if (module.exports.__esModule) module.exports = module.exports.default
-	if (__vue_template__) {
-	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
-	}
-	if (false) {(function () {  module.hot.accept()
-	  var hotAPI = require("vue-hot-reload-api")
-	  hotAPI.install(require("vue"), false)
-	  if (!hotAPI.compatible) return
-	  var id = "./app.vue"
-	  if (!module.hot.data) {
-	    hotAPI.createRecord(id, module.exports)
-	  } else {
-	    hotAPI.update(id, module.exports, __vue_template__)
-	  }
-	})()}
-
-/***/ },
-/* 6 */
-/***/ function(module, exports) {
-
-	module.exports = "\n<div>\n    <router-view></router-view>\n</div>\n";
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __vue_script__, __vue_template__
-	__webpack_require__(8)
-	__vue_script__ = __webpack_require__(12)
-	if (__vue_script__ &&
-	    __vue_script__.__esModule &&
-	    Object.keys(__vue_script__).length > 1) {
-	  console.warn("[vue-loader] src/components/home.vue: named exports in *.vue files are ignored.")}
-	__vue_template__ = __webpack_require__(24)
-	module.exports = __vue_script__ || {}
-	if (module.exports.__esModule) module.exports = module.exports.default
-	if (__vue_template__) {
-	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
-	}
-	if (false) {(function () {  module.hot.accept()
-	  var hotAPI = require("vue-hot-reload-api")
-	  hotAPI.install(require("vue"), false)
-	  if (!hotAPI.compatible) return
-	  var id = "./home.vue"
-	  if (!module.hot.data) {
-	    hotAPI.createRecord(id, module.exports)
-	  } else {
-	    hotAPI.update(id, module.exports, __vue_template__)
-	  }
-	})()}
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(9);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(11)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./home.vue", function() {
-				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./home.vue");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(10)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "\n\n\n\n\n\n.content {\n    width: 80%;\n    height: 600px;\n    float: left;\n    overflow: auto;\n}\n", ""]);
-
-	// exports
-
-
-/***/ },
-/* 10 */
-/***/ function(module, exports) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	// css base code, injected by the css-loader
-	module.exports = function() {
-		var list = [];
-
-		// return the list of modules as css string
-		list.toString = function toString() {
-			var result = [];
-			for(var i = 0; i < this.length; i++) {
-				var item = this[i];
-				if(item[2]) {
-					result.push("@media " + item[2] + "{" + item[1] + "}");
-				} else {
-					result.push(item[1]);
-				}
-			}
-			return result.join("");
-		};
-
-		// import a list of modules into the list
-		list.i = function(modules, mediaQuery) {
-			if(typeof modules === "string")
-				modules = [[null, modules, ""]];
-			var alreadyImportedModules = {};
-			for(var i = 0; i < this.length; i++) {
-				var id = this[i][0];
-				if(typeof id === "number")
-					alreadyImportedModules[id] = true;
-			}
-			for(i = 0; i < modules.length; i++) {
-				var item = modules[i];
-				// skip already imported module
-				// this implementation is not 100% perfect for weird media query combinations
-				//  when a module is imported multiple times with different media queries.
-				//  I hope this will never occur (Hey this way we have smaller bundles)
-				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-					if(mediaQuery && !item[2]) {
-						item[2] = mediaQuery;
-					} else if(mediaQuery) {
-						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-					}
-					list.push(item);
-				}
-			}
-		};
-		return list;
-	};
-
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	var stylesInDom = {},
-		memoize = function(fn) {
-			var memo;
-			return function () {
-				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-				return memo;
-			};
-		},
-		isOldIE = memoize(function() {
-			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
-		}),
-		getHeadElement = memoize(function () {
-			return document.head || document.getElementsByTagName("head")[0];
-		}),
-		singletonElement = null,
-		singletonCounter = 0,
-		styleElementsInsertedAtTop = [];
-
-	module.exports = function(list, options) {
-		if(false) {
-			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-		}
-
-		options = options || {};
-		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-		// tags it will allow on a page
-		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
-
-		// By default, add <style> tags to the bottom of <head>.
-		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
-
-		var styles = listToStyles(list);
-		addStylesToDom(styles, options);
-
-		return function update(newList) {
-			var mayRemove = [];
-			for(var i = 0; i < styles.length; i++) {
-				var item = styles[i];
-				var domStyle = stylesInDom[item.id];
-				domStyle.refs--;
-				mayRemove.push(domStyle);
-			}
-			if(newList) {
-				var newStyles = listToStyles(newList);
-				addStylesToDom(newStyles, options);
-			}
-			for(var i = 0; i < mayRemove.length; i++) {
-				var domStyle = mayRemove[i];
-				if(domStyle.refs === 0) {
-					for(var j = 0; j < domStyle.parts.length; j++)
-						domStyle.parts[j]();
-					delete stylesInDom[domStyle.id];
-				}
-			}
-		};
-	}
-
-	function addStylesToDom(styles, options) {
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			if(domStyle) {
-				domStyle.refs++;
-				for(var j = 0; j < domStyle.parts.length; j++) {
-					domStyle.parts[j](item.parts[j]);
-				}
-				for(; j < item.parts.length; j++) {
-					domStyle.parts.push(addStyle(item.parts[j], options));
-				}
-			} else {
-				var parts = [];
-				for(var j = 0; j < item.parts.length; j++) {
-					parts.push(addStyle(item.parts[j], options));
-				}
-				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-			}
-		}
-	}
-
-	function listToStyles(list) {
-		var styles = [];
-		var newStyles = {};
-		for(var i = 0; i < list.length; i++) {
-			var item = list[i];
-			var id = item[0];
-			var css = item[1];
-			var media = item[2];
-			var sourceMap = item[3];
-			var part = {css: css, media: media, sourceMap: sourceMap};
-			if(!newStyles[id])
-				styles.push(newStyles[id] = {id: id, parts: [part]});
-			else
-				newStyles[id].parts.push(part);
-		}
-		return styles;
-	}
-
-	function insertStyleElement(options, styleElement) {
-		var head = getHeadElement();
-		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
-		if (options.insertAt === "top") {
-			if(!lastStyleElementInsertedAtTop) {
-				head.insertBefore(styleElement, head.firstChild);
-			} else if(lastStyleElementInsertedAtTop.nextSibling) {
-				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
-			} else {
-				head.appendChild(styleElement);
-			}
-			styleElementsInsertedAtTop.push(styleElement);
-		} else if (options.insertAt === "bottom") {
-			head.appendChild(styleElement);
-		} else {
-			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-		}
-	}
-
-	function removeStyleElement(styleElement) {
-		styleElement.parentNode.removeChild(styleElement);
-		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
-		if(idx >= 0) {
-			styleElementsInsertedAtTop.splice(idx, 1);
-		}
-	}
-
-	function createStyleElement(options) {
-		var styleElement = document.createElement("style");
-		styleElement.type = "text/css";
-		insertStyleElement(options, styleElement);
-		return styleElement;
-	}
-
-	function addStyle(obj, options) {
-		var styleElement, update, remove;
-
-		if (options.singleton) {
-			var styleIndex = singletonCounter++;
-			styleElement = singletonElement || (singletonElement = createStyleElement(options));
-			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-		} else {
-			styleElement = createStyleElement(options);
-			update = applyToTag.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-			};
-		}
-
-		update(obj);
-
-		return function updateStyle(newObj) {
-			if(newObj) {
-				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-					return;
-				update(obj = newObj);
-			} else {
-				remove();
-			}
-		};
-	}
-
-	var replaceText = (function () {
-		var textStore = [];
-
-		return function (index, replacement) {
-			textStore[index] = replacement;
-			return textStore.filter(Boolean).join('\n');
-		};
-	})();
-
-	function applyToSingletonTag(styleElement, index, remove, obj) {
-		var css = remove ? "" : obj.css;
-
-		if (styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = replaceText(index, css);
-		} else {
-			var cssNode = document.createTextNode(css);
-			var childNodes = styleElement.childNodes;
-			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-			if (childNodes.length) {
-				styleElement.insertBefore(cssNode, childNodes[index]);
-			} else {
-				styleElement.appendChild(cssNode);
-			}
-		}
-	}
-
-	function applyToTag(styleElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-		var sourceMap = obj.sourceMap;
-
-		if (media) {
-			styleElement.setAttribute("media", media);
-		}
-
-		if (sourceMap) {
-			// https://developer.chrome.com/devtools/docs/javascript-debugging
-			// this makes source maps inside style tags work properly in Chrome
-			css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */';
-			// http://stackoverflow.com/a/26603875
-			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-		}
-
-		if (styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = css;
-		} else {
-			while(styleElement.firstChild) {
-				styleElement.removeChild(styleElement.firstChild);
-			}
-			styleElement.appendChild(document.createTextNode(css));
-		}
-	}
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _headLine = __webpack_require__(13);
-
-	var _headLine2 = _interopRequireDefault(_headLine);
-
-	var _sidebar = __webpack_require__(18);
-
-	var _sidebar2 = _interopRequireDefault(_sidebar);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	// <template>
-	//         <headline :username=username></headline>
-	//         <sidebar :username=username></sidebar>
-	//         <router-view></router-view>
-	// </template>
-	// <style>
-	//     .content {
-	//         width: 80%;
-	//         height: 600px;
-	//         float: left;
-	//         overflow: auto;
-	//     }
-	// </style>
-	// <script>
-	exports.default = {
-	    data: function data() {
-	        return {
-	            msg: 'hello vue',
-	            username: '',
-	            items: ''
-	        };
-	    },
-
-	    components: {
-	        "headline": _headLine2.default,
-	        'sidebar': _sidebar2.default
-	    },
-	    ready: function ready() {
-	        this.$http.get('/api/auth').then(function (res) {
-	            var user = res.data.username;
-	            this.username = user;
-	            //                router.go({path:'/home'})
-	        }, function (res) {
-	            router.go({ path: '/login' });
-	        });
-	    }
-	};
-	// </script>
-	//
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __vue_script__, __vue_template__
-	__webpack_require__(14)
-	__vue_script__ = __webpack_require__(16)
-	if (__vue_script__ &&
-	    __vue_script__.__esModule &&
-	    Object.keys(__vue_script__).length > 1) {
-	  console.warn("[vue-loader] src/components/headLine.vue: named exports in *.vue files are ignored.")}
-	__vue_template__ = __webpack_require__(17)
-	module.exports = __vue_script__ || {}
-	if (module.exports.__esModule) module.exports = module.exports.default
-	if (__vue_template__) {
-	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
-	}
-	if (false) {(function () {  module.hot.accept()
-	  var hotAPI = require("vue-hot-reload-api")
-	  hotAPI.install(require("vue"), false)
-	  if (!hotAPI.compatible) return
-	  var id = "./headLine.vue"
-	  if (!module.hot.data) {
-	    hotAPI.createRecord(id, module.exports)
-	  } else {
-	    hotAPI.update(id, module.exports, __vue_template__)
-	  }
-	})()}
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(15);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(11)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./headLine.vue", function() {
-				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./headLine.vue");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(10)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "\n\n\n\n\n\n\n.headline{\n    width: 100%;\n    height: 50px;\n    background-color: #333;\n    line-height: 50px;\n}\n.headline_title{\n    font-size: 20px;\n    font-weight: bold;\n    color: #fff;\n\n}\n", ""]);
-
-	// exports
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	// <template>
-	//     <div class="headline">
-	//         <span class="headline_title">云题库</span>
-	//         <a class="headline_title" style="float:right" @click="logout"><span style="color:green">{{username}}&nbsp&nbsp&nbsp&nbsp</span>/logout</a>
-	//     </div>
-	// </template>
-	// <style>
-	//     .headline{
-	//         width: 100%;
-	//         height: 50px;
-	//         background-color: #333;
-	//         line-height: 50px;
-	//     }
-	//     .headline_title{
-	//         font-size: 20px;
-	//         font-weight: bold;
-	//         color: #fff;
-	//
-	//     }
-	// </style>
-	// <script>
-	exports.default = {
-	    data: function data() {
-	        return {
-	            msg: 'hello vue'
-	        };
-	    },
-
-	    components: {},
-	    methods: {
-	        logout: function logout() {
-	            this.$http.get('/api/logout').then(function (res) {
-	                router.go({ name: 'login' });
-	            }, function (res) {
-	                router.go({ name: "login" });
-	            });
-	        }
-	    },
-	    props: ['username']
-	};
-	// </script>
-
-/***/ },
-/* 17 */
-/***/ function(module, exports) {
-
-	module.exports = "\n<div class=\"headline\">\n    <span class=\"headline_title\">云题库</span>\n    <a class=\"headline_title\" style=\"float:right\" @click=\"logout\"><span style=\"color:green\">{{username}}&nbsp&nbsp&nbsp&nbsp</span>/logout</a>\n</div>\n";
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __vue_script__, __vue_template__
-	__webpack_require__(19)
-	__vue_script__ = __webpack_require__(21)
-	if (__vue_script__ &&
-	    __vue_script__.__esModule &&
-	    Object.keys(__vue_script__).length > 1) {
-	  console.warn("[vue-loader] src/components/sidebar.vue: named exports in *.vue files are ignored.")}
-	__vue_template__ = __webpack_require__(22)
-	module.exports = __vue_script__ || {}
-	if (module.exports.__esModule) module.exports = module.exports.default
-	if (__vue_template__) {
-	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
-	}
-	if (false) {(function () {  module.hot.accept()
-	  var hotAPI = require("vue-hot-reload-api")
-	  hotAPI.install(require("vue"), false)
-	  if (!hotAPI.compatible) return
-	  var id = "./sidebar.vue"
-	  if (!module.hot.data) {
-	    hotAPI.createRecord(id, module.exports)
-	  } else {
-	    hotAPI.update(id, module.exports, __vue_template__)
-	  }
-	})()}
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(20);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(11)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./sidebar.vue", function() {
-				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./sidebar.vue");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(10)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n.sidebar{\n    width: 15%;\n    height: 600px;\n    border-right: 2px solid #000;\n    float: left;\n    text-align: center;\n}\n.user_img{\n    display: block;\n    margin: 20px auto;\n}\n.user_info{\n    display: block;\n    margin: 0 auto;\n    margin-bottom: 20px;\n}\nli{\n    line-height: 30px;\n}\na:focus{\n    color: #e96153;\n}\n", ""]);
-
-	// exports
-
-
-/***/ },
-/* 21 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	// <template>
-	//     <div class="sidebar">
-	//         <img class="user_img" src="../../static/images/user_icon.png">
-	//         <span class="user_info">{{username}}</span>
-	//         <ul>
-	//             <li><a v-link="{name:'list'}">我的题库</a></li>
-	//             <li><a v-link="{name:'create'}">录入题目</a></li>
-	//             <li><a v-link="{name:'list'}">智能组卷</a></li>
-	//             <li><a v-link="{name:'list'}">手动组卷</a></li>
-	//         </ul>
-	//     </div>
-	// </template>
-	// <style>
-	//     .sidebar{
-	//         width: 15%;
-	//         height: 600px;
-	//         border-right: 2px solid #000;
-	//         float: left;
-	//         text-align: center;
-	//     }
-	//     .user_img{
-	//         display: block;
-	//         margin: 20px auto;
-	//     }
-	//     .user_info{
-	//         display: block;
-	//         margin: 0 auto;
-	//         margin-bottom: 20px;
-	//     }
-	//     li{
-	//         line-height: 30px;
-	//     }
-	//     a:focus{
-	//         color: #e96153;
-	//     }
-	// </style>
-	// <script>
-	exports.default = {
-	    data: function data() {
-	        return {
-	            msg: 'hello vue'
-	        };
-	    },
-
-	    components: {},
-	    props: ['username']
-	};
-	// </script>
-
-/***/ },
-/* 22 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = "\n<div class=\"sidebar\">\n    <img class=\"user_img\" src=\"" + __webpack_require__(23) + "\">\n    <span class=\"user_info\">{{username}}</span>\n    <ul>\n        <li><a v-link=\"{name:'list'}\">我的题库</a></li>\n        <li><a v-link=\"{name:'create'}\">录入题目</a></li>\n        <li><a v-link=\"{name:'list'}\">智能组卷</a></li>\n        <li><a v-link=\"{name:'list'}\">手动组卷</a></li>\n    </ul>\n</div>\n";
-
-/***/ },
-/* 23 */
-/***/ function(module, exports) {
-
-	module.exports = "data:image/png;base64,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"
-
-/***/ },
-/* 24 */
-/***/ function(module, exports) {
-
-	module.exports = "\n<headline :username=username></headline>\n<sidebar :username=username></sidebar>\n<router-view></router-view>\n";
-
-/***/ },
-/* 25 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __vue_script__, __vue_template__
-	__webpack_require__(26)
-	__vue_script__ = __webpack_require__(28)
-	if (__vue_script__ &&
-	    __vue_script__.__esModule &&
-	    Object.keys(__vue_script__).length > 1) {
-	  console.warn("[vue-loader] src/components/login.vue: named exports in *.vue files are ignored.")}
-	__vue_template__ = __webpack_require__(29)
-	module.exports = __vue_script__ || {}
-	if (module.exports.__esModule) module.exports = module.exports.default
-	if (__vue_template__) {
-	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
-	}
-	if (false) {(function () {  module.hot.accept()
-	  var hotAPI = require("vue-hot-reload-api")
-	  hotAPI.install(require("vue"), false)
-	  if (!hotAPI.compatible) return
-	  var id = "./login.vue"
-	  if (!module.hot.data) {
-	    hotAPI.createRecord(id, module.exports)
-	  } else {
-	    hotAPI.update(id, module.exports, __vue_template__)
-	  }
-	})()}
-
-/***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(27);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(11)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./login.vue", function() {
-				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./login.vue");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(10)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n.login_lg {\n    position: relative;\n    width: 500px;\n    height: 400px;\n    border: 1px solid #000;\n    margin: 0 auto;\n    margin-top: 20px;\n    background: #eee;\n}\n\n.login_header {\n    height: 60px;\n    border-bottom: 1px solid #000;\n    text-align: center;\n    line-height: 60px;\n}\n\n.login_title {\n    font-size: 20px;\n    font-weight: bold;\n    color: #000;\n}\n\n.login_content {\n    text-align: center;\n}\n\n.login_input {\n    width: 200px;\n    height: 30px;\n    font-size: 20px;\n}\n.login_common{\n    margin-top: 20px;\n}\n.span_md{\n    display: inline-block;\n    font-size: 20px;\n    text-align: right;\n    width: 100px;\n    margin-left: -60px;\n}\n", ""]);
-
-	// exports
-
-
-/***/ },
-/* 28 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _headLine = __webpack_require__(13);
-
-	var _headLine2 = _interopRequireDefault(_headLine);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = {
-	    data: function data() {
-	        return {
-	            msg: 'hello vue',
-	            username: '',
-	            password: ''
-	        };
-	    },
-
-	    components: {
-	        "headline": _headLine2.default
-	    },
-	    methods: {
-	        login: function login() {
-	            this.$http.post('/api/login', { "username": this.username, "password": this.password }).then(function (res) {
-	                var data = res.data;
-	                this.msg = data;
-	                localStorage.user_id = data[0]._id;
-	                router.go({ path: '/home' });
-	            }, function (res) {
-	                var data = res.data;
-	                this.msg = data.error;
-	            });
-	        }
-	    }
-	};
-	// </script>
-	// <template>
-	//     <headline></headline>
-	//     <div class="login_lg">
-	//         <div class="login_header">
-	//             <span class="login_title">登&nbsp&nbsp&nbsp陆</span>
-	//         </div>
-	//         <div class="login_content">
-	//             <div class="login_common">
-	//                 <span class="span_md">账号:</span>
-	//                 <input class="login_input" style="margin-top:60px" type="text" placeholder="" v-model="username">
-	//             </div>
-	//             <div class="login_common">
-	//                 <span class="span_md">密码:</span>
-	//                 <input class="login_input" type="password" placeholder="" v-model="password"></div>
-	//             <div class="login_common">
-	//                 <button @click="login">sign in</button>
-	//                 <a v-link="{path:'register'}"><button>sign up</button></a>
-	//             </div>
-	//             <p>{{msg}}</p>
-	//         </div>
-	//     </div>
-	// </template>
-	// <style>
-	//     .login_lg {
-	//         position: relative;
-	//         width: 500px;
-	//         height: 400px;
-	//         border: 1px solid #000;
-	//         margin: 0 auto;
-	//         margin-top: 20px;
-	//         background: #eee;
-	//     }
-	//
-	//     .login_header {
-	//         height: 60px;
-	//         border-bottom: 1px solid #000;
-	//         text-align: center;
-	//         line-height: 60px;
-	//     }
-	//
-	//     .login_title {
-	//         font-size: 20px;
-	//         font-weight: bold;
-	//         color: #000;
-	//     }
-	//
-	//     .login_content {
-	//         text-align: center;
-	//     }
-	//
-	//     .login_input {
-	//         width: 200px;
-	//         height: 30px;
-	//         font-size: 20px;
-	//     }
-	//     .login_common{
-	//         margin-top: 20px;
-	//     }
-	//     .span_md{
-	//         display: inline-block;
-	//         font-size: 20px;
-	//         text-align: right;
-	//         width: 100px;
-	//         margin-left: -60px;
-	//     }
-	// </style>
-	// <script>
-
-/***/ },
-/* 29 */
-/***/ function(module, exports) {
-
-	module.exports = "\n<headline></headline>\n<div class=\"login_lg\">\n    <div class=\"login_header\">\n        <span class=\"login_title\">登&nbsp&nbsp&nbsp陆</span>\n    </div>\n    <div class=\"login_content\">\n        <div class=\"login_common\">\n            <span class=\"span_md\">账号:</span>\n            <input class=\"login_input\" style=\"margin-top:60px\" type=\"text\" placeholder=\"\" v-model=\"username\">\n        </div>\n        <div class=\"login_common\">\n            <span class=\"span_md\">密码:</span>\n            <input class=\"login_input\" type=\"password\" placeholder=\"\" v-model=\"password\"></div>\n        <div class=\"login_common\">\n            <button @click=\"login\">sign in</button>\n            <a v-link=\"{path:'register'}\"><button>sign up</button></a>\n        </div>\n        <p>{{msg}}</p>\n    </div>\n</div>\n";
-
-/***/ },
-/* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __vue_script__, __vue_template__
-	__webpack_require__(31)
-	__vue_script__ = __webpack_require__(33)
-	if (__vue_script__ &&
-	    __vue_script__.__esModule &&
-	    Object.keys(__vue_script__).length > 1) {
-	  console.warn("[vue-loader] src/components/register.vue: named exports in *.vue files are ignored.")}
-	__vue_template__ = __webpack_require__(34)
-	module.exports = __vue_script__ || {}
-	if (module.exports.__esModule) module.exports = module.exports.default
-	if (__vue_template__) {
-	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
-	}
-	if (false) {(function () {  module.hot.accept()
-	  var hotAPI = require("vue-hot-reload-api")
-	  hotAPI.install(require("vue"), false)
-	  if (!hotAPI.compatible) return
-	  var id = "./register.vue"
-	  if (!module.hot.data) {
-	    hotAPI.createRecord(id, module.exports)
-	  } else {
-	    hotAPI.update(id, module.exports, __vue_template__)
-	  }
-	})()}
-
-/***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(32);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(11)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./register.vue", function() {
-				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./register.vue");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 32 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(10)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
-
-	// exports
-
-
-/***/ },
-/* 33 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _headLine = __webpack_require__(13);
-
-	var _headLine2 = _interopRequireDefault(_headLine);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = {
-	    data: function data() {
-	        return {
-	            msg: '',
-	            username: '',
-	            password: ''
-	        };
-	    },
-
-	    components: {
-	        "headline": _headLine2.default
-	    },
-	    methods: {
-	        register: function register() {
-	            this.$http.post('/api/register', { "username": this.username, "password": this.password }).then(function (res) {
-	                var data = res.data;
-	                this.msg = data;
-	            }, function (res) {
-	                var data = res.data;
-	                this.msg = data.error;
-	            });
-	        }
-	    }
-	};
-	// </script>
-	// <template>
-	//     <headline></headline>
-	//     <div class="login_lg">
-	//         <div class="login_header">
-	//             <span class="login_title">注&nbsp&nbsp&nbsp册</span>
-	//         </div>
-	//         <div class="login_content">
-	//             <div class="login_common">
-	//                 <span class="span_md">用户名:</span>
-	//                 <input class="login_input" style="margin-top:60px" type="text" placeholder="" v-model="username">
-	//             </div>
-	//             <div class="login_common">
-	//                 <span class="span_md">密码:</span>
-	//                 <input class="login_input" type="password" placeholder="" v-model="password"></div>
-	//             <div class="login_common">
-	//                 <span class="span_md">确认密码:</span>
-	//                 <input class="login_input" type="password" placeholder=""></div>
-	//             <div class="login_common">
-	//                 <a v-link="{path:'login'}"><button><-back</button></a>
-	//                 <button @click="register">continue</button>
-	//             </div>
-	//             <p>{{msg}}</p>
-	//         </div>
-	//     </div>
-	//
-	// </template>
-	// <style>
-	// </style>
-	// <script>
-
-/***/ },
-/* 34 */
-/***/ function(module, exports) {
-
-	module.exports = "\n<headline></headline>\n<div class=\"login_lg\">\n    <div class=\"login_header\">\n        <span class=\"login_title\">注&nbsp&nbsp&nbsp册</span>\n    </div>\n    <div class=\"login_content\">\n        <div class=\"login_common\">\n            <span class=\"span_md\">用户名:</span>\n            <input class=\"login_input\" style=\"margin-top:60px\" type=\"text\" placeholder=\"\" v-model=\"username\">\n        </div>\n        <div class=\"login_common\">\n            <span class=\"span_md\">密码:</span>\n            <input class=\"login_input\" type=\"password\" placeholder=\"\" v-model=\"password\"></div>\n        <div class=\"login_common\">\n            <span class=\"span_md\">确认密码:</span>\n            <input class=\"login_input\" type=\"password\" placeholder=\"\"></div>\n        <div class=\"login_common\">\n            <a v-link=\"{path:'login'}\"><button><-back</button></a>\n            <button @click=\"register\">continue</button>\n        </div>\n        <p>{{msg}}</p>\n    </div>\n</div>\n\n";
-
-/***/ },
-/* 35 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __vue_script__, __vue_template__
-	__webpack_require__(36)
-	__vue_script__ = __webpack_require__(38)
-	if (__vue_script__ &&
-	    __vue_script__.__esModule &&
-	    Object.keys(__vue_script__).length > 1) {
-	  console.warn("[vue-loader] src/components/list.vue: named exports in *.vue files are ignored.")}
-	__vue_template__ = __webpack_require__(39)
-	module.exports = __vue_script__ || {}
-	if (module.exports.__esModule) module.exports = module.exports.default
-	if (__vue_template__) {
-	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
-	}
-	if (false) {(function () {  module.hot.accept()
-	  var hotAPI = require("vue-hot-reload-api")
-	  hotAPI.install(require("vue"), false)
-	  if (!hotAPI.compatible) return
-	  var id = "./list.vue"
-	  if (!module.hot.data) {
-	    hotAPI.createRecord(id, module.exports)
-	  } else {
-	    hotAPI.update(id, module.exports, __vue_template__)
-	  }
-	})()}
-
-/***/ },
-/* 36 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(37);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(11)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./list.vue", function() {
-				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./list.vue");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 37 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(10)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n.listBox{\n    margin-left: 10%;\n    width: 75%;\n    height: 100px;\n    background-color: #fff;\n    margin-top: 10px;\n}\n", ""]);
-
-	// exports
-
-
-/***/ },
-/* 38 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	// <template>
-	//     <div class="content">
-	//         <!--<ul>-->
-	//             <!--<li v-for="item in items">-->
-	//                 <!--<span>类型</span><span>{{item.type}}</span><br>-->
-	//                 <!--<span>课程</span><span>{{item.subject}}</span><br>-->
-	//                 <!--<span>题目</span><span>{{item.question}}</span><br>-->
-	//                 <!--<span>答案</span><span>{{item.answer}}</span><br>-->
-	//                 <!--<span>难度</span><span>{{item.level}}</span><br>-->
-	//                 <!--<button @click="deleteQ(item._id,item)">删除</button>-->
-	//             <!--</li>-->
-	//         <!--</ul>-->
-	//
-	//         <div class="listBox" v-for="item in items">
-	//             <span>{{$index+1}}</span>
-	//             <span>[{{item.type}}]</span>
-	//             <span>{{item.question}}</span><br>
-	//             <span>答案:</span><span>{{item.answer}}</span><br>
-	//             <span>难度:</span><span>{{item.level}}</span><br>
-	//             <button @click="deleteQ(item._id,item)">删除</button>
-	//         </div>
-	//     </div>
-	// </template>
-	// <style>
-	//     .listBox{
-	//         margin-left: 10%;
-	//         width: 75%;
-	//         height: 100px;
-	//         background-color: #fff;
-	//         margin-top: 10px;
-	//     }
-	// </style>
-	// <script>
-	exports.default = {
-	    data: function data() {
-	        return {
-	            msg: 'hello vue',
-	            items: ''
-	        };
-	    },
-
-	    components: {},
-	    ready: function ready() {
-	        this.$http.get('/api/bank/' + localStorage.user_id + '/list').then(function (res) {
-	            var data = res.data;
-	            this.items = data;
-	        }, function (res) {
-	            var data = res.data;
-	            this.bank = data;
-	        });
-	    },
-
-
-	    methods: {
-	        deleteQ: function deleteQ(id, item) {
-	            this.$http.get('/api/bank/' + id + '/delete').then(function (res) {
-	                var data = res.data;
-	                this.msg = data;
-	                this.items.$remove(item);
-	            }, function (res) {
-	                var data = res.data;
-	                this.msg = data;
-	            });
-	        }
-	    }
-	};
-	// </script>
-
-/***/ },
-/* 39 */
-/***/ function(module, exports) {
-
-	module.exports = "\n<div class=\"content\">\n    <!--<ul>-->\n        <!--<li v-for=\"item in items\">-->\n            <!--<span>类型</span><span>{{item.type}}</span><br>-->\n            <!--<span>课程</span><span>{{item.subject}}</span><br>-->\n            <!--<span>题目</span><span>{{item.question}}</span><br>-->\n            <!--<span>答案</span><span>{{item.answer}}</span><br>-->\n            <!--<span>难度</span><span>{{item.level}}</span><br>-->\n            <!--<button @click=\"deleteQ(item._id,item)\">删除</button>-->\n        <!--</li>-->\n    <!--</ul>-->\n\n    <div class=\"listBox\" v-for=\"item in items\">\n        <span>{{$index+1}}</span>\n        <span>[{{item.type}}]</span>\n        <span>{{item.question}}</span><br>\n        <span>答案:</span><span>{{item.answer}}</span><br>\n        <span>难度:</span><span>{{item.level}}</span><br>\n        <button @click=\"deleteQ(item._id,item)\">删除</button>\n    </div>\n</div>\n";
-
-/***/ },
-/* 40 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __vue_script__, __vue_template__
-	__webpack_require__(41)
-	__vue_script__ = __webpack_require__(43)
-	if (__vue_script__ &&
-	    __vue_script__.__esModule &&
-	    Object.keys(__vue_script__).length > 1) {
-	  console.warn("[vue-loader] src/components/create.vue: named exports in *.vue files are ignored.")}
-	__vue_template__ = __webpack_require__(44)
-	module.exports = __vue_script__ || {}
-	if (module.exports.__esModule) module.exports = module.exports.default
-	if (__vue_template__) {
-	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
-	}
-	if (false) {(function () {  module.hot.accept()
-	  var hotAPI = require("vue-hot-reload-api")
-	  hotAPI.install(require("vue"), false)
-	  if (!hotAPI.compatible) return
-	  var id = "./create.vue"
-	  if (!module.hot.data) {
-	    hotAPI.createRecord(id, module.exports)
-	  } else {
-	    hotAPI.update(id, module.exports, __vue_template__)
-	  }
-	})()}
-
-/***/ },
-/* 41 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(42);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(11)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./create.vue", function() {
-				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./create.vue");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 42 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(10)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
-
-	// exports
-
-
-/***/ },
-/* 43 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	// <template>
-	//     <div class="content">
-	//         <span>题目类型</span>
-	//         <select v-model="type">
-	//             <option value="选择" selected="selected">选择</option>
-	//             <option value="判断">判断</option>
-	//             <option value="填空">填空</option>
-	//             <option value="简答">简答</option>
-	//             <option value="解答">解答</option>
-	//             <option value="计算">计算</option>
-	//         </select><br>
-	//         <span>课程</span><input type="text" value="高数" v-model="subject"><br>
-	//         <span>是否选择题</span><span>是</span><input type="radio" v-model="isOption" name="isOption" value="true">
-	//         <span>不是</span><input type="radio" v-model="isOption" name="isOption" value="false" checked><br>
-	//         <span>题目</span><textarea rows="3" cols="20" v-model="question"></textarea><br>
-	//         <span>选项</span><input type="text" v-model="options"><br>
-	//         <span>答案</span><input type="text" v-model="answer"><br>
-	//         <span>难度</span><input type="text" v-model="level"><br>
-	//         {{msg}}
-	//         <button @click="create">提交</button>
-	//     </div>
-	// </template>
-	// <style>
-	// </style>
-	// <script>
-	exports.default = {
-	    data: function data() {
-	        return {
-	            msg: 'hello vue'
-	        };
-	    },
-
-	    components: {},
-	    methods: {
-	        create: function create() {
-	            this.$http.post('/api/bank/' + localStorage.user_id + '/create', {
-	                "type": this.type,
-	                "subject": this.subject,
-	                "isOption": this.isOption,
-	                "question": this.question,
-	                "options": this.options,
-	                "answer": this.answer,
-	                "level": this.level
-	            }).then(function (res) {
-	                var data = res.data;
-	                this.msg = data.message;
-	            }, function (res) {
-	                var data = res.data;
-	                this.msg = data;
-	            });
-	        }
-	    }
-	};
-	// </script>
-
-/***/ },
-/* 44 */
-/***/ function(module, exports) {
-
-	module.exports = "\n<div class=\"content\">\n    <span>题目类型</span>\n    <select v-model=\"type\">\n        <option value=\"选择\" selected=\"selected\">选择</option>\n        <option value=\"判断\">判断</option>\n        <option value=\"填空\">填空</option>\n        <option value=\"简答\">简答</option>\n        <option value=\"解答\">解答</option>\n        <option value=\"计算\">计算</option>\n    </select><br>\n    <span>课程</span><input type=\"text\" value=\"高数\" v-model=\"subject\"><br>\n    <span>是否选择题</span><span>是</span><input type=\"radio\" v-model=\"isOption\" name=\"isOption\" value=\"true\">\n    <span>不是</span><input type=\"radio\" v-model=\"isOption\" name=\"isOption\" value=\"false\" checked><br>\n    <span>题目</span><textarea rows=\"3\" cols=\"20\" v-model=\"question\"></textarea><br>\n    <span>选项</span><input type=\"text\" v-model=\"options\"><br>\n    <span>答案</span><input type=\"text\" v-model=\"answer\"><br>\n    <span>难度</span><input type=\"text\" v-model=\"level\"><br>\n    {{msg}}\n    <button @click=\"create\">提交</button>\n</div>\n";
-
-/***/ },
-/* 45 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __vue_script__, __vue_template__
-	__webpack_require__(49)
-	__vue_script__ = __webpack_require__(46)
-	if (__vue_script__ &&
-	    __vue_script__.__esModule &&
-	    Object.keys(__vue_script__).length > 1) {
-	  console.warn("[vue-loader] src/components/markbook.vue: named exports in *.vue files are ignored.")}
-	__vue_template__ = __webpack_require__(48)
-	module.exports = __vue_script__ || {}
-	if (module.exports.__esModule) module.exports = module.exports.default
-	if (__vue_template__) {
-	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
-	}
-	if (false) {(function () {  module.hot.accept()
-	  var hotAPI = require("vue-hot-reload-api")
-	  hotAPI.install(require("vue"), false)
-	  if (!hotAPI.compatible) return
-	  var id = "./markbook.vue"
-	  if (!module.hot.data) {
-	    hotAPI.createRecord(id, module.exports)
-	  } else {
-	    hotAPI.update(id, module.exports, __vue_template__)
-	  }
-	})()}
-
-/***/ },
-/* 46 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _marked = __webpack_require__(47);
-
-	var _marked2 = _interopRequireDefault(_marked);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = {
-	    data: function data() {
-	        return {
-	            // note: changing this line won't causes changes
-	            // with hot-reload because the reloaded component
-	            // preserves its current state and we are modifying
-	            // its initial state.
-	            input: '# Helzzz World!'
-	        };
-	    },
-
-	    //        filters: {
-	    //            marked_html: marked,
-	    //            marked_json: marked.lexer,
-	    //
-	    //        },
-	    computed: {
-	        output_html: function output_html() {
-	            return (0, _marked2.default)(this.input);
-	        },
-	        output_json: function output_json() {
-	            return _marked2.default.lexer(this.input);
-	        }
-	    },
-
-	    methods: {
-	        cc: function cc() {
-	            var a = this.output_json;
-	            console.log(a);
-	        }
-	    }
-
-	};
-	// </script>
-	// <style>
-	//     #editor {
-	//         margin: 0;
-	//         height: 700px;
-	//         font-family: 'Helvetica Neue', Arial, sans-serif;
-	//         color: #333;
-	//     }
-	//     textarea, #editor div {
-	//         display: inline-block;
-	//         width: 49%;
-	//         height: 100%;
-	//         vertical-align: top;
-	//         -webkit-box-sizing: border-box;
-	//         -moz-box-sizing: border-box;
-	//         box-sizing: border-box;
-	//         padding: 0 20px;
-	//     }
-	//
-	//     textarea {
-	//         border: none;
-	//         border-right: 1px solid #ccc;
-	//         resize: none;
-	//         outline: none;
-	//         background-color: #f6f6f6;
-	//         font-size: 14px;
-	//         font-family: 'Monaco', courier, monospace;
-	//         padding: 20px;
-	//     }
-	//
-	//     code {
-	//         color: #f66;
-	//     }
-	// </style>
-	// <template>
-	//     <div id="editor">
-	//         <textarea v-model="input" debounce=500></textarea>
-	//         <div v-html="output_html"></div>
-	//     </div>
-	//     {{output_json}}
-	//     <button @click="cc">aa</button>
-	// </template>
-	//
-	// <script>
-
-/***/ },
-/* 47 */
-/***/ function(module, exports, __webpack_require__) {
-
 	/* WEBPACK VAR INJECTION */(function(global) {/**
 	 * marked - a markdown parser
 	 * Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
@@ -17178,22 +15751,1375 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 48 */
-/***/ function(module, exports) {
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "\n<div id=\"editor\">\n    <textarea v-model=\"input\" debounce=500></textarea>\n    <div v-html=\"output_html\"></div>\n</div>\n{{output_json}}\n<button @click=\"cc\">aa</button>\n";
+	var __vue_script__, __vue_template__
+	__vue_template__ = __webpack_require__(7)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./app.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
 
 /***/ },
-/* 49 */
+/* 7 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<div>\n    <router-view></router-view>\n</div>\n";
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(9)
+	__vue_script__ = __webpack_require__(13)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] src/components/home.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(25)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./home.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(50);
+	var content = __webpack_require__(10);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(11)(content, {});
+	var update = __webpack_require__(12)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./home.vue", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./home.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(11)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\n\n\n\n\n\n.content {\n    width: 80%;\n    height: 600px;\n    float: left;\n    overflow: auto;\n}\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	// css base code, injected by the css-loader
+	module.exports = function() {
+		var list = [];
+
+		// return the list of modules as css string
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+
+		// import a list of modules into the list
+		list.i = function(modules, mediaQuery) {
+			if(typeof modules === "string")
+				modules = [[null, modules, ""]];
+			var alreadyImportedModules = {};
+			for(var i = 0; i < this.length; i++) {
+				var id = this[i][0];
+				if(typeof id === "number")
+					alreadyImportedModules[id] = true;
+			}
+			for(i = 0; i < modules.length; i++) {
+				var item = modules[i];
+				// skip already imported module
+				// this implementation is not 100% perfect for weird media query combinations
+				//  when a module is imported multiple times with different media queries.
+				//  I hope this will never occur (Hey this way we have smaller bundles)
+				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+					if(mediaQuery && !item[2]) {
+						item[2] = mediaQuery;
+					} else if(mediaQuery) {
+						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+					}
+					list.push(item);
+				}
+			}
+		};
+		return list;
+	};
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	var stylesInDom = {},
+		memoize = function(fn) {
+			var memo;
+			return function () {
+				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+				return memo;
+			};
+		},
+		isOldIE = memoize(function() {
+			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
+		}),
+		getHeadElement = memoize(function () {
+			return document.head || document.getElementsByTagName("head")[0];
+		}),
+		singletonElement = null,
+		singletonCounter = 0,
+		styleElementsInsertedAtTop = [];
+
+	module.exports = function(list, options) {
+		if(false) {
+			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+		}
+
+		options = options || {};
+		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+		// tags it will allow on a page
+		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+
+		// By default, add <style> tags to the bottom of <head>.
+		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
+
+		var styles = listToStyles(list);
+		addStylesToDom(styles, options);
+
+		return function update(newList) {
+			var mayRemove = [];
+			for(var i = 0; i < styles.length; i++) {
+				var item = styles[i];
+				var domStyle = stylesInDom[item.id];
+				domStyle.refs--;
+				mayRemove.push(domStyle);
+			}
+			if(newList) {
+				var newStyles = listToStyles(newList);
+				addStylesToDom(newStyles, options);
+			}
+			for(var i = 0; i < mayRemove.length; i++) {
+				var domStyle = mayRemove[i];
+				if(domStyle.refs === 0) {
+					for(var j = 0; j < domStyle.parts.length; j++)
+						domStyle.parts[j]();
+					delete stylesInDom[domStyle.id];
+				}
+			}
+		};
+	}
+
+	function addStylesToDom(styles, options) {
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			if(domStyle) {
+				domStyle.refs++;
+				for(var j = 0; j < domStyle.parts.length; j++) {
+					domStyle.parts[j](item.parts[j]);
+				}
+				for(; j < item.parts.length; j++) {
+					domStyle.parts.push(addStyle(item.parts[j], options));
+				}
+			} else {
+				var parts = [];
+				for(var j = 0; j < item.parts.length; j++) {
+					parts.push(addStyle(item.parts[j], options));
+				}
+				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+			}
+		}
+	}
+
+	function listToStyles(list) {
+		var styles = [];
+		var newStyles = {};
+		for(var i = 0; i < list.length; i++) {
+			var item = list[i];
+			var id = item[0];
+			var css = item[1];
+			var media = item[2];
+			var sourceMap = item[3];
+			var part = {css: css, media: media, sourceMap: sourceMap};
+			if(!newStyles[id])
+				styles.push(newStyles[id] = {id: id, parts: [part]});
+			else
+				newStyles[id].parts.push(part);
+		}
+		return styles;
+	}
+
+	function insertStyleElement(options, styleElement) {
+		var head = getHeadElement();
+		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+		if (options.insertAt === "top") {
+			if(!lastStyleElementInsertedAtTop) {
+				head.insertBefore(styleElement, head.firstChild);
+			} else if(lastStyleElementInsertedAtTop.nextSibling) {
+				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+			} else {
+				head.appendChild(styleElement);
+			}
+			styleElementsInsertedAtTop.push(styleElement);
+		} else if (options.insertAt === "bottom") {
+			head.appendChild(styleElement);
+		} else {
+			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+		}
+	}
+
+	function removeStyleElement(styleElement) {
+		styleElement.parentNode.removeChild(styleElement);
+		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+		if(idx >= 0) {
+			styleElementsInsertedAtTop.splice(idx, 1);
+		}
+	}
+
+	function createStyleElement(options) {
+		var styleElement = document.createElement("style");
+		styleElement.type = "text/css";
+		insertStyleElement(options, styleElement);
+		return styleElement;
+	}
+
+	function addStyle(obj, options) {
+		var styleElement, update, remove;
+
+		if (options.singleton) {
+			var styleIndex = singletonCounter++;
+			styleElement = singletonElement || (singletonElement = createStyleElement(options));
+			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+		} else {
+			styleElement = createStyleElement(options);
+			update = applyToTag.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+			};
+		}
+
+		update(obj);
+
+		return function updateStyle(newObj) {
+			if(newObj) {
+				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+					return;
+				update(obj = newObj);
+			} else {
+				remove();
+			}
+		};
+	}
+
+	var replaceText = (function () {
+		var textStore = [];
+
+		return function (index, replacement) {
+			textStore[index] = replacement;
+			return textStore.filter(Boolean).join('\n');
+		};
+	})();
+
+	function applyToSingletonTag(styleElement, index, remove, obj) {
+		var css = remove ? "" : obj.css;
+
+		if (styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = replaceText(index, css);
+		} else {
+			var cssNode = document.createTextNode(css);
+			var childNodes = styleElement.childNodes;
+			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+			if (childNodes.length) {
+				styleElement.insertBefore(cssNode, childNodes[index]);
+			} else {
+				styleElement.appendChild(cssNode);
+			}
+		}
+	}
+
+	function applyToTag(styleElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+		var sourceMap = obj.sourceMap;
+
+		if (media) {
+			styleElement.setAttribute("media", media);
+		}
+
+		if (sourceMap) {
+			// https://developer.chrome.com/devtools/docs/javascript-debugging
+			// this makes source maps inside style tags work properly in Chrome
+			css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */';
+			// http://stackoverflow.com/a/26603875
+			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+		}
+
+		if (styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = css;
+		} else {
+			while(styleElement.firstChild) {
+				styleElement.removeChild(styleElement.firstChild);
+			}
+			styleElement.appendChild(document.createTextNode(css));
+		}
+	}
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _headLine = __webpack_require__(14);
+
+	var _headLine2 = _interopRequireDefault(_headLine);
+
+	var _sidebar = __webpack_require__(19);
+
+	var _sidebar2 = _interopRequireDefault(_sidebar);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	// <template>
+	//         <headline :username=username></headline>
+	//         <sidebar :username=username></sidebar>
+	//         <router-view></router-view>
+	// </template>
+	// <style>
+	//     .content {
+	//         width: 80%;
+	//         height: 600px;
+	//         float: left;
+	//         overflow: auto;
+	//     }
+	// </style>
+	// <script>
+	exports.default = {
+	    data: function data() {
+	        return {
+	            msg: 'hello vue',
+	            username: '',
+	            items: ''
+	        };
+	    },
+
+	    components: {
+	        "headline": _headLine2.default,
+	        'sidebar': _sidebar2.default
+	    },
+	    ready: function ready() {
+	        this.$http.get('/api/auth').then(function (res) {
+	            var user = res.data.username;
+	            this.username = user;
+	            //                router.go({path:'/home'})
+	        }, function (res) {
+	            router.go({ path: '/login' });
+	        });
+	    }
+	};
+	// </script>
+	//
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(15)
+	__vue_script__ = __webpack_require__(17)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] src/components/headLine.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(18)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./headLine.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(16);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(12)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./headLine.vue", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./headLine.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(11)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\n\n\n\n\n\n\n.headline{\n    width: 100%;\n    height: 50px;\n    background-color: #333;\n    line-height: 50px;\n}\n.headline_title{\n    font-size: 20px;\n    font-weight: bold;\n    color: #fff;\n\n}\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	// <template>
+	//     <div class="headline">
+	//         <span class="headline_title">云题库</span>
+	//         <a class="headline_title" style="float:right" @click="logout"><span style="color:green">{{username}}&nbsp&nbsp&nbsp&nbsp</span>/logout</a>
+	//     </div>
+	// </template>
+	// <style>
+	//     .headline{
+	//         width: 100%;
+	//         height: 50px;
+	//         background-color: #333;
+	//         line-height: 50px;
+	//     }
+	//     .headline_title{
+	//         font-size: 20px;
+	//         font-weight: bold;
+	//         color: #fff;
+	//
+	//     }
+	// </style>
+	// <script>
+	exports.default = {
+	    data: function data() {
+	        return {
+	            msg: 'hello vue'
+	        };
+	    },
+
+	    components: {},
+	    methods: {
+	        logout: function logout() {
+	            this.$http.get('/api/logout').then(function (res) {
+	                router.go({ name: 'login' });
+	            }, function (res) {
+	                router.go({ name: "login" });
+	            });
+	        }
+	    },
+	    props: ['username']
+	};
+	// </script>
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<div class=\"headline\">\n    <span class=\"headline_title\">云题库</span>\n    <a class=\"headline_title\" style=\"float:right\" @click=\"logout\"><span style=\"color:green\">{{username}}&nbsp&nbsp&nbsp&nbsp</span>/logout</a>\n</div>\n";
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(20)
+	__vue_script__ = __webpack_require__(22)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] src/components/sidebar.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(23)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./sidebar.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(21);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(12)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./sidebar.vue", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./sidebar.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(11)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n.sidebar{\n    width: 15%;\n    height: 600px;\n    border-right: 2px solid #000;\n    float: left;\n    text-align: center;\n}\n.user_img{\n    display: block;\n    margin: 20px auto;\n}\n.user_info{\n    display: block;\n    margin: 0 auto;\n    margin-bottom: 20px;\n}\nli{\n    line-height: 30px;\n}\na:focus{\n    color: #e96153;\n}\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 22 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	// <template>
+	//     <div class="sidebar">
+	//         <img class="user_img" src="../../static/images/user_icon.png">
+	//         <span class="user_info">{{username}}</span>
+	//         <ul>
+	//             <li><a v-link="{name:'list'}">我的题库</a></li>
+	//             <li><a v-link="{name:'create'}">录入题目</a></li>
+	//             <li><a v-link="{name:'list'}">智能组卷</a></li>
+	//             <li><a v-link="{name:'list'}">手动组卷</a></li>
+	//         </ul>
+	//     </div>
+	// </template>
+	// <style>
+	//     .sidebar{
+	//         width: 15%;
+	//         height: 600px;
+	//         border-right: 2px solid #000;
+	//         float: left;
+	//         text-align: center;
+	//     }
+	//     .user_img{
+	//         display: block;
+	//         margin: 20px auto;
+	//     }
+	//     .user_info{
+	//         display: block;
+	//         margin: 0 auto;
+	//         margin-bottom: 20px;
+	//     }
+	//     li{
+	//         line-height: 30px;
+	//     }
+	//     a:focus{
+	//         color: #e96153;
+	//     }
+	// </style>
+	// <script>
+	exports.default = {
+	    data: function data() {
+	        return {
+	            msg: 'hello vue'
+	        };
+	    },
+
+	    components: {},
+	    props: ['username']
+	};
+	// </script>
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = "\n<div class=\"sidebar\">\n    <img class=\"user_img\" src=\"" + __webpack_require__(24) + "\">\n    <span class=\"user_info\">{{username}}</span>\n    <ul>\n        <li><a v-link=\"{name:'list'}\">我的题库</a></li>\n        <li><a v-link=\"{name:'create'}\">录入题目</a></li>\n        <li><a v-link=\"{name:'list'}\">智能组卷</a></li>\n        <li><a v-link=\"{name:'list'}\">手动组卷</a></li>\n    </ul>\n</div>\n";
+
+/***/ },
+/* 24 */
+/***/ function(module, exports) {
+
+	module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBIWXMAAAJYAAACWACbxr6zAAAVK0lEQVR42u2deZBcR33HP/3evDczO7uz965Wxx6SVpbQtUaWfMr4Cj6wjR2CDaa4qiAkVKhKQQVIhRRJkUqqqJAqJwGKpHAMpIAEE4wJNtixfGCDHdmxJdm679W599zzru788Wbl1Wp35s2xu/pjv6Wprd15r/vX/e3f79f961+3YBGLWMQiFrGIRSxiEYuYd4iFFiAIbr77SxzZ96a+dGmLOTDQRd7DqDO1usZ42JRCYArkyEQ+IzRhHdk/pI4eH3cP7X3CqW+4nnTq5YUWvyguOwJuuesTALpSRKSUS3Vd22Ca+uZ4PLK2IR7pjMZMoQQRoWjUdRFVIAS4nlTjQMbKOSqZyE+kU9aBfN7Z47pyt6aJE0KIDODuePLRhW7iRbgsCCh0eghoA64H7gTWhsOh7pbWuiXRmGmEwyGErgUqT0mFY3vks7Y3PpYdy2btY1JyQgh+DewATgEOwEITsmAEFDodoAHYDjwEXKkUqwxDC7e1x2hoimKYIYQApSponADXkaQSOUaHM1iW6wEngD3Az4BfAcOAXCgi5p2AQscLoB14sPDZDNQDNDSEae9sIBozqaDPZ26kANtyGT2fZnw8O0mmDRwEHgceBY6xAETMGwFTRvwS/NH+MWA9vulBCGhpjdHe2YBuaBWN+FItVZ5ifDTD8Pk0nicnv1HAUeC/gO8Ch5hHIuaFgELnx4B7gS8CGyh0PIAQgs7Oeprb6xHa3IuUmshx9nQC15VT/6yAQeCb+ESMwtz7iDlt7RRzsxH4CvA+oG66AK3t9bR3NSDE/CikACbGspw9nUDKS1TNBV4B/hp4njmeOelzVXCh88PAA8C/4s9ujIseUtDcEqVzaeO8jPypiEQNBJBJ29O/0oBu/MGiAbv7+gesY4fenBM55qTVhc5vBf4c+AwFBzsdYVOnu68VIxqiZh53SsM85f+cTbGkJzl9Ypxk0prtGQf4BfBlfN9Qc5NUUw245a5P0Nc/ALAK+Da+ow3P2EECOpbEqW+M1LTzFVBv6tyxvoWWmEHekViu8smY1smaLjAMnXTSQs7s9XVgHXAD/tR1sK9/gFpqQ80ImDLL2Qz8G3ALs2iYUlBfb9LRFZ99eFYIpeCqngbet6mV9V0xNi2P0Rk3yNqStOXhyourNMwQju2SzTrFROkqtOcQcLiWJNSEgCmdfw3+DGJLsec1Ae0d9UTrw9QSUim6WyLcP9BGfdhvWp2p0d0cZtOyejriBsm8SyLnoSY1QoCua6RT+Zkc8lQ0AzcDJ4H9ff0DqhYkVE3AtJH/3cLPWaGAaNSgo6sBob0TWpAKFApVeMb/CAr/KFWmUore1ggPbGmnq8m8aB2hAFMXLG8Os35pDEMTnE85WK5CAIapY+Uccjm3lEI24E8mDgCHaqEJVRMwxeY/AlxV8gUFTU1RGpqiFzo+pAu6Gk2WNobpa4vQ0xKhOWbQENFxPYXlTlIjLnSQ3+k+aVFDZ11XjA9c2cby5vCsizgFRAyN1R1RuhpNziVsknkPTQPPkaRTVpAmT5LwBnCiWhKqMsCF0d+GP/LvDVphd08zsaYoQkBPS4TrVsVZt6SOSEhD1/xO9qTCkzCUsnljMM2x0TyjaYes7S+eIoZGPKLTEjO4ZmWcNR1RTF0E9ueagLMJm5++McLBoRyu5XL8yAiOIwOWwB7gQ8BeqHx2FKroLS6a538ZuDvoe3pIIxQOYYY0blgV59a1TdSH9Qsj+sJzmkDXoLslzPLmMJYrmci6TORclILGaIh4RCdiaBi6KJiw4JAKuhpNPry1g5+8PszbZzJEIga2bQWdF2wE/h74OH5AryJUZIKm2P0Hgb9ilqnmpY1WLGut4+r17VzZXc/t61sIl4j7TH4V0gQNEZ32epP2BpN4RMfUNYQIPupnKjtmavS1RTmdsBkcypDPOeVMzFYBEnixr39AVmKKggXYZ8Zm4G+YZZE1Y4MVtDWaPHBVO7dc0YRWZphZKZ9E/1Ob5YNU0BoLcf9AK0ubwqjyooAa8McULMCUgVlWAWWhUEk98BdAX7nvx8IhYqaOPs+hh2KQClY0R1jVHqmE1Ebgq/jhi7JRFgFTGL4HP1ZSNuojOtpl1PmTUKhqgoGbgD8BQuVqQSUmqAv4M6ZFNYMi78hSC54FQ5nmZyoEvjN+d7kvBiZgCrMfxme8IqRyDu5lS0BVr3cAf0SZWlCuBnQCH6XC2ZMQMJ52yNlerUNA1UP5a48qcSclwjDTEYiAadPOjZVKJxCMpWzGUjbi8kjIuADblQwnAq2Ei2EJ8GlAC6oF5WhAHPggVYQvhIBU1uXE+exlpQFCQCLrcGYsXwu5bgXWBH24HAK2AwPVSud4ksNn0rXfdK8CmhCcHMoymrTQqmegF99PBloXlCRgMlOtUGjgRVcxnBnL4XiBYy5zDgXsG0yRs71aFXkrftCuJIJqQAc1GP3gj7YDp9OcGcvXYrTVBK6nODmcraVWridgfwUl4DqgvxaSCQEjCYvXD41fFn5AEzA0kefgqVQt5WmiEB0uZYaKElB4WQPuAMxaSedJxVvHE9juwpshIQQ7D47PhUZuAaKlHgqiAVFgbS0l04Rgz/EEh8+kFzwsYTmS/zs8Xos1wHT04UcNivdFgIKWAj21lEwIGE3ZvLBnuJrlf9XQNMHbJxLsOpaYC3+0nACLsiAEbMBfYNQUQsDv9o9xaiS3YM7Yk4rn94yQzJa1BxAUIWAbFPcDsxIwbbPdoMbQhOD0SI7fvDVS85YHql8THBhM8dt9I3M5ANZTwneW0gCdGtv/6fjlzrMcWgBfYDuSJ187y2jSnsvZWIwSkYNSBJj4Abg5gRBwbizPz185jR18M7xq6Jrg1QNjvLBnZK6Jb8InYVYE8QFzKqHQBM/tHua53UPz4gs0ITg1kuNHz58ka7lzHRJspMS+SSkCDCAylxIKIG97/GDHSd4+mZzTESkEpPMuP9hxggOnU/NBeMkKShEQoUbxn6JCCMHZ0RzfefIop0dyc0KCEL7d/48XB9mxa360LVDbS3xvEmA1VxNBNMHbJxP80xOHOTNaWxI0IbBsyY9fHOSxl05xOW3IlSKgkL46T8IIwc5DY3z9sQPsH0wiRHXJ0wKf2NGUxXeeOsqPXxjEKeSDXi4olRnnAPn5FGgyTPG1H+3joZu6uWF9G411BkqpslJGNCHI2x5vnUjy/WdPsG8w6WeXXk69T2kCckB6voXShODceJ5//sVhnnrtHO+/dinb17dhhoIFb6VS7DqW4LGXTvH2iSSpnIMmLrdNUB9BNCC3EIJpQuB6ir0nkxw/nyFq6mxf31YyaKZpgiOnM3z9Jwc4P+FHOC8XhzujvCW+n0zVXzDomiBreRw5mw4kiMCfaiayzoVM6wVEBv9A+KwopQEuMDEXkimlCjtQk5n/01E4mVE4ydLaYAY2IYYu0Aop7qJQxvRxpN6ppZARNydkjQDJYg8EMUEHaiGJVAolFZomCIdN6mNR6uqiNMT8haKUF+/HenYO18qgCcGK9jq29LfMdpDu4nqkorczxt3buth9LIHjSXQjQijyznJGCIFWOJ2TyeVJZ3JkszlyOQvPkwjBhe+rRB4outE8KwE7nnx0MiK6Gz8FuyKJpJTous6yJW0sW9bJmtU99PYup62thaZ4nLbmRv8yDimnjEqBlx3FOf4bNCdNNBzC0EWgPVsFxMI6n7qjj2zewxMhQsuvIdTcw+Q8SgiBEH5zxpMpxicSTEwkOXnyDPsOHuXU4DnOnBvGsh306og4BBRNNgpyQOMt/GP77WV1vFKEdI2Vfd1cd80AV28boLEpjmH4kW2lFLqmEY6ECekzBAzrYyjjWuSp36JcqyxHpPCdeEOdibZkE6Jz3YzzT6UUlucSMg06Otu5Yu0qbrr5WjKZLLt37+fFl17j4KHj5PNWJRqhgNeh+OmZIAQcx79JJDABUkq6lrRx2y3XceP2rTTEGy40WMp3op6u52HZDqHozBFb0dyHcLKos6+DLD9lRLT2Izo2zTr5tx0X23EL/sinWNM04vEGtm/fxtatm3jttT089esXOXJ0kDL9xBCws9RDQQjI4N+xsy1ozVcOrOPBD95FX98K/yBdEdth2TbRSHiWqaJAa18HTgY5tJfAEzKlEI0r0Lq2gDZ7Ey3HnlG2SUJM0+SGG7aybu0qfvbzZ3jhNztxHDdoGvtR/MFbFEU3C44depO+/gGJn5Z4NyXCEkIIbrpxK5/82AdY0tURKA1dSokRCs1shgCEhoh1oKwk5MfRNe3C3H6mD0oh6lrRuq9HmLPHEV3PI53NldyTVkpRVxdlw/p+QiGdo0cHcdxAJPwa/wqcoueJgx7S24FvhlYVe+g926/iox+5j2hd9CJTU7SBgO04RMwiO3e6ib5sK8lUgudeeZOs7TGzvsA1G1fS0381RJqK1ms5Dl5QGQvacM/dtyIQ/PTxp0tpQh7/jomS9w4FJeAU/rHMGQmQUrFpYz8PPvA+onXRsjMd8rZDNOxhhIoopNlArnWA77/43wyeHZ7xdhUzFKJ74DZ66otng0ilsGynLBmVUui6zp13vofxiQRP/89viz1+APhdkHKDunYH/2qvS6RWStHR3sxDH7qHpqbGitJMpJTYTukOCde3Eo3V+/P0aaZHCIFhGMSaS++gOo6L45ZHwGRbTdPk/vvey7or+opp+Uv4i7CSKEnAFBX6FbB/+vehkM5dd9xIb++KwGZnJli2HWihVQv4zreyd5VSNDU1cv9976U+VjfTgBsG/h1QQQ5vlzO5PQ88MfUPUkpW9i3nhhu2Vt0ptuuW1IJEOk02l2eWwAWu5zE2kShahuN65Ms0P9MhpWTt2lVcvW3TTES+jH+NQSAEImAKk48Chyd/MYwQt9x0NQ0N9TXJcJvNLjuuSzKTYSKZwrZnTyOR0mMimWIinZm1LNt1qtLUd9pucMvN1xKPx6a2PYV/bUPgozblLu+O4N+3iVKKttYmNmy4ombphZbj4Ljuhd+VUmTyeSZSaXKWHaAEP4BnOw6JdJpUNntRZ/vON0g5pSGlZNmyJfT1Lpva/hfxZ4yB744ITEChQIV/K8oJpRSrV/VU7Hhna5Tt+AS4rkcinSGVyeJJORkY9YN6/uruos/kKtu/B0gglSKTyzOeSmMVTJvtODiOW7mA0xCNRthy5frJMEUK/5awbDllVHJZxwHgW6GQ/rcDm9fqhhGaegdn1cgXRmjOsnC9d8IPCjBCIXpWLMP1lE/UFFOkaxodrc2XOEbHdUmk09SFI7jSq/nmxrp1q4k3xEgk078QQpQ1+qHMA3eFlTHZbP5Ae1vzdXfcfmNPLTUA3pmSzjQjikYirF+3lhND43iaQSzeRF1DI9H6OF3LlvG5T32Ulb3dlyyQlPKd/FRCawXHcXjl1V2nxsYSnwuF9MFyr62pKNb6zYe/MrLl3Ru+1t7WOjqf6eWapmEYBnZhFXrho2nYjgeFtcB8oRCmsAc2rfnGy8/+8M2K2lTuCzuefJR4zOT9t1/znGmIbylZQZiyCtiOg+teXKUA8pbF0Oj4fIoCgGlov/yDe2965PjxI4Hm/dNRkQb0r15DNBZ1rXTiYc9zf1XqeaUUnufhel7g+MtMEEIwnkiRy1uXmBnPk5wfHqOaLWwpJW5BziCaLT1vn2Plv2LWxZO9vasC1HApKt7uWblyDdHG1lHHyn9RSu+tYs96nsfoxATDY2MkUqmqfMbQ6PhFU9V3oDg/MoZbxYQgnc0yMjbGyNgYOav4VF5JOeRYuS/0dvfuPX1wV8V1VrXfNrjvDXq7e/Y6+dznlJSDswoLeFLieV5ViyCl/E6erYxUJoNXhaOd1ABPSlQROZWSace2vuKmR54+cfwQV7/n9orrrIqAa266g7f27GL/GztfsPPZP1XSGyr6QpVpB47rMlzEztuO62+qV1HHBdM2m6xK5aTrfC07Mfw9jDqvty/wrQQzouqt/42bBujrX62Gj+973HOsLygpK77ArhSkVNizhBiEECRSadKZ7NzlHyqV8zz375x87uFYU6u9un9d1UXWJPfiincN0LJkuUyePvhDO5/9rJLydK3bLoTAsm0yufyMHSyEIJPNMTqRnJNr8JWSac+xvmpl01/XQobVvbyiG8ouQU0IAFi1ZgPSjMtDr7/8Uzuf/aT0vJrkE01CAMlUhmQ6M6uJcRyX4dGxWlYLgJJy2LXyn88kRh/WUFbPitp0PtSQAICNA1tp7uhQPSu6n7Fz6Qc913mOWqU2CsHoRIL8DFPQSUgpOTc8VtuVueftd6zsJ3Lj5x4xDMPuW1mTGxsuoKYEAFx1/W3857/8A/GWtl35dOIhz7H/USmVqkXZQyPjJcMJw7NOU8uDUtKWrvO4nc/+fs+KnicT4+PeytXV2/zpqDkBAA9+5gu0xuMYpnlO5VNfsvLZP0TJA8Fy22aGlJLzI6MlR7ftOKjqj8Ccs3K5v7QzyY8LTd8HsO3G985FV80NAZPo6e7j/PCwlTj8xo+lY9+FVN8GKjLSrusyNpEs/pAQZLJ5LNuuyBELITIo+XMhvXtzqbFvjCVTyd4VK+ayiyq/Ozoortp2PQA7d7151LFyn49FzB8pz/0suv57QmhtQcvxpLokBnRJBwLJdIZEKkO8PhbY+SilMkp6r4Y0vulYuaeNSCy99apr57prgHkgYBJbNw8AWKfPn38pNXr+1WhD43UhM/JpoWk3C6EtLfauEIJsLu/PgIqMbCEE+bzFyPgEK5Z2lryHUik1rqT3qnSdR/LpxFPta96VTh7fw7u33DNf3TJ/BExiWWcngDM0Pv5CYvjsy2Ykuj5kRj4itNDNCNYKoV2SziaEYCKZCrTIcjyPoZEiVk4pW6GOSM99RbrO99x85n/7Vq3NPff4s/RfsX6+u2P+CZhER3MzgHto365dyaHTe+pbOuK6Ed6qG+Z9QgttBrVSCK1zMo98ZGwCy3ZK/28aSnFueBTP8ya1RSklx1EcU9I7KD3nCc+xn3dy6ZEl/ZvchtDCHqFZMAIm0b9uM/jnDyYO7Nn5jJXLPhtvXxpFiB7diGzV9NBWEQqtGU8ko7omOjxPRYoZFkPX3UQyPeQ6bk7T1AmU2ik951XpOkfsbDrdvW6zG7mMzowtOAFTccXGreCTkQH2PvPYI3uVlN9fd+1tZiadDi1picfPjiZNr0jWb0s8JqMhEo6ddYYP77aNcERu2X7HQjdtEYtYxCIWsYhFLGIRi7ic8P+9X2dy80wzCAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxNi0wNS0yNlQwMDo1OToyNCswODowME8z/d8AAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTYtMDUtMjZUMDA6NTk6MjQrMDg6MDA+bkVjAAAATnRFWHRzb2Z0d2FyZQBJbWFnZU1hZ2ljayA2LjguOC0xMCBRMTYgeDg2XzY0IDIwMTUtMDctMTkgaHR0cDovL3d3dy5pbWFnZW1hZ2ljay5vcmcFDJw1AAAAY3RFWHRzdmc6Y29tbWVudAAgR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxOS4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICDOSJALAAAAGHRFWHRUaHVtYjo6RG9jdW1lbnQ6OlBhZ2VzADGn/7svAAAAGHRFWHRUaHVtYjo6SW1hZ2U6OkhlaWdodAA1NzlOBS2PAAAAF3RFWHRUaHVtYjo6SW1hZ2U6OldpZHRoADU3Od30fdIAAAAZdEVYdFRodW1iOjpNaW1ldHlwZQBpbWFnZS9wbmc/slZOAAAAF3RFWHRUaHVtYjo6TVRpbWUAMTQ2NDE5NTU2NLi3muMAAAATdEVYdFRodW1iOjpTaXplADQzLjNLQkJUdDheAAAAWnRFWHRUaHVtYjo6VVJJAGZpbGU6Ly8vaG9tZS93d3dyb290L3d3dy5lYXN5aWNvbi5uZXQvY2RuLWltZy5lYXN5aWNvbi5jbi9zcmMvMTIwMTQvMTIwMTQxMi5wbmdXO1h6AAAAAElFTkSuQmCC"
+
+/***/ },
+/* 25 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<headline :username=username></headline>\n<sidebar :username=username></sidebar>\n<router-view></router-view>\n";
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(27)
+	__vue_script__ = __webpack_require__(29)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] src/components/login.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(30)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./login.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(28);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(12)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./login.vue", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./login.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(11)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n.login_lg {\n    position: relative;\n    width: 500px;\n    height: 400px;\n    border: 1px solid #000;\n    margin: 0 auto;\n    margin-top: 20px;\n    background: #eee;\n}\n\n.login_header {\n    height: 60px;\n    border-bottom: 1px solid #000;\n    text-align: center;\n    line-height: 60px;\n}\n\n.login_title {\n    font-size: 20px;\n    font-weight: bold;\n    color: #000;\n}\n\n.login_content {\n    text-align: center;\n}\n\n.login_input {\n    width: 200px;\n    height: 30px;\n    font-size: 20px;\n}\n.login_common{\n    margin-top: 20px;\n}\n.span_md{\n    display: inline-block;\n    font-size: 20px;\n    text-align: right;\n    width: 100px;\n    margin-left: -60px;\n}\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _headLine = __webpack_require__(14);
+
+	var _headLine2 = _interopRequireDefault(_headLine);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	    data: function data() {
+	        return {
+	            msg: 'hello vue',
+	            username: '',
+	            password: ''
+	        };
+	    },
+
+	    components: {
+	        "headline": _headLine2.default
+	    },
+	    methods: {
+	        login: function login() {
+	            this.$http.post('/api/login', { "username": this.username, "password": this.password }).then(function (res) {
+	                var data = res.data;
+	                this.msg = data;
+	                localStorage.user_id = data[0]._id;
+	                router.go({ path: '/home' });
+	            }, function (res) {
+	                var data = res.data;
+	                this.msg = data.error;
+	            });
+	        }
+	    }
+	};
+	// </script>
+	// <template>
+	//     <headline></headline>
+	//     <div class="login_lg">
+	//         <div class="login_header">
+	//             <span class="login_title">登&nbsp&nbsp&nbsp陆</span>
+	//         </div>
+	//         <div class="login_content">
+	//             <div class="login_common">
+	//                 <span class="span_md">账号:</span>
+	//                 <input class="login_input" style="margin-top:60px" type="text" placeholder="" v-model="username">
+	//             </div>
+	//             <div class="login_common">
+	//                 <span class="span_md">密码:</span>
+	//                 <input class="login_input" type="password" placeholder="" v-model="password"></div>
+	//             <div class="login_common">
+	//                 <button @click="login">sign in</button>
+	//                 <a v-link="{path:'register'}"><button>sign up</button></a>
+	//             </div>
+	//             <p>{{msg}}</p>
+	//         </div>
+	//     </div>
+	// </template>
+	// <style>
+	//     .login_lg {
+	//         position: relative;
+	//         width: 500px;
+	//         height: 400px;
+	//         border: 1px solid #000;
+	//         margin: 0 auto;
+	//         margin-top: 20px;
+	//         background: #eee;
+	//     }
+	//
+	//     .login_header {
+	//         height: 60px;
+	//         border-bottom: 1px solid #000;
+	//         text-align: center;
+	//         line-height: 60px;
+	//     }
+	//
+	//     .login_title {
+	//         font-size: 20px;
+	//         font-weight: bold;
+	//         color: #000;
+	//     }
+	//
+	//     .login_content {
+	//         text-align: center;
+	//     }
+	//
+	//     .login_input {
+	//         width: 200px;
+	//         height: 30px;
+	//         font-size: 20px;
+	//     }
+	//     .login_common{
+	//         margin-top: 20px;
+	//     }
+	//     .span_md{
+	//         display: inline-block;
+	//         font-size: 20px;
+	//         text-align: right;
+	//         width: 100px;
+	//         margin-left: -60px;
+	//     }
+	// </style>
+	// <script>
+
+/***/ },
+/* 30 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<headline></headline>\n<div class=\"login_lg\">\n    <div class=\"login_header\">\n        <span class=\"login_title\">登&nbsp&nbsp&nbsp陆</span>\n    </div>\n    <div class=\"login_content\">\n        <div class=\"login_common\">\n            <span class=\"span_md\">账号:</span>\n            <input class=\"login_input\" style=\"margin-top:60px\" type=\"text\" placeholder=\"\" v-model=\"username\">\n        </div>\n        <div class=\"login_common\">\n            <span class=\"span_md\">密码:</span>\n            <input class=\"login_input\" type=\"password\" placeholder=\"\" v-model=\"password\"></div>\n        <div class=\"login_common\">\n            <button @click=\"login\">sign in</button>\n            <a v-link=\"{path:'register'}\"><button>sign up</button></a>\n        </div>\n        <p>{{msg}}</p>\n    </div>\n</div>\n";
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(32)
+	__vue_script__ = __webpack_require__(34)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] src/components/register.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(35)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./register.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(33);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(12)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./register.vue", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./register.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(11)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _headLine = __webpack_require__(14);
+
+	var _headLine2 = _interopRequireDefault(_headLine);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	    data: function data() {
+	        return {
+	            msg: '',
+	            username: '',
+	            password: ''
+	        };
+	    },
+
+	    components: {
+	        "headline": _headLine2.default
+	    },
+	    methods: {
+	        register: function register() {
+	            this.$http.post('/api/register', { "username": this.username, "password": this.password }).then(function (res) {
+	                var data = res.data;
+	                this.msg = data;
+	            }, function (res) {
+	                var data = res.data;
+	                this.msg = data.error;
+	            });
+	        }
+	    }
+	};
+	// </script>
+	// <template>
+	//     <headline></headline>
+	//     <div class="login_lg">
+	//         <div class="login_header">
+	//             <span class="login_title">注&nbsp&nbsp&nbsp册</span>
+	//         </div>
+	//         <div class="login_content">
+	//             <div class="login_common">
+	//                 <span class="span_md">用户名:</span>
+	//                 <input class="login_input" style="margin-top:60px" type="text" placeholder="" v-model="username">
+	//             </div>
+	//             <div class="login_common">
+	//                 <span class="span_md">密码:</span>
+	//                 <input class="login_input" type="password" placeholder="" v-model="password"></div>
+	//             <div class="login_common">
+	//                 <span class="span_md">确认密码:</span>
+	//                 <input class="login_input" type="password" placeholder=""></div>
+	//             <div class="login_common">
+	//                 <a v-link="{path:'login'}"><button><-back</button></a>
+	//                 <button @click="register">continue</button>
+	//             </div>
+	//             <p>{{msg}}</p>
+	//         </div>
+	//     </div>
+	//
+	// </template>
+	// <style>
+	// </style>
+	// <script>
+
+/***/ },
+/* 35 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<headline></headline>\n<div class=\"login_lg\">\n    <div class=\"login_header\">\n        <span class=\"login_title\">注&nbsp&nbsp&nbsp册</span>\n    </div>\n    <div class=\"login_content\">\n        <div class=\"login_common\">\n            <span class=\"span_md\">用户名:</span>\n            <input class=\"login_input\" style=\"margin-top:60px\" type=\"text\" placeholder=\"\" v-model=\"username\">\n        </div>\n        <div class=\"login_common\">\n            <span class=\"span_md\">密码:</span>\n            <input class=\"login_input\" type=\"password\" placeholder=\"\" v-model=\"password\"></div>\n        <div class=\"login_common\">\n            <span class=\"span_md\">确认密码:</span>\n            <input class=\"login_input\" type=\"password\" placeholder=\"\"></div>\n        <div class=\"login_common\">\n            <a v-link=\"{path:'login'}\"><button><-back</button></a>\n            <button @click=\"register\">continue</button>\n        </div>\n        <p>{{msg}}</p>\n    </div>\n</div>\n\n";
+
+/***/ },
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(37)
+	__vue_script__ = __webpack_require__(39)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] src/components/list.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(40)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./list.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(38);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(12)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./list.vue", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./list.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(11)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n.listBox{\n    margin-left: 10%;\n    width: 75%;\n    height: 100px;\n    background-color: #fff;\n    margin-top: 10px;\n}\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 39 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	// <template>
+	//     <div class="content">
+	//         <!--<ul>-->
+	//             <!--<li v-for="item in items">-->
+	//                 <!--<span>类型</span><span>{{item.type}}</span><br>-->
+	//                 <!--<span>课程</span><span>{{item.subject}}</span><br>-->
+	//                 <!--<span>题目</span><span>{{item.question}}</span><br>-->
+	//                 <!--<span>答案</span><span>{{item.answer}}</span><br>-->
+	//                 <!--<span>难度</span><span>{{item.level}}</span><br>-->
+	//                 <!--<button @click="deleteQ(item._id,item)">删除</button>-->
+	//             <!--</li>-->
+	//         <!--</ul>-->
+	//
+	//         <div class="listBox" v-for="item in items">
+	//             <span>{{$index+1}}</span>
+	//             <span>[{{item.type}}]</span>
+	//             <span>{{item.question}}</span><br>
+	//             <span>答案:</span><span>{{item.answer}}</span><br>
+	//             <span>难度:</span><span>{{item.level}}</span><br>
+	//             <button @click="deleteQ(item._id,item)">删除</button>
+	//         </div>
+	//     </div>
+	// </template>
+	// <style>
+	//     .listBox{
+	//         margin-left: 10%;
+	//         width: 75%;
+	//         height: 100px;
+	//         background-color: #fff;
+	//         margin-top: 10px;
+	//     }
+	// </style>
+	// <script>
+	exports.default = {
+	    data: function data() {
+	        return {
+	            msg: 'hello vue',
+	            items: ''
+	        };
+	    },
+
+	    components: {},
+	    ready: function ready() {
+	        this.$http.get('/api/bank/' + localStorage.user_id + '/list').then(function (res) {
+	            var data = res.data;
+	            this.items = data;
+	        }, function (res) {
+	            var data = res.data;
+	            this.bank = data;
+	        });
+	    },
+
+
+	    methods: {
+	        deleteQ: function deleteQ(id, item) {
+	            this.$http.get('/api/bank/' + id + '/delete').then(function (res) {
+	                var data = res.data;
+	                this.msg = data;
+	                this.items.$remove(item);
+	            }, function (res) {
+	                var data = res.data;
+	                this.msg = data;
+	            });
+	        }
+	    }
+	};
+	// </script>
+
+/***/ },
+/* 40 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<div class=\"content\">\n    <!--<ul>-->\n        <!--<li v-for=\"item in items\">-->\n            <!--<span>类型</span><span>{{item.type}}</span><br>-->\n            <!--<span>课程</span><span>{{item.subject}}</span><br>-->\n            <!--<span>题目</span><span>{{item.question}}</span><br>-->\n            <!--<span>答案</span><span>{{item.answer}}</span><br>-->\n            <!--<span>难度</span><span>{{item.level}}</span><br>-->\n            <!--<button @click=\"deleteQ(item._id,item)\">删除</button>-->\n        <!--</li>-->\n    <!--</ul>-->\n\n    <div class=\"listBox\" v-for=\"item in items\">\n        <span>{{$index+1}}</span>\n        <span>[{{item.type}}]</span>\n        <span>{{item.question}}</span><br>\n        <span>答案:</span><span>{{item.answer}}</span><br>\n        <span>难度:</span><span>{{item.level}}</span><br>\n        <button @click=\"deleteQ(item._id,item)\">删除</button>\n    </div>\n</div>\n";
+
+/***/ },
+/* 41 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(42)
+	__vue_script__ = __webpack_require__(44)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] src/components/create.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(45)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./create.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 42 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(43);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(12)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./create.vue", function() {
+				var newContent = require("!!./../../node_modules/css-loader/index.js!./../../node_modules/vue-loader/lib/style-rewriter.js!./../../node_modules/vue-loader/lib/selector.js?type=style&index=0!./create.vue");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 43 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(11)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 44 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	// <template>
+	//     <div class="content">
+	//         <span>题目类型</span>
+	//         <select v-model="type">
+	//             <option value="选择" selected="selected">选择</option>
+	//             <option value="判断">判断</option>
+	//             <option value="填空">填空</option>
+	//             <option value="简答">简答</option>
+	//             <option value="解答">解答</option>
+	//             <option value="计算">计算</option>
+	//         </select><br>
+	//         <span>课程</span><input type="text" value="高数" v-model="subject"><br>
+	//         <span>是否选择题</span><span>是</span><input type="radio" v-model="isOption" name="isOption" value="true">
+	//         <span>不是</span><input type="radio" v-model="isOption" name="isOption" value="false" checked><br>
+	//         <span>题目</span><textarea rows="3" cols="20" v-model="question"></textarea><br>
+	//         <span>选项</span><input type="text" v-model="options"><br>
+	//         <span>答案</span><input type="text" v-model="answer"><br>
+	//         <span>难度</span><input type="text" v-model="level"><br>
+	//         {{msg}}
+	//         <button @click="create">提交</button>
+	//     </div>
+	// </template>
+	// <style>
+	// </style>
+	// <script>
+	exports.default = {
+	    data: function data() {
+	        return {
+	            msg: 'hello vue'
+	        };
+	    },
+
+	    components: {},
+	    methods: {
+	        create: function create() {
+	            this.$http.post('/api/bank/' + localStorage.user_id + '/create', {
+	                "type": this.type,
+	                "subject": this.subject,
+	                "isOption": this.isOption,
+	                "question": this.question,
+	                "options": this.options,
+	                "answer": this.answer,
+	                "level": this.level
+	            }).then(function (res) {
+	                var data = res.data;
+	                this.msg = data.message;
+	            }, function (res) {
+	                var data = res.data;
+	                this.msg = data;
+	            });
+	        }
+	    }
+	};
+	// </script>
+
+/***/ },
+/* 45 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<div class=\"content\">\n    <span>题目类型</span>\n    <select v-model=\"type\">\n        <option value=\"选择\" selected=\"selected\">选择</option>\n        <option value=\"判断\">判断</option>\n        <option value=\"填空\">填空</option>\n        <option value=\"简答\">简答</option>\n        <option value=\"解答\">解答</option>\n        <option value=\"计算\">计算</option>\n    </select><br>\n    <span>课程</span><input type=\"text\" value=\"高数\" v-model=\"subject\"><br>\n    <span>是否选择题</span><span>是</span><input type=\"radio\" v-model=\"isOption\" name=\"isOption\" value=\"true\">\n    <span>不是</span><input type=\"radio\" v-model=\"isOption\" name=\"isOption\" value=\"false\" checked><br>\n    <span>题目</span><textarea rows=\"3\" cols=\"20\" v-model=\"question\"></textarea><br>\n    <span>选项</span><input type=\"text\" v-model=\"options\"><br>\n    <span>答案</span><input type=\"text\" v-model=\"answer\"><br>\n    <span>难度</span><input type=\"text\" v-model=\"level\"><br>\n    {{msg}}\n    <button @click=\"create\">提交</button>\n</div>\n";
+
+/***/ },
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __vue_script__, __vue_template__
+	__webpack_require__(47)
+	__vue_script__ = __webpack_require__(49)
+	if (__vue_script__ &&
+	    __vue_script__.__esModule &&
+	    Object.keys(__vue_script__).length > 1) {
+	  console.warn("[vue-loader] src/components/markbook.vue: named exports in *.vue files are ignored.")}
+	__vue_template__ = __webpack_require__(50)
+	module.exports = __vue_script__ || {}
+	if (module.exports.__esModule) module.exports = module.exports.default
+	if (__vue_template__) {
+	(typeof module.exports === "function" ? (module.exports.options || (module.exports.options = {})) : module.exports).template = __vue_template__
+	}
+	if (false) {(function () {  module.hot.accept()
+	  var hotAPI = require("vue-hot-reload-api")
+	  hotAPI.install(require("vue"), false)
+	  if (!hotAPI.compatible) return
+	  var id = "./markbook.vue"
+	  if (!module.hot.data) {
+	    hotAPI.createRecord(id, module.exports)
+	  } else {
+	    hotAPI.update(id, module.exports, __vue_template__)
+	  }
+	})()}
+
+/***/ },
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(48);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(12)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -17210,18 +17136,135 @@
 	}
 
 /***/ },
-/* 50 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(10)();
+	exports = module.exports = __webpack_require__(11)();
 	// imports
 
 
 	// module
-	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n#editor {\n    margin: 0;\n    height: 700px;\n    font-family: 'Helvetica Neue', Arial, sans-serif;\n    color: #333;\n}\ntextarea, #editor div {\n    display: inline-block;\n    width: 49%;\n    height: 100%;\n    vertical-align: top;\n    box-sizing: border-box;\n    padding: 0 20px;\n}\n\ntextarea {\n    border: none;\n    border-right: 1px solid #ccc;\n    resize: none;\n    outline: none;\n    background-color: #f6f6f6;\n    font-size: 14px;\n    font-family: 'Monaco', courier, monospace;\n    padding: 20px;\n}\n\ncode {\n    color: #f66;\n}\n", ""]);
+	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n#editor {\n    margin: 0;\n    height: 700px;\n    font-family: 'Helvetica Neue', Arial, sans-serif;\n    color: #333;\n}\ntextarea, #editor div {\n    display: inline-block;\n    width: 49%;\n    height: 100%;\n    vertical-align: top;\n    box-sizing: border-box;\n    padding: 0 20px;\n}\n\ntextarea {\n    border: none;\n    border-right: 1px solid #ccc;\n    resize: none;\n    outline: none;\n    background-color: #f6f6f6;\n    font-size: 14px;\n    font-family: 'Monaco', courier, monospace;\n    padding: 20px;\n}\n\ncode {\n    color: #f66;\n}\n", ""]);
 
 	// exports
 
+
+/***/ },
+/* 49 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _marked = __webpack_require__(5);
+
+	var _marked2 = _interopRequireDefault(_marked);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = {
+	    data: function data() {
+	        return {
+	            input: '# Helzzz World!'
+	        };
+	    },
+
+	    //        filters: {
+	    //            marked_html: marked,
+	    //            marked_json: marked.lexer,
+	    //
+	    //        },
+	    computed: {
+	        output_html: function output_html() {
+	            return (0, _marked2.default)(this.input);
+	        },
+	        output_json: function output_json() {
+	            return _marked2.default.lexer(this.input);
+	        }
+	    },
+
+	    methods: {
+	        cc: function cc() {
+	            var a = this.output_json;
+	            console.log(a[0].text);
+	            console.log(a[0].text.match(/\[(选择|判断|填空|解答|简答|计算)]\[(知识点)]\[(易|中|难)]([\s\S*]+)答案[:|：]([\s\S*]+)/));
+	        },
+	        aa: function aa() {
+	            var a = this.output_json;
+	            this.$http.post('/api/bank/57dde781113489039ead0a76/create', {
+	                "type": this.type,
+	                "subject": this.subject,
+	                "isOption": this.isOption,
+	                "question": this.question,
+	                "options": this.options,
+	                "answer": this.answer,
+	                "level": this.level
+	            }).then(function (res) {
+	                var data = res.data;
+	                this.msg = data.message;
+	            }, function (res) {
+	                var data = res.data;
+	                this.msg = data;
+	            });
+	        }
+	    }
+
+	};
+	// </script>
+	// <style>
+	//     #editor {
+	//         margin: 0;
+	//         height: 700px;
+	//         font-family: 'Helvetica Neue', Arial, sans-serif;
+	//         color: #333;
+	//     }
+	//     textarea, #editor div {
+	//         display: inline-block;
+	//         width: 49%;
+	//         height: 100%;
+	//         vertical-align: top;
+	//         -webkit-box-sizing: border-box;
+	//         -moz-box-sizing: border-box;
+	//         box-sizing: border-box;
+	//         padding: 0 20px;
+	//     }
+	//
+	//     textarea {
+	//         border: none;
+	//         border-right: 1px solid #ccc;
+	//         resize: none;
+	//         outline: none;
+	//         background-color: #f6f6f6;
+	//         font-size: 14px;
+	//         font-family: 'Monaco', courier, monospace;
+	//         padding: 20px;
+	//     }
+	//
+	//     code {
+	//         color: #f66;
+	//     }
+	// </style>
+	// <template>
+	//     <div style="border-bottom:1px solid #ccc">
+	//         <span>文本题目录入</span><br>
+	//         <span>为保证页面流畅性，建议每次录入控制在50道题目以内</span><button @click="cc">保存</button><button @click="aa">发到数据库</button>
+	//     </div>
+	//     <div id="editor">
+	//         <textarea v-model="input" debounce=500></textarea>
+	//         <div v-html="output_html"></div>
+	//     </div>
+	// </template>
+	//
+	// <script>
+
+/***/ },
+/* 50 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<div style=\"border-bottom:1px solid #ccc\">\n    <span>文本题目录入</span><br>\n    <span>为保证页面流畅性，建议每次录入控制在50道题目以内</span><button @click=\"cc\">保存</button><button @click=\"aa\">发到数据库</button>\n</div>\n<div id=\"editor\">\n    <textarea v-model=\"input\" debounce=500></textarea>\n    <div v-html=\"output_html\"></div>\n</div>\n";
 
 /***/ }
 /******/ ]);

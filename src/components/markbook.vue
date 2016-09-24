@@ -1,10 +1,12 @@
 <template>
+    <div style="border-bottom:1px solid #ccc">
+        <span>文本题目录入</span><br>
+        <span>为保证页面流畅性，建议每次录入控制在50道题目以内</span><button @click="cc">保存</button><button @click="aa">发到数据库</button>
+    </div>
     <div id="editor">
         <textarea v-model="input" debounce=500></textarea>
         <div v-html="output_html"></div>
     </div>
-    {{output_json}}
-    <button @click="cc">aa</button>
 </template>
 
 <script>
@@ -12,10 +14,6 @@
     export default {
         data () {
             return {
-                // note: changing this line won't causes changes
-                // with hot-reload because the reloaded component
-                // preserves its current state and we are modifying
-                // its initial state.
                 input: '# Helzzz World!'
             }
         },
@@ -36,7 +34,26 @@
         methods:{
             cc:function () {
                 var a = this.output_json
-                console.log(a)
+                console.log(a[0].text)
+                console.log(a[0].text.match(/\[(选择|判断|填空|解答|简答|计算)]\[(知识点)]\[(易|中|难)]([\s\S*]+)答案[:|：]([\s\S*]+)/));
+            },
+            aa:function(){
+                var a = this.output_json
+                this.$http.post('/api/bank/57dde781113489039ead0a76/create', {
+                    "type": this.type,
+                    "subject": this.subject,
+                    "isOption": this.isOption,
+                    "question": this.question,
+                    "options": this.options,
+                    "answer": this.answer,
+                    "level": this.level
+                }).then(function (res) {
+                    var data = res.data;
+                    this.msg = data.message;
+                }, function (res) {
+                    var data = res.data;
+                    this.msg = data;
+                })
             }
         }
 
