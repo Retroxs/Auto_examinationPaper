@@ -110,12 +110,17 @@
 	    smartypants: false
 	});
 	renderer.paragraph = function (text) {
-	    if (text.match(/^\[(选择|判断|填空|解答|简答|计算)]\[知识点]\[(易|中|难)]/)) {
-
-	        // var a =text.toLowerCase().(/^\[(选择|判断|填空|解答|简答|计算)]\[知识点]\[(易|中|难)]/);
-	        var b = text.split(/\n/);
-	        var c = text.split(/答案(:|：)/);
-	        return '<span style="color: #ccc;">' + b[0] + '</span><br><span>' + b[1] + '</span><br><span>' + b[2] + '</span><br><span>' + b[3] + '</span><br><span>' + b[4] + '</span><br><span>' + b[5] + '</span><br><span>答案:' + c[2] + '</span><hr>';
+	    if (text.match(/^\[(选择|判断|填空|解答|简答|计算)][\s\S*]+\[(易|中|难)]/)) {
+	        var bank = text.match(/\[(选择|判断|填空|解答|简答|计算)]\[([\s\S*]+)]\[(易|中|难)]([\s\S*]+)答案[:|：]([\s\S*]+)/);
+	        if (bank[1] == '选择') {
+	            var b = text.split(/\n/);
+	            var c = text.split(/答案(:|：)/);
+	            return '<span style="color: #ccc;">' + b[0] + '</span><br><span>' + b[1] + '</span><br><span>' + b[2] + '</span><br><span>' + b[3] + '</span><br><span>' + b[4] + '</span><br><span>' + b[5] + '</span><br><span>答案:' + bank[5] + '</span><hr>';
+	        } else {
+	            var b = text.split(/\n/);
+	            var c = text.split(/答案(:|：)/);
+	            return '<span style="color: #ccc;">' + b[0] + '</span><br><span>' + b[1] + '</span><br><span>答案:' + bank[5] + '</span><hr>';
+	        }
 	    } else {
 	        return '<span style="color: #ccc;">error</span>';
 	    }
@@ -146,7 +151,8 @@
 	        component: _register2.default
 	    },
 	    '/markdown': {
-	        component: _markbook2.default
+	        component: _markbook2.default,
+	        name: 'markdown'
 	    }
 
 	});
@@ -16376,7 +16382,7 @@
 
 
 	// module
-	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n.sidebar{\n    width: 15%;\n    height: 600px;\n    border-right: 2px solid #000;\n    float: left;\n    text-align: center;\n}\n.user_img{\n    display: block;\n    margin: 20px auto;\n}\n.user_info{\n    display: block;\n    margin: 0 auto;\n    margin-bottom: 20px;\n}\nli{\n    line-height: 30px;\n}\na:focus{\n    color: #e96153;\n}\n", ""]);
+	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n.sidebar{\n    width: 15%;\n    height: 600px;\n    border-right: 2px solid #000;\n    float: left;\n    text-align: center;\n}\n.user_img{\n    display: block;\n    margin: 20px auto;\n}\n.user_info{\n    display: block;\n    margin: 0 auto;\n    margin-bottom: 20px;\n}\nli{\n    line-height: 30px;\n}\na:focus{\n    color: #e96153;\n}\n", ""]);
 
 	// exports
 
@@ -16399,6 +16405,7 @@
 	//             <li><a v-link="{name:'create'}">录入题目</a></li>
 	//             <li><a v-link="{name:'list'}">智能组卷</a></li>
 	//             <li><a v-link="{name:'list'}">手动组卷</a></li>
+	//             <li><a v-link="{name:'markdown'}">批量录入</a></li>
 	//         </ul>
 	//     </div>
 	// </template>
@@ -16443,7 +16450,7 @@
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "\n<div class=\"sidebar\">\n    <img class=\"user_img\" src=\"" + __webpack_require__(24) + "\">\n    <span class=\"user_info\">{{username}}</span>\n    <ul>\n        <li><a v-link=\"{name:'list'}\">我的题库</a></li>\n        <li><a v-link=\"{name:'create'}\">录入题目</a></li>\n        <li><a v-link=\"{name:'list'}\">智能组卷</a></li>\n        <li><a v-link=\"{name:'list'}\">手动组卷</a></li>\n    </ul>\n</div>\n";
+	module.exports = "\n<div class=\"sidebar\">\n    <img class=\"user_img\" src=\"" + __webpack_require__(24) + "\">\n    <span class=\"user_info\">{{username}}</span>\n    <ul>\n        <li><a v-link=\"{name:'list'}\">我的题库</a></li>\n        <li><a v-link=\"{name:'create'}\">录入题目</a></li>\n        <li><a v-link=\"{name:'list'}\">智能组卷</a></li>\n        <li><a v-link=\"{name:'list'}\">手动组卷</a></li>\n        <li><a v-link=\"{name:'markdown'}\">批量录入</a></li>\n    </ul>\n</div>\n";
 
 /***/ },
 /* 24 */
@@ -17144,7 +17151,7 @@
 
 
 	// module
-	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n#editor {\n    margin: 0;\n    height: 700px;\n    font-family: 'Helvetica Neue', Arial, sans-serif;\n    color: #333;\n}\ntextarea, #editor div {\n    display: inline-block;\n    width: 49%;\n    height: 100%;\n    vertical-align: top;\n    box-sizing: border-box;\n    padding: 0 20px;\n}\n\ntextarea {\n    border: none;\n    border-right: 1px solid #ccc;\n    resize: none;\n    outline: none;\n    background-color: #f6f6f6;\n    font-size: 14px;\n    font-family: 'Monaco', courier, monospace;\n    padding: 20px;\n}\n\ncode {\n    color: #f66;\n}\n", ""]);
+	exports.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n#editor {\n    margin: 0;\n    height: 700px;\n    font-family: 'Helvetica Neue', Arial, sans-serif;\n    color: #333;\n}\ntextarea, #editor div {\n    display: inline-block;\n    width: 49%;\n    height: 100%;\n    vertical-align: top;\n    box-sizing: border-box;\n    padding: 0 20px;\n}\n\ntextarea {\n    border: none;\n    border-right: 1px solid #ccc;\n    resize: none;\n    outline: none;\n    background-color: #f6f6f6;\n    font-size: 14px;\n    font-family: 'Monaco', courier, monospace;\n    padding: 20px;\n}\n\ncode {\n    color: #f66;\n}\n", ""]);
 
 	// exports
 
@@ -17168,7 +17175,7 @@
 	exports.default = {
 	    data: function data() {
 	        return {
-	            input: '# Helzzz World!'
+	            input: '[选择][常识][中]\n最好的组卷产品?\nA.云题库 \nB.腾讯 \nC.百度 \nD.阿里巴巴 \n答案：A \n\r[判断][常识][易] \n2014年2月有28天。 \n答案：正确 \n\r[填空][常识][中] \n2015年的前三个月依次分别有 __ 天， __ 天，和 __ 天。 \n答案：31，28，31 \n\r[简答][常识][难] \n一年哪几个月有31天？ \n答案：1月、3月、5月、7月、8月、10月、12月'
 	        };
 	    },
 
@@ -17187,28 +17194,26 @@
 	    },
 
 	    methods: {
-	        cc: function cc() {
-	            var a = this.output_json;
-	            console.log(a[0].text);
-	            console.log(a[0].text.match(/\[(选择|判断|填空|解答|简答|计算)]\[(知识点)]\[(易|中|难)]([\s\S*]+)答案[:|：]([\s\S*]+)/));
-	        },
 	        aa: function aa() {
 	            var a = this.output_json;
-	            this.$http.post('/api/bank/57dde781113489039ead0a76/create', {
-	                "type": this.type,
-	                "subject": this.subject,
-	                "isOption": this.isOption,
-	                "question": this.question,
-	                "options": this.options,
-	                "answer": this.answer,
-	                "level": this.level
-	            }).then(function (res) {
-	                var data = res.data;
-	                this.msg = data.message;
-	            }, function (res) {
-	                var data = res.data;
-	                this.msg = data;
-	            });
+	            for (var i = 0; i < a.length; i++) {
+	                var bank = a[i].text.match(/\[(选择|判断|填空|解答|简答|计算)]\[([\s\S*]+)]\[(易|中|难)]([\s\S*]+)答案[:|：]([\s\S*]+)/);
+	                this.$http.post('/api/bank/57dde781113489039ead0a76/create', {
+	                    "type": bank[1],
+	                    "subject": bank[2],
+	                    "isOption": true,
+	                    "question": bank[4],
+	                    "options": '111',
+	                    "answer": bank[5],
+	                    "level": bank[3]
+	                }).then(function (res) {
+	                    var data = res.data;
+	                    this.msg = data.message;
+	                }, function (res) {
+	                    var data = res.data;
+	                    this.msg = data;
+	                });
+	            }
 	        }
 	    }
 

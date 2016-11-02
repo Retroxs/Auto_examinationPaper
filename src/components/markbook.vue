@@ -14,7 +14,7 @@
     export default {
         data () {
             return {
-                input: '# Helzzz World!'
+                input: '[选择][常识][中]\n最好的组卷产品?\nA.云题库 \nB.腾讯 \nC.百度 \nD.阿里巴巴 \n答案：A \n\r[判断][常识][易] \n2014年2月有28天。 \n答案：正确 \n\r[填空][常识][中] \n2015年的前三个月依次分别有 __ 天， __ 天，和 __ 天。 \n答案：31，28，31 \n\r[简答][常识][难] \n一年哪几个月有31天？ \n答案：1月、3月、5月、7月、8月、10月、12月'
             }
         },
 //        filters: {
@@ -32,28 +32,27 @@
         },
 
         methods:{
-            cc:function () {
-                var a = this.output_json
-                console.log(a[0].text)
-                console.log(a[0].text.match(/\[(选择|判断|填空|解答|简答|计算)]\[(知识点)]\[(易|中|难)]([\s\S*]+)答案[:|：]([\s\S*]+)/));
-            },
             aa:function(){
                 var a = this.output_json
-                this.$http.post('/api/bank/57dde781113489039ead0a76/create', {
-                    "type": this.type,
-                    "subject": this.subject,
-                    "isOption": this.isOption,
-                    "question": this.question,
-                    "options": this.options,
-                    "answer": this.answer,
-                    "level": this.level
-                }).then(function (res) {
-                    var data = res.data;
-                    this.msg = data.message;
-                }, function (res) {
-                    var data = res.data;
-                    this.msg = data;
-                })
+                for (var i=0 ; i<a.length;i++){
+                    var bank = a[i].text.match(/\[(选择|判断|填空|解答|简答|计算)]\[([\s\S*]+)]\[(易|中|难)]([\s\S*]+)答案[:|：]([\s\S*]+)/);
+                    this.$http.post('/api/bank/57dde781113489039ead0a76/create', {
+                        "type": bank[1],
+                        "subject": bank[2],
+                        "isOption": true,
+                        "question": bank[4],
+                        "options": '111',
+                        "answer": bank[5],
+                        "level": bank[3]
+                    }).then(function (res) {
+                        var data = res.data;
+                        this.msg = data.message;
+                    }, function (res) {
+                        var data = res.data;
+                        this.msg = data;
+                    })
+                }
+
             }
         }
 

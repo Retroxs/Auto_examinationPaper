@@ -27,16 +27,21 @@ marked.setOptions({
     smartypants: false
 });
 renderer.paragraph = function (text) {
-    if (text.match(/^\[(选择|判断|填空|解答|简答|计算)]\[知识点]\[(易|中|难)]/)) {
-
-        // var a =text.toLowerCase().(/^\[(选择|判断|填空|解答|简答|计算)]\[知识点]\[(易|中|难)]/);
-        var b =text.split(/\n/);
-        var c = text.split(/答案(:|：)/)
-        return '<span style="color: #ccc;">'+b[0]+'</span><br><span>'+b[1]+'</span><br><span>'+b[2]+'</span><br><span>'+b[3]+'</span><br><span>'+b[4]+'</span><br><span>'+b[5]+'</span><br><span>答案:'+c[2]+'</span><hr>'
+    if (text.match(/^\[(选择|判断|填空|解答|简答|计算)][\s\S*]+\[(易|中|难)]/)) {
+        var bank = text.match(/\[(选择|判断|填空|解答|简答|计算)]\[([\s\S*]+)]\[(易|中|难)]([\s\S*]+)答案[:|：]([\s\S*]+)/);
+        if (bank[1] == '选择') {
+            var b = text.split(/\n/);
+            var c = text.split(/答案(:|：)/);
+            return '<span style="color: #ccc;">' + b[0] + '</span><br><span>' + b[1] + '</span><br><span>' + b[2] + '</span><br><span>' + b[3] + '</span><br><span>' + b[4] + '</span><br><span>' + b[5] + '</span><br><span>答案:' + bank[5] + '</span><hr>'
+        }
+        else{
+            var b = text.split(/\n/);
+            var c = text.split(/答案(:|：)/);
+            return '<span style="color: #ccc;">' + b[0] + '</span><br><span>' + b[1] + '</span><br><span>答案:' + bank[5] + '</span><hr>'
+        }
     }
-    else{
+    else {
         return '<span style="color: #ccc;">error</span>'
-
     }
 };
 var app = Vue.extend(App);
@@ -66,6 +71,7 @@ router.map({
     },
     '/markdown': {
         component: markdown,
+        name:'markdown'
     }
 
 

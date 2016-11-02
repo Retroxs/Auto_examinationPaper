@@ -7,6 +7,7 @@
             <li><a v-link="{name:'create'}">录入题目</a></li>
             <li><a v-link="{name:'list'}">智能组卷</a></li>
             <li><a v-link="{name:'list'}">手动组卷</a></li>
+            <li><a v-link="{name:'markdown'}">批量录入</a></li>
         </ul>
     </div>
 </template>
