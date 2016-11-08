@@ -1,0 +1,53 @@
+.login_box{
+    margin: 0 auto;
+    margin-top: 11%;
+    width: 460px;
+    height: 317px;
+    background-color: #ffffff;
+}
+.form-signin-heading{
+    text-align: center;
+}
+.login_input{
+    margin: 20px auto;width: 70%;
+}
+.login_btn{
+    display: inline-block;
+    width: 29%;
+    background-color: #69ba62;
+    border-color: #69ba62;
+    float: right;
+    margin-right: 15%;
+    margin-top: -8%;
+}
+.login_btn:hover{
+    background-color: #69ba62;
+    border-color: #69ba62;
+}
+.checkbox{
+    position: inherit;
+    display: block;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+
+/*Global*/
+.header{
+    height: 50px;
+    line-height: 50px;
+    background-color: #ffffff;
+    border-bottom: 5px solid #69ba62;
+}
+.logo{
+    position: relative;
+    font-size: 16px;
+    display: inline-block;
+    left:10px;
+}
+.content{
+    position: relative;
+    padding-left:200px;
+    top:0;
+
+}

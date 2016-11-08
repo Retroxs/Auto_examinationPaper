@@ -1,0 +1,27 @@
+//
+   Created by HUI on 2016/11/3.
+
+extends layout
+
+block styles
+    link(rel='stylesheet',href='style/style.css')
+block content
+    .header
+        a.logo 后台管理系统
+    .side
+        ul.layui-nav.layui-nav-tree.layui-nav-side(style="top:55px")
+            li.layui-nav-item
+                a(href='/') 个人中心
+            li.layui-nav-item
+                a(href='/') 录题中心
+            li.layui-nav-item.layui-this
+                a(href='/banks-list') 试题中心
+            li.layui-nav-item
+                a(href='/') 组卷中心
+            li.layui-nav-item
+                a(href='/') 试卷中心
+            li.layui-nav-item
+                a(href='/') 退出
+    .content
+        blockquote.layui-elem-quote.layui-quote-nm 猿强，则国强。国强，则猿更强！
+            <br>——孟子
