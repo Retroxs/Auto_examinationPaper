@@ -51,3 +51,16 @@
     top:0;
 
 }
+.qt-delete{
+    position: absolute;
+    right: 25px;
+}
+.qt-detail{
+    position: absolute;
+    right: 75px;
+}
+.logout{
+    float: right;
+    position: relative;
+    right: 20px;
+}

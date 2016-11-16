@@ -1,3 +1,103 @@
 //
    Created by HUI on 2016/11/3.
 
+extends components/layout
+
+block styles
+    link(rel='stylesheet',href='style/style.css')
+block content
+    include  ./components/head
+    include  ./components/side
+    .content
+        blockquote.layui-elem-quote.layui-quote-nm 云题库-智能组卷
+        form.layui-form.layui-form-pane(action='')
+            .layui-form-item
+                label.layui-form-label 科目
+                .layui-input-inline
+                    select(name="subject")
+                        option(value="0" selected) 高数
+                        option(value="1") 物理
+                        option(value="2") 英语
+                label.layui-form-label 知识点
+                .layui-input-inline
+                    input.layui-input
+            .layui-form-item
+                label.layui-form-label 选择题
+                .layui-input-inline
+                    input.layui-input(type="number" name="number" lay-verify="number" autocomplete="off")
+            .layui-form-item
+                label.layui-form-label 填空题
+                .layui-input-inline
+                    input.layui-input(type="number" name="number" lay-verify="number" autocomplete="off")
+            .layui-form-item
+                label.layui-form-label 判断题
+                .layui-input-inline
+                    input.layui-input(type="number" name="number" lay-verify="number" autocomplete="off")
+            .layui-form-item
+                label.layui-form-label 简答题
+                .layui-input-inline
+                    input.layui-input(type="number" name="number" lay-verify="number" autocomplete="off")
+            .layui-form-item
+                label.layui-form-label 解答题
+                .layui-input-inline
+                    input.layui-input(type="number" name="number" lay-verify="number" autocomplete="off")
+            .layui-form-item
+                label.layui-form-label LEVEL
+                .layui-input-block
+                    input(type="radio" name="level" title="容易" value="1.0")
+                    input(type="radio" name="level" title="普通" value="2.0" checked="")
+                    input(type="radio" name="level" title="有难度" value="3.0")
+            hr
+            .layui-form-item
+                label.layui-form-label 分享
+                .layui-input-block
+                    input(type="checkbox" name="public" lay-skin="switch" title="分享")
+            hr
+            button.layui-btn.layui-btn-radius.layui-btn-normal(style="display:block;margin:0 auto")  提交保存
+
+block scripts
+    script(src='layui/layui.js')
+    script(src='layui/lay/dest/layui.all.js')
+    script.
+        layui.use('util', function () {
+            var util = layui.util;
+            //使用内部工具组件
+            util.fixbar({
+                bar1: true
+                , click: function (type) {
+                    console.log(type);
+                    if (type === 'bar1') {
+                        layer.alert('点击了bar1')
+                    }
+                }
+            })
+        });
+        layui.use('layedit', function () {
+            var layedit = layui.layedit
+                    , $ = layui.jquery;
+
+            //构建一个默认的编辑器
+            var index = layedit.build('LAY_demo1');
+
+            //编辑器外部操作
+            var active = {
+                content: function () {
+                    alert(layedit.getContent(index)); //获取编辑器内容
+                }
+                , text: function () {
+                    alert(layedit.getText(index)); //获取编辑器纯文本内容
+                }
+            };
+
+            $('.site-demo-layedit').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+            //自定义工具栏
+            layedit.build('LAY_demo2', {
+                tool: ['face', 'link', 'unlink', '|', 'left', 'center', 'right']
+                , height: 100
+            })
+        });
+

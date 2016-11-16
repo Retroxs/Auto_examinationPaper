@@ -1,37 +1,23 @@
-extends layout
+extends components/layout
 
 block styles
     link(rel='stylesheet',href='style/style.css')
 block content
     include  ./components/head
-    .side
-        ul.layui-nav.layui-nav-tree.layui-nav-side(style="top:55px")
-            li.layui-nav-item
-                a(href='/') 个人中心
-            li.layui-nav-item.layui-this
-                a(href='/') 录题中心
-            li.layui-nav-item
-                a(href='/banks-list') 试题中心
-            li.layui-nav-item
-                a(href='/') 组卷中心
-            li.layui-nav-item
-                a(href='/') 试卷中心
-            li.layui-nav-item
-                a(href='/') 退出
+    include  ./components/side
     .content
-        blockquote.layui-elem-quote.layui-quote-nm 猿强，则国强。国强，则猿更强！
-            <br>——孟子
-        form.layui-form.layui-form-pane(action='')
+        blockquote.layui-elem-quote.layui-quote-nm 云题库-录入题目
+        form.layui-form.layui-form-pane(onsubmit='return false')
             .layui-form-item
                 label.layui-form-label 科目
                 .layui-input-inline
-                    select(name="subject")
+                    select(name="subject" id='subject')
                         option(value="0" selected) 高数
                         option(value="1") 物理
                         option(value="2") 英语
                 label.layui-form-label 题型
                 .layui-input-inline
-                    select(name="type")
+                    select(name="type" id='type')
                         option(value="0" selected) 选择题
                         option(value="1") 填空题
                         option(value="2") 判断题
@@ -39,15 +25,15 @@ block content
                         option(value="4") 解答题
                 label.layui-form-label 知识点
                 .layui-input-inline
-                    input.layui-input
+                    input.layui-input(id='tips')
             .layui-form-item.layui-form-text
                 label.layui-form-label 题目
                 .layui-input-block
-                    textarea.layui-textarea(placeholder="请输入题目")
+                    textarea.layui-textarea(placeholder="请输入题目" id='question')
             .layui-form-item.layui-form-text
                 label.layui-form-label 答案
                 .layui-input-block
-                    textarea.layui-textarea(placeholder="请输入答案")
+                    textarea.layui-textarea(placeholder="请输入答案" id='answer')
             .layui-form-item
                 label.layui-form-label LEVEL
                 .layui-input-block
@@ -58,13 +44,15 @@ block content
             .layui-form-item
                 label.layui-form-label 分享
                 .layui-input-block
-                    input(type="checkbox" name="public" lay-skin="switch" title="分享")
+                    input(type="checkbox" name="public" lay-skin="switch" title="分享" id='isPublic')
             hr
-            button.layui-btn.layui-btn-radius.layui-btn-normal(style="display:block;margin:0 auto")  提交保存
+            button.layui-btn.layui-btn-radius.layui-btn-normal(style="display:block;margin:0 auto" onclick='submitTest()')  提交保存
 
 block scripts
+    script(src='//cdn.bootcss.com/jquery/3.1.1/jquery.min.js')
     script(src='layui/layui.js')
     script(src='layui/lay/dest/layui.all.js')
+    script(src='js/add_questions.js')
     script.
         layui.use('util', function () {
             var util = layui.util;

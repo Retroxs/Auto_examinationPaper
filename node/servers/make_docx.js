@@ -171,5 +171,4 @@ var out = fs.createWriteStream('../public/tmp/out_json.docx');
 out.on('error', function (err) {
     console.log(err);
 });
-
 docx.generate(out);

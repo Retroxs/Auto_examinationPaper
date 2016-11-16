@@ -1,27 +1,48 @@
 //
    Created by HUI on 2016/11/3.
 
-extends layout
+extends components/layout
 
 block styles
     link(rel='stylesheet',href='style/style.css')
 block content
-    .header
-        a.logo 后台管理系统
-    .side
-        ul.layui-nav.layui-nav-tree.layui-nav-side(style="top:55px")
-            li.layui-nav-item
-                a(href='/') 个人中心
-            li.layui-nav-item
-                a(href='/') 录题中心
-            li.layui-nav-item.layui-this
-                a(href='/banks-list') 试题中心
-            li.layui-nav-item
-                a(href='/') 组卷中心
-            li.layui-nav-item
-                a(href='/') 试卷中心
-            li.layui-nav-item
-                a(href='/') 退出
+    include  ./components/head
+    include  ./components/side
     .content
-        blockquote.layui-elem-quote.layui-quote-nm 猿强，则国强。国强，则猿更强！
-            <br>——孟子
+        input(id="page" style="display:none" name= total)
+        blockquote.layui-elem-quote.layui-quote-nm 云题库-我的题库
+        fieldset.ayui-elem-field.layui-field-title
+            legend 试题库
+            .layui-field-box
+            each item in list
+                blockquote.layui-elem-quote.layui-quote-nm #{item.question}
+                    a.qt-delete(name="#{item._id}" onclick="delete_question(this)") 删除
+                    a.qt-detail(id="#{item._id}" onclick="show_question(this)") 预览
+            #demo1(style="text-align:center")
+block scripts
+    script(src='//cdn.bootcss.com/jquery/3.1.1/jquery.min.js')
+    script(src='layui/layui.js')
+    script(src='layui/lay/dest/layui.all.js')
+    script(src='js/show_questions.js')
+    script.
+        var total_page = document.getElementById("page").name;
+        layui.use(['laypage', 'layer'], function () {
+            var laypage = layui.laypage,
+                    layer = layui.layer;
+
+            laypage({
+                cont: 'demo1',
+                pages: total_page,
+                groups: 10, //连续显示分页数
+                curr: function () { //通过url获取当前页，也可以同上（pages）方式获取
+                    var page = location.search.match(/page=(\d+)/);
+                    return page ? page[1] : 1;
+                }(),
+                jump: function (e, first) { //触发分页后的回调
+                    if (!first) { //一定要加此判断，否则初始时会无限刷新
+                        location.href = '?page=' + e.curr;
+                    }
+                }
+            });
+        })
+

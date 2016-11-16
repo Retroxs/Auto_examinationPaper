@@ -1,5 +1,15 @@
 //
    Created by HUI on 2016/11/3.
 
-.header
-    a.logo 后台管理系统
+.side
+    ul.layui-nav.layui-nav-tree.layui-nav-side(style="top:55px")
+        //li.layui-nav-item
+        //    a(href='/') 个人中心
+        li.layui-nav-item(class=title=="录入题目" ? "layui-this" : "")
+            a(href='/home') 录入题目
+        li.layui-nav-item(class=title=="试题中心" ? "layui-this" : "")
+            a(href='/banks-list?page=1') 我的题库
+        li.layui-nav-item(class=title=="组卷中心" ? "layui-this" : "")
+            a(href='/make-paper') 智能组卷
+        li.layui-nav-item(class=title=="试卷中心" ? "layui-this" : "")
+            a(href='/paper-bank') 我的试卷
