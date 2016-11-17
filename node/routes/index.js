@@ -35,6 +35,16 @@ router.get('/home', authToken, function (req, res, next) {
     res.render('index', {title: '录入题目'});
 
 });
+router.get('/back/dashboard', function (req, res, next) {
+    User.find({},function (err,docs) {
+        if(err){
+            res.end(err);
+        }
+        res.render('back/home', {title: '超级管理员系统',user_info:docs});
+    })
+
+
+});
 
 router.get('/login', function (req, res, next) {
     res.render('login', {title: '后台登陆'});
@@ -43,14 +53,18 @@ router.get('/login', function (req, res, next) {
 router.get('/back/login', function (req, res, next) {
     res.render('back/login', {title: 'root登陆'});
 });
+router.get('/back/logout', function (req, res, next) {
+    res.render('back/login', {title: 'root登陆'});
+});
+router.get('/back/createuser', function (req, res, next) {
+    res.render('back/create_user', {title: '创建用户'});
+});
 
 router.get('/banks-list', authToken, function (req, res, next) {
     var user_id = req.session.user.user_id;
     var count = 0;
     var page = req.query.page;
-    console.log(page)
     var rows = 5;
-    // console.log("page:"+page+",rows:"+rows);
     var query = Bank.find({});
     query.skip((page - 1) * rows);
     query.limit(rows);
@@ -64,7 +78,6 @@ router.get('/banks-list', authToken, function (req, res, next) {
         } else {
             //计算数据总数
             Bank.find({'user_id':user_id},function (err, result) {
-                console.log(Math.ceil(result.length / rows))
                 res.render('banks-list', {title: '试题中心', list: rs, total: Math.ceil(result.length / rows)});
             });
         }

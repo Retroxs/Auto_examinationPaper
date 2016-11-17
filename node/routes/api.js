@@ -63,30 +63,32 @@ router.get('/test', function (req, res, next) {
 
 /*用户接口*/
 //注册
-router.post('/register', function (req, res, next) {
+router.get('/register', function (req, res, next) {
 
     var md5 = crypto.createHash('md5');
-    md5.update(req.body.password);
+    md5.update(req.query.password);
     var a = md5.digest('hex');
 
     var schema = Joi.object().keys({
         username: Joi.string().regex(/^[a-zA-Z0-9]{6,18}$/).required(),
         password: Joi.string().regex(/^[a-zA-Z0-9]{6,18}$/).required(),
     });
-    Joi.validate({username: req.body.username, password: req.body.password}, schema, function (err, value) {
+    Joi.validate({username: req.query.username, password: req.query.password}, schema, function (err, value) {
         if (err) {
             res.status(400).send(err);
         }
         else {
-            User.find({username: req.body.username}, function (err, docs) {
+            User.find({username: req.query.username}, function (err, docs) {
                 if (err) {
                     res.end(err)
                 }
                 else {
                     if (docs.length == 0) {
                         var user = new User({
-                            username: req.body.username,
-                            password: a
+                            username: req.query.username,
+                            password: req.query.password,
+                            subject:req.query.subject,
+                            remarks:req.query.remarks
                         });
 
                         user.save(function (err, next) {
@@ -95,7 +97,7 @@ router.post('/register', function (req, res, next) {
                                 return next();
                             }
                             // res.end()
-                            res.status(200).send({username: req.body.username, password: "***"});
+                            res.redirect('/back/dashboard')
 
 
                         })
@@ -151,27 +153,47 @@ router.get('/logout', function (req, res, next) {
 });
 
 //更改密码
-router.post('/:id/set-password', function (req, res, next) {
-    var md5 = crypto.createHash('md5');
-    md5.update(req.body.oldPassword);
-    var b = md5.digest('hex');
-
-    var md5_1 = crypto.createHash('md5');
-    md5_1.update(req.body.newPassword);
-    var c = md5_1.digest('hex');
-    User.find({_id: req.params.id}, function (err, doc) {
-        if (doc[0].password == b) {
-            User.update({_id: req.params.id}, {$set: {password: c}}, function (err, next) {
-                if (err) {
-                    res.end('err', err);
-                    return next();
-                }
-                res.status(200).send({message: "change password success"})
-            })
-        } else {
-            res.status(400).send({error: "password is error"})
-
+router.get('/back/find_userInfo/:username', function (req, res, next) {
+    User.find({username: req.params.username}, function (err, doc) {
+        if(err){
+            res.end(err)
         }
+        console.log(doc)
+        res.render('back/create_user', {title: '更新信息',userInfo:doc[0]});
+
+            // User.update({_id: req.params.id}, {$set: {password: c}}, function (err, next) {
+            //     if (err) {
+            //         res.end('err', err);
+            //         return next();
+            //     }
+            //     // res.status(200).send({message: "change password success"})
+            // })
+    })
+});
+router.get('/back/update', function (req, res, next) {
+    User.find({username: req.query.username}, function (err, doc) {
+        if(err){
+            res.end(err)
+        }
+        User.update({username: req.query.username}, {$set: {password:req.query.password,subject:req.query.subject,remarks:req.query.remarks }}, function (err, next) {
+            if (err) {
+                res.end('err', err);
+                return next();
+            }
+            res.redirect('/back/dashboard')
+        })
+    })
+});
+router.get('/back/delete/:username', function (req, res, next) {
+
+    User.findOne({username: req.params.username}, function (err, doc) {
+        if (err) {
+            res.end('err', err);
+            return next();
+        }
+        doc.remove();
+        // res.status(200).send(doc);
+        res.redirect('/back/dashboard')
     })
 });
 /*ending*/
@@ -371,13 +393,14 @@ router.get('/createpaper/:num/:level', function (req, res, next) {
 //登陆
 router.get('/back/login', function (req, res, next) {
     if (req.query.username == 'admin' && req.query.password == '123456') {
-        res.redirect('/home ')
+        res.redirect('/back/dashboard ')
     }
     else {
         res.status(400).send({error: 'username or password is flase'});
     }
 
 });
+
 
 /**
  * 测试testAPI
@@ -441,17 +464,20 @@ router.post('/bank/pagelist', function (req, res) {
 
 //测试出卷新算法
 router.post('/make_paper', function (req, res) {
-    var findByTips = req.body.tips;
     var type_num = [];
-    for (item in req.body.type_items) {
-        type_num.push(req.body.type_items[item])
-    }
-    var type_items = Object.keys(req.body.type_items);
     var paper_list = [];
+    var total_length = 0;
+    var tips = req.body.tips; //用户指定的知识点
+    var type_items = Object.keys(req.body.type_items); //用户指定的题型
+    for (item in req.body.type_items) {
+        type_num.push(req.body.type_items[item])  //用户指定的题型数量
+        total_length = total_length + req.body.type_items[item]; //用户指定的题型数量总和
+    }
 
+    //每个题型循环一次
     for (var i = 0; i < type_items.length; i++) {
         (function (arg1) {
-            Bank.find({tips: {$in: findByTips}, type: type_items[i]}, {"type": 1, "tips": 1, "level": 1},
+            Bank.find({tips: {$in: tips}, type: type_items[i]}, {"type": 1, "tips": 1, "level": 1}, //检索包含给定知识点的第i个题型
                 function (err, docs) {
                     if (err) {
                         res.send(err);
@@ -460,47 +486,82 @@ router.post('/make_paper', function (req, res) {
                         var M = docs.map(function (o) {
                             return o.tips;
                         });
-                        var findByTips_selected = Array.from(new Set(M));
+                        var tips_selected = Array.from(new Set(M));//对检索出的知识点进行去重
+                        if (tips_selected.length >= type_num[arg1]) {
+                            var tipsByType = randArray(tips_selected, type_num[arg1]);
 
-                        var findByTipsBY_type = randArray(findByTips_selected, type_num[arg1]);
+                        } else {
+                            var tipsByType_arr = tips_selected;
+                            var tipsByType = [];
+                            for (var x = 1; x < parseInt(type_num[arg1] / tips_selected.length); x++) {
+                                //知识点的个数少于对应提醒的提数
+                                tipsByType_arr = tipsByType_arr.concat(tips_selected);
+                            }
+
+                            tipsByType = randArray(tips_selected, type_num[arg1] % tips_selected.length);
+                            tipsByType = tipsByType_arr.concat(tipsByType);
+                        }
+
                         for (var j = 0; j < type_num[arg1]; j++) {
-                            (function (arg, arg4) {
-                                Bank.find({tips: findByTipsBY_type[i], type: type_items[arg1]}, {
-                                        "type": 1,
-                                        "tips": 1,
-                                        "level": 1
-                                    },
-                                    function (err, docs) {
-                                        if (err) {
-                                            res.send(err);
-
-                                        } else {
-                                            level_random();
-                                            Bank.find({
-                                                    tips: findByTipsBY_type[arg],
-                                                    type: type_items[arg1],
-                                                    level: level_select
-                                                }, {
-                                                    "type": 1,
-                                                    "tips": 1,
-                                                    "level": 1
-                                                },
-                                                function (err, docs) {
+                            (function (arg, arg4, arg5) {
+                                Bank.find({tips: tipsByType[i], type: type_items[arg1]}, {
+                                    "type": 1,
+                                    "tips": 1,
+                                    "level": 1
+                                }, function (err, docs) {
+                                    if (err) {
+                                        res.send(err);
+                                    } else {
+                                        level_random();
+                                        Bank.find({
+                                                tips: tipsByType[arg],
+                                                type: type_items[arg5],
+                                                level: level_select
+                                            }, {
+                                                "type": 1,
+                                                "tips": 1,
+                                                "level": 1
+                                            },
+                                            function (err, docs) {
+                                                if (docs.length > 0) {
                                                     var rdIndex = Math.ceil(Math.random() * (docs.length - 1));
                                                     var select_finally = docs[rdIndex]
-                                                    // console.log(select_finally)
                                                     arg4.push(select_finally)
-                                                    // console.log(arg4.length)
-                                                    if(arg4.length==25){
-                                                        console.log('ok')
-                                                        res.status(200).send({message: paper_list});
+                                                    if (arg4.length == total_length) {
+                                                        res.status(200).send({
+                                                            message: "ok",
+                                                            data: paper_list,
+                                                            length: paper_list.length
+                                                        });
                                                     }
-                                                })
-                                        }
+                                                }
+                                                else {
+                                                    Bank.find({
+                                                        tips: tipsByType[arg],
+                                                        type: type_items[arg5],
+                                                    }, {
+                                                        "type": 1,
+                                                        "tips": 1,
+                                                        "level": 1
+                                                    }, function (err, doc) {
+                                                        var rdIndex = Math.ceil(Math.random() * (doc.length - 1));
+                                                        var select_finally = doc[rdIndex]
+                                                        arg4.push(select_finally)
+                                                        if (arg4.length == total_length) {
+                                                            res.status(200).send({
+                                                                message: "ok",
+                                                                data: paper_list,
+                                                                length: paper_list.length
+                                                            });
+                                                        }
+                                                    })
+                                                }
+                                            })
+                                    }
 
-                                    })
+                                })
 
-                            })(j, paper_list)
+                            })(j, paper_list, arg1)
                         }
                     }
                 })
