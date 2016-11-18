@@ -2,15 +2,16 @@
  * Created by HUI on 2016/11/10.
  */
 function submitTest() {
-    const addQ_obj = {};
-    const subject=document.getElementById("subject");
-    var subject_index=subject.selectedIndex ;
-    const type=document.getElementById("type");
+    var addQ_obj = {};
+    var tips=document.getElementById("tips");
+    var tips_index=tips.selectedIndex ;
+
+    var type=document.getElementById("type");
     var type_index=type.selectedIndex ;
 
-    addQ_obj.subject = subject.options[subject_index].text;
+    addQ_obj.subject = subject.value;
     addQ_obj.type = type.options[type_index].text;
-    addQ_obj.tips = $('#tips').val();
+    addQ_obj.tips = tips.options[tips_index].text;
     addQ_obj.level = $("input[name='level']:checked").val();
     addQ_obj.question = $('#question').val();
     addQ_obj.answer = $('#answer').val();
@@ -28,7 +29,7 @@ function submitTest() {
             // });
         },
         success: function () {
-           alert('success')
+                layer.alert('success')
         },
         error: function () {
 

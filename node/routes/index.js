@@ -32,9 +32,19 @@ function authToken(req, res, next) {
 }
 /* GET home page. */
 router.get('/home', authToken, function (req, res, next) {
-    res.render('index', {title: '录入题目'});
+    Bank.find({user_id:req.session.user.user_id},function (err,docs) {
+        if(err){
+            res.end(err)
+        }
+        var M = docs.map(function (o) {
+            return o.tips;
+        });
+        var allTips = Array.from(new Set(M));//对检索出的知识点进行去重
+        res.render('index', {title: '录入题目',subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips});
 
+    })
 });
+
 router.get('/back/dashboard', function (req, res, next) {
     User.find({},function (err,docs) {
         if(err){
@@ -53,9 +63,11 @@ router.get('/login', function (req, res, next) {
 router.get('/back/login', function (req, res, next) {
     res.render('back/login', {title: 'root登陆'});
 });
+
 router.get('/back/logout', function (req, res, next) {
     res.render('back/login', {title: 'root登陆'});
 });
+
 router.get('/back/createuser', function (req, res, next) {
     res.render('back/create_user', {title: '创建用户'});
 });
@@ -69,7 +81,7 @@ router.get('/banks-list', authToken, function (req, res, next) {
     query.skip((page - 1) * rows);
     query.limit(rows);
     if (user_id) {
-        query.where('user_id', user_id);
+        query.where('user_id', user_id).sort({_id:-1});
     }
     //计算分页数据
     query.exec(function (err, rs) {
@@ -78,7 +90,7 @@ router.get('/banks-list', authToken, function (req, res, next) {
         } else {
             //计算数据总数
             Bank.find({'user_id':user_id},function (err, result) {
-                res.render('banks-list', {title: '试题中心', list: rs, total: Math.ceil(result.length / rows)});
+                res.render('banks-list', {title: '试题中心', list: rs, total: Math.ceil(result.length / rows),subject:req.session.user.subject,subject_default:req.session.user.subject_default});
             });
         }
     });
@@ -86,12 +98,22 @@ router.get('/banks-list', authToken, function (req, res, next) {
 });
 
 router.get('/make-paper', authToken, function (req, res, next) {
-    res.render('make-paper', {title: '组卷中心'});
+    Bank.find({user_id:req.session.user.user_id},function (err,docs) {
+            if(err){
+                res.end(err)
+            }
+        var M = docs.map(function (o) {
+            return o.tips;
+        });
+        var allTips = Array.from(new Set(M));//对检索出的知识点进行去重
+        res.render('make-paper', {title: '组卷中心',subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips});
+
+    })
 
 });
 
 router.get('/paper-bank', authToken, function (req, res, next) {
-    res.render('paper-bank', {title: '试卷中心'});
+    res.render('paper-bank', {title: '试卷中心',subject:req.session.user.subject,subject_default:req.session.user.subject_default});
 
 });
 

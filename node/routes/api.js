@@ -61,69 +61,22 @@ router.get('/test', function (req, res, next) {
     }
 });
 
-/*用户接口*/
-//注册
-router.get('/register', function (req, res, next) {
+/**
+ * 用户接口
+ **/
 
-    var md5 = crypto.createHash('md5');
-    md5.update(req.query.password);
-    var a = md5.digest('hex');
-
-    var schema = Joi.object().keys({
-        username: Joi.string().regex(/^[a-zA-Z0-9]{6,18}$/).required(),
-        password: Joi.string().regex(/^[a-zA-Z0-9]{6,18}$/).required(),
-    });
-    Joi.validate({username: req.query.username, password: req.query.password}, schema, function (err, value) {
-        if (err) {
-            res.status(400).send(err);
-        }
-        else {
-            User.find({username: req.query.username}, function (err, docs) {
-                if (err) {
-                    res.end(err)
-                }
-                else {
-                    if (docs.length == 0) {
-                        var user = new User({
-                            username: req.query.username,
-                            password: req.query.password,
-                            subject:req.query.subject,
-                            remarks:req.query.remarks
-                        });
-
-                        user.save(function (err, next) {
-                            if (err) {
-                                res.end("error");
-                                return next();
-                            }
-                            // res.end()
-                            res.redirect('/back/dashboard')
-
-
-                        })
-                    } else {
-                        res.status(400).send({error: 'username is used'});
-                    }
-
-                }
-            })
-        }
-
-    });  // err === null -> valid
-
-});
 
 //登录
-router.get('/login', function (req, res, next) {
+router.post('/login', function (req, res, next) {
     var md5 = crypto.createHash('md5');
-    md5.update(req.query.password);
+    md5.update(req.body.password);
     var d = md5.digest('hex');
     var user_session = {
-        username: req.query.username,
-        password: req.query.password
+        username: req.body.username,
+        password: req.body.password
     }
     console.log(user_session)
-    User.find({username: req.query.username, password: d}, function (err, docs) {
+    User.find({username: req.body.username, password: req.body.password}, function (err, docs) {
         if (err) {
             res.end(err);
         } else {
@@ -131,8 +84,9 @@ router.get('/login', function (req, res, next) {
                 res.status(400).send({error: 'username or password is flase'});
             } else {
                 user_session.user_id = docs[0]._id
+                user_session.subject = docs[0].subject
+                user_session.subject_default = docs[0].subject[0]
                 req.session.user = user_session;
-                console.log(docs[0]._id)
                 res.redirect('/home')
 
             }
@@ -160,46 +114,18 @@ router.get('/back/find_userInfo/:username', function (req, res, next) {
         }
         console.log(doc)
         res.render('back/create_user', {title: '更新信息',userInfo:doc[0]});
-
-            // User.update({_id: req.params.id}, {$set: {password: c}}, function (err, next) {
-            //     if (err) {
-            //         res.end('err', err);
-            //         return next();
-            //     }
-            //     // res.status(200).send({message: "change password success"})
-            // })
     })
 });
-router.get('/back/update', function (req, res, next) {
-    User.find({username: req.query.username}, function (err, doc) {
-        if(err){
-            res.end(err)
-        }
-        User.update({username: req.query.username}, {$set: {password:req.query.password,subject:req.query.subject,remarks:req.query.remarks }}, function (err, next) {
-            if (err) {
-                res.end('err', err);
-                return next();
-            }
-            res.redirect('/back/dashboard')
-        })
-    })
+
+/**
+ * 题库接口
+ **/
+//设置全局科目
+router.get('/selectSubject',function (req,res,next) {
+    if(req.session.user.subject_default=req.query.subject_default){
+        res.redirect('/home');
+    }
 });
-router.get('/back/delete/:username', function (req, res, next) {
-
-    User.findOne({username: req.params.username}, function (err, doc) {
-        if (err) {
-            res.end('err', err);
-            return next();
-        }
-        doc.remove();
-        // res.status(200).send(doc);
-        res.redirect('/back/dashboard')
-    })
-});
-/*ending*/
-
-
-/*题库*/
 //插入题目
 router.post('/bank/create', function (req, res, next) {
 
@@ -333,106 +259,7 @@ router.get('/findQuestion/:q_id', function (req, res, next) {
 
 });
 
-//生成题目
-//测试 20 -》 5  level 1.8
-router.get('/createpaper/:num/:level', function (req, res, next) {
-    var num = req.params.num;
-    var level = req.params.level;
-    var level_1 = Math.floor(num * ((level / 3) / 2));
-    var level_2 = Math.floor(num / 2);
-    var level_3 = num - level_1 - level_2;
-    var arr1 = [];
-
-    var p1 = all.getAll("选择题", "易", level_3, arr1);
-    var p2 = all.getAll("选择题", "中", level_2, arr1);
-    var p3 = all.getAll("选择题", "难", level_1, arr1);
-    var p4 = all.getAll("简答题", "易", level_3, arr1);
-    var p5 = all.getAll("简答题", "中", level_2, arr1);
-    var p6 = all.getAll("简答题", "难", level_1, arr1);
-
-    var sp = Promise.all([p1, p2, p3, p4, p5, p6]).then(function () {
-
-
-        var M = arr1.map(function (o) {
-            return o.tips
-        })
-        var set1 = Array.from(new Set(M))
-        console.log(set1.length / 10)
-        if (set1.length / 10 >= 0.6) {
-            var paper = new Paper({
-                subject: "物理",
-                level: level,
-                data: arr1
-            });
-            paper.save(function (err, next) {
-                if (err) {
-                    res.end("error");
-                    return next();
-                }
-
-                res.json({message: "done", data: arr1})
-            })
-
-        }
-        else {
-            res.json({message: "done", data: set1.length / 10})
-        }
-    })
-
-});
-
-//生成word
-
-/*ending*/
-
-
-/**
- * root用户接口
- **/
-
-//登陆
-router.get('/back/login', function (req, res, next) {
-    if (req.query.username == 'admin' && req.query.password == '123456') {
-        res.redirect('/back/dashboard ')
-    }
-    else {
-        res.status(400).send({error: 'username or password is flase'});
-    }
-
-});
-
-
-/**
- * 测试testAPI
- **/
-
-//造数据
-router.get('/addtestdata', function (req, res, next) {
-    var data = Mock.mock({
-        'list|10000': [{
-            user_id: "580dd278e639721573a2d85c",
-            subject: "物理",
-            "type|1": ["选择题", "判断题", "填空题", "简答题", "解答题"],
-            tips: /知识点[0-4][0-9]/,
-            "level|1": ["易", "中", "难"],
-            "public|1": true,
-            question: /云题题库:题目[a-z]+[A-Z]+[1-9]/,
-            answer: /云题题库:答案[a-z]+[A-Z]+[1-9]/,
-        }]
-    });
-    Bank.collection.insert(data.list, onInsert);
-    function onInsert(err, docs) {
-        if (err) {
-            res.end("error");
-            return next();
-        } else {
-            res.status(200).send({message: "done"});
-        }
-    }
-
-});
-
-//测试分页
+//题库分页
 router.post('/bank/pagelist', function (req, res) {
     var count = 0;
     var page = req.body.page;
@@ -567,6 +394,181 @@ router.post('/make_paper', function (req, res) {
                 })
 
         })(i)
+    }
+
+});
+
+//生成题目
+//测试 20 -》 5  level 1.8
+router.get('/createpaper/:num/:level', function (req, res, next) {
+    var num = req.params.num;
+    var level = req.params.level;
+    var level_1 = Math.floor(num * ((level / 3) / 2));
+    var level_2 = Math.floor(num / 2);
+    var level_3 = num - level_1 - level_2;
+    var arr1 = [];
+
+    var p1 = all.getAll("选择题", "易", level_3, arr1);
+    var p2 = all.getAll("选择题", "中", level_2, arr1);
+    var p3 = all.getAll("选择题", "难", level_1, arr1);
+    var p4 = all.getAll("简答题", "易", level_3, arr1);
+    var p5 = all.getAll("简答题", "中", level_2, arr1);
+    var p6 = all.getAll("简答题", "难", level_1, arr1);
+
+    var sp = Promise.all([p1, p2, p3, p4, p5, p6]).then(function () {
+
+
+        var M = arr1.map(function (o) {
+            return o.tips
+        })
+        var set1 = Array.from(new Set(M))
+        console.log(set1.length / 10)
+        if (set1.length / 10 >= 0.6) {
+            var paper = new Paper({
+                subject: "物理",
+                level: level,
+                data: arr1
+            });
+            paper.save(function (err, next) {
+                if (err) {
+                    res.end("error");
+                    return next();
+                }
+
+                res.json({message: "done", data: arr1})
+            })
+
+        }
+        else {
+            res.json({message: "done", data: set1.length / 10})
+        }
+    })
+
+});
+
+//生成word
+
+
+
+/**
+ * root用户接口
+ **/
+
+//登陆
+router.get('/back/login', function (req, res, next) {
+    if (req.query.username == 'root' && req.query.password == '123456') {
+        res.redirect('/back/dashboard ')
+    }
+    else {
+        res.status(400).send({error: 'username or password is flase'});
+    }
+
+});
+//创建用户
+router.get('/register', function (req, res, next) {
+    var subject=(req.query.subject).split(',');
+    var md5 = crypto.createHash('md5');
+    md5.update(req.query.password);
+    var a = md5.digest('hex');
+
+    var schema = Joi.object().keys({
+        username: Joi.string().regex(/^[a-zA-Z0-9]{6,18}$/).required(),
+        password: Joi.string().regex(/^[a-zA-Z0-9]{6,18}$/).required(),
+    });
+    Joi.validate({username: req.query.username, password: req.query.password}, schema, function (err, value) {
+        if (err) {
+            res.status(400).send(err);
+        }
+        else {
+            User.find({username: req.query.username}, function (err, docs) {
+                if (err) {
+                    res.end(err)
+                }
+                else {
+                    if (docs.length == 0) {
+                        var user = new User({
+                            username: req.query.username,
+                            password: req.query.password,
+                            subject:subject,
+                            remarks:req.query.remarks
+                        });
+
+                        user.save(function (err, next) {
+                            if (err) {
+                                res.end("error");
+                                return next();
+                            }
+                            // res.end()
+                            res.redirect('/back/dashboard')
+
+
+                        })
+                    } else {
+                        res.status(400).send({error: 'username is used'});
+                    }
+
+                }
+            })
+        }
+
+    });
+
+});
+//更新用户信息
+router.get('/back/update', function (req, res, next) {
+    var subject=(req.query.subject).split(',');
+    User.find({username: req.query.username}, function (err, doc) {
+        if(err){
+            res.end(err)
+        }
+        User.update({username: req.query.username}, {$set: {password:req.query.password,subject:subject,remarks:req.query.remarks }}, function (err, next) {
+            if (err) {
+                res.end('err', err);
+                return next();
+            }
+            res.redirect('/back/dashboard')
+        })
+    })
+});
+//删除用户
+router.get('/back/delete/:username', function (req, res, next) {
+
+    User.findOne({username: req.params.username}, function (err, doc) {
+        if (err) {
+            res.end('err', err);
+            return next();
+        }
+        doc.remove();
+        res.redirect('/back/dashboard')
+    })
+});
+
+/**
+ * testAPI
+ **/
+
+//造数据
+router.get('/addtestdata', function (req, res, next) {
+    var data = Mock.mock({
+        'list|10000': [{
+            user_id: "582e96460522740cd397ccfa",
+            "subject|1": ["物理","高数","英语"],
+            "type|1": ["选择题", "判断题", "填空题", "简答题", "解答题"],
+            tips: /知识点[0-4][0-9]/,
+            "level|1": ["易", "中", "难"],
+            "public|1": true,
+            question: /云题题库:题目[a-z]+[A-Z]+[1-9]/,
+            answer: /云题题库:答案[a-z]+[A-Z]+[1-9]/,
+        }]
+    });
+    Bank.collection.insert(data.list, onInsert);
+    function onInsert(err, docs) {
+        if (err) {
+            res.end("error");
+            return next();
+        } else {
+            res.status(200).send({message: "done"});
+        }
     }
 
 });

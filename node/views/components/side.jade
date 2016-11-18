@@ -3,8 +3,12 @@
 
 .side
     ul.layui-nav.layui-nav-tree.layui-nav-side(style="top:55px")
-        //li.layui-nav-item
-        //    a(href='/') 个人中心
+        li.layui-nav-item
+            a(href="javascript:;") 当前学科
+            dl.layui-nav-child
+                for item in subject
+                    dd
+                        a(href='/api//selectSubject?subject_default='+'#{item}')  #{item}
         li.layui-nav-item(class=title=="录入题目" ? "layui-this" : "")
             a(href='/home') 录入题目
         li.layui-nav-item(class=title=="试题中心" ? "layui-this" : "")

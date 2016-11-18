@@ -14,7 +14,7 @@ block content
             .navbar-header
                 a.navbar-brand(href="" style="color:#fdfeff") 后台管理系统
     .container.login_box
-        form.form-signin(role="form" action='/api/login' method='get')
+        form.form-signin(role="form" action='/api/login' method='post')
             h2.form-signin-heading 管理系统
             input.form-control.login_input(type="text"  placeholder="账号" required="" autofocus="" name='username' id='username')
             input.form-control.login_input(type="password" placeholder="密码" required="" autofocus="" name='password' id='password')

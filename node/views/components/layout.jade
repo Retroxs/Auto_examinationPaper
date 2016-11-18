@@ -8,5 +8,22 @@ html
     block styles
     body
     block content
+    script(src='//cdn.bootcss.com/jquery/3.1.1/jquery.min.js')
+    script(src='/layui/layui.js')
+    script(src='/layui/lay/dest/layui.all.js')
+    script.
+            layui.use('util', function () {
+                var util = layui.util;
+                //使用内部工具组件
+                util.fixbar({
+                    bar1: true
+                    , click: function (type) {
+                        console.log(type);
+                        if (type === 'bar1') {
+                            layer.alert('点击了bar1')
+                        }
+                    }
+                })
+            });
     block scripts
 

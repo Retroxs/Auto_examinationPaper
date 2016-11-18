@@ -38,7 +38,6 @@ function show_question(self) {
 }
 
 function delete_question(self) {
-    debugger
     $.ajax({
         url: '/api/bank/'+self.name+'/delete',
         type: 'get',

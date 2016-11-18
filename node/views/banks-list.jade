@@ -11,6 +11,7 @@ block content
     .content
         input(id="page" style="display:none" name= total)
         blockquote.layui-elem-quote.layui-quote-nm 云题库-我的题库
+        form.layui-for
         fieldset.ayui-elem-field.layui-field-title
             legend 试题库
             .layui-field-box
@@ -20,9 +21,6 @@ block content
                     a.qt-detail(id="#{item._id}" onclick="show_question(this)") 预览
             #demo1(style="text-align:center")
 block scripts
-    script(src='//cdn.bootcss.com/jquery/3.1.1/jquery.min.js')
-    script(src='layui/layui.js')
-    script(src='layui/lay/dest/layui.all.js')
     script(src='js/show_questions.js')
     script.
         var total_page = document.getElementById("page").name;
