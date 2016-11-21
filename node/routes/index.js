@@ -81,15 +81,15 @@ router.get('/banks-list', authToken, function (req, res, next) {
     query.skip((page - 1) * rows);
     query.limit(rows);
     if (user_id) {
-        query.where('user_id', user_id).sort({_id:-1});
+        query.where('user_id', user_id).where('subject',req.session.user.subject_default).sort({_id:-1});
     }
     //计算分页数据
     query.exec(function (err, rs) {
         if (err) {
             res.send(err);
         } else {
-            //计算数据总数
-            Bank.find({'user_id':user_id},function (err, result) {
+            // 计算数据总数
+            Bank.find({'user_id':user_id,'subject':req.session.user.subject_default},function (err, result) {
                 res.render('banks-list', {title: '试题中心', list: rs, total: Math.ceil(result.length / rows),subject:req.session.user.subject,subject_default:req.session.user.subject_default});
             });
         }
@@ -98,7 +98,7 @@ router.get('/banks-list', authToken, function (req, res, next) {
 });
 
 router.get('/make-paper', authToken, function (req, res, next) {
-    Bank.find({user_id:req.session.user.user_id},function (err,docs) {
+    Bank.find({user_id:req.session.user.user_id,subject:req.session.user.subject_default},function (err,docs) {
             if(err){
                 res.end(err)
             }
@@ -113,7 +113,27 @@ router.get('/make-paper', authToken, function (req, res, next) {
 });
 
 router.get('/paper-bank', authToken, function (req, res, next) {
-    res.render('paper-bank', {title: '试卷中心',subject:req.session.user.subject,subject_default:req.session.user.subject_default});
+    var user_id = req.session.user.user_id;
+    var count = 0;
+    var page = req.query.page;
+    var rows = 5;
+    var query = Paper.find({});
+    query.skip((page - 1) * rows);
+    query.limit(rows);
+    if (user_id) {
+        query.where('user_id', user_id).where('subject',req.session.user.subject_default).sort({_id:-1});
+    }
+    //计算分页数据
+    query.exec(function (err, rs) {
+        if (err) {
+            res.send(err);
+        } else {
+            // 计算数据总数
+            Paper.find({'user_id':user_id,'subject':req.session.user.subject_default},function (err, result) {
+                res.render('paper-bank', {title: '试卷中心', list: rs, total: Math.ceil(result.length / rows),subject:req.session.user.subject,subject_default:req.session.user.subject_default});
+            });
+        }
+    });
 
 });
 

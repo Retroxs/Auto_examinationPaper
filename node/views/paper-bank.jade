@@ -12,15 +12,7 @@ block content
         fieldset.ayui-elem-field.layui-field-title
             legend 试卷库
             .layui-field-box
-                blockquote.layui-elem-quote.layui-quote-nm exampaper1
-                    a.qt-detail 查看详情
-                blockquote.layui-elem-quote.layui-quote-nm exampaper2
-                    a.qt-detail 查看详情
-                blockquote.layui-elem-quote.layui-quote-nm exampaper3
-                    a.qt-detail 查看详情
-                blockquote.layui-elem-quote.layui-quote-nm exampaper4
-                    a.qt-detail 查看详情
-                blockquote.layui-elem-quote.layui-quote-nm exampaper5
-                    a.qt-detail 查看详情
-                blockquote.layui-elem-quote.layui-quote-nm exampaper6
-                    a.qt-detail 查看详情
+            each item in list
+                blockquote.layui-elem-quote.layui-quote-nm #{item.date}
+                    a.qt-delete(name="#{item._id}" onclick="delete_question(this)") 删除
+                    a.qt-detail(id="#{item._id}" href='/api/download/'+'#{item.date}') 下载

@@ -11,9 +11,13 @@ block content
     .content
         input(id="page" style="display:none" name= total)
         blockquote.layui-elem-quote.layui-quote-nm 云题库-我的题库
-        form.layui-for
         fieldset.ayui-elem-field.layui-field-title
             legend 试题库
+        form.layui-form.layui-form-pane
+            .layui-form-item
+                label.layui-form-label 科目
+                .layui-input-inline
+                    input.layui-input(id='subject' value= subject_default readonly='readonly')
             .layui-field-box
             each item in list
                 blockquote.layui-elem-quote.layui-quote-nm #{item.question}
@@ -26,7 +30,7 @@ block scripts
         var total_page = document.getElementById("page").name;
         layui.use(['laypage', 'layer'], function () {
             var laypage = layui.laypage,
-                    layer = layui.layer;
+                layer = layui.layer;
 
             laypage({
                 cont: 'demo1',

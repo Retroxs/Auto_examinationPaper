@@ -4,8 +4,11 @@
 var mongoose = require('mongoose');
 
 var PaperSchema = mongoose.Schema({
+    user_id:String,
     subject:String,
+    tips:Array,
     level:String,
-    data:Array
+    data:Array,
+    date:Date
 });
 mongoose.model('Paper', PaperSchema);

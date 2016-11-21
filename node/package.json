@@ -13,6 +13,7 @@
     "ejs": "~2.4.1",
     "express": "~4.13.4",
     "express-session": "^1.14.1",
+    "fs": "^0.0.1-security",
     "jade": "^1.11.0",
     "joi": "^9.0.4",
     "mockjs": "^1.0.1-beta3",

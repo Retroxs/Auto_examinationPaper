@@ -7,9 +7,11 @@ var crypto = require('crypto');
 var Joi = require('joi');
 var Mock = require('mockjs');
 var Random = Mock.Random;
+var fs = require("fs");
+var path= require("path");
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
-
+var filePath = path.join(__dirname, '../public/tmp');
 var User = mongoose.model('User');
 var Bank = mongoose.model('Bank');
 var Paper = mongoose.model('Paper');
@@ -40,11 +42,11 @@ function randArray(m, len) {
 }
 var level_select;
 //抽取难度的概率控制
-function level_random() {
+function level_random(level) {
     var rand = Math.random();
-    if (rand <= 0.7) {
+    if (rand <= 0.3) {
         level_select = "中"
-    } else if (rand > 0.7 && rand <= 0.9) {
+    } else if (rand > 0.3 && rand <= 0.3 + (level * 0.7)) {
         level_select = "难"
     } else {
         level_select = "易"
@@ -109,11 +111,11 @@ router.get('/logout', function (req, res, next) {
 //更改密码
 router.get('/back/find_userInfo/:username', function (req, res, next) {
     User.find({username: req.params.username}, function (err, doc) {
-        if(err){
+        if (err) {
             res.end(err)
         }
         console.log(doc)
-        res.render('back/create_user', {title: '更新信息',userInfo:doc[0]});
+        res.render('back/create_user', {title: '更新信息', userInfo: doc[0]});
     })
 });
 
@@ -121,8 +123,8 @@ router.get('/back/find_userInfo/:username', function (req, res, next) {
  * 题库接口
  **/
 //设置全局科目
-router.get('/selectSubject',function (req,res,next) {
-    if(req.session.user.subject_default=req.query.subject_default){
+router.get('/selectSubject', function (req, res, next) {
+    if (req.session.user.subject_default = req.query.subject_default) {
         res.redirect('/home');
     }
 });
@@ -295,6 +297,7 @@ router.post('/make_paper', function (req, res) {
     var paper_list = [];
     var total_length = 0;
     var tips = req.body.tips; //用户指定的知识点
+    var level = req.body.level; //用户指定的知识点
     var type_items = Object.keys(req.body.type_items); //用户指定的题型
     for (item in req.body.type_items) {
         type_num.push(req.body.type_items[item])  //用户指定的题型数量
@@ -339,7 +342,7 @@ router.post('/make_paper', function (req, res) {
                                     if (err) {
                                         res.send(err);
                                     } else {
-                                        level_random();
+                                        level_random(level);
                                         Bank.find({
                                                 tips: tipsByType[arg],
                                                 type: type_items[arg5],
@@ -347,19 +350,40 @@ router.post('/make_paper', function (req, res) {
                                             }, {
                                                 "type": 1,
                                                 "tips": 1,
-                                                "level": 1
+                                                "level": 1,
+                                                "question":1,
+                                                "answer":1
                                             },
                                             function (err, docs) {
                                                 if (docs.length > 0) {
                                                     var rdIndex = Math.ceil(Math.random() * (docs.length - 1));
-                                                    var select_finally = docs[rdIndex]
-                                                    arg4.push(select_finally)
+                                                    var select_finally = docs[rdIndex];
+                                                    arg4.push(select_finally);
                                                     if (arg4.length == total_length) {
-                                                        res.status(200).send({
-                                                            message: "ok",
+
+                                                        var paper = new Paper({
+                                                            user_id: req.session.user.user_id,
+                                                            subject: req.session.user.subject_default,
+                                                            tips: req.body.tips,
+                                                            level: req.body.level,
                                                             data: paper_list,
-                                                            length: paper_list.length
+                                                            date: new Date()
                                                         });
+                                                        paper.save(function (err, next) {
+                                                            if (err) {
+                                                                res.end('error', err);
+                                                                return next();
+                                                            }
+                                                            fs.writeFile(filePath+'/'+paper.date+'.txt',paper_list,function (err) {
+                                                                if (err) throw err ;
+                                                                console.log("File Saved !"); //文件被保存
+                                                            }) ;
+                                                            res.status(200).send({
+                                                                message: "ok",
+                                                                data: paper_list,
+                                                                length: paper_list.length
+                                                            });
+                                                        })
                                                     }
                                                 }
                                                 else {
@@ -375,11 +399,29 @@ router.post('/make_paper', function (req, res) {
                                                         var select_finally = doc[rdIndex]
                                                         arg4.push(select_finally)
                                                         if (arg4.length == total_length) {
-                                                            res.status(200).send({
-                                                                message: "ok",
+                                                            var paper = new Paper({
+                                                                user_id: req.session.user.user_id,
+                                                                subject: req.session.user.subject_default,
+                                                                tips: req.body.tips,
+                                                                level: req.body.level,
                                                                 data: paper_list,
-                                                                length: paper_list.length
+                                                                date: new Date()
                                                             });
+                                                            paper.save(function (err, next) {
+                                                                if (err) {
+                                                                    res.end('error', err);
+                                                                    return next();
+                                                                }
+                                                                fs.writeFile("bb.txt",paper_list,function (err) {
+                                                                    if (err) throw err ;
+                                                                    console.log("File Saved !"); //文件被保存
+                                                                }) ;
+                                                                res.status(200).send({
+                                                                    message: "ok",
+                                                                    data: paper_list,
+                                                                    length: paper_list.length
+                                                                });
+                                                            })
                                                         }
                                                     })
                                                 }
@@ -446,8 +488,11 @@ router.get('/createpaper/:num/:level', function (req, res, next) {
 
 });
 
+router.get('/download/:filename',function (req,res,next) {
+    var file =filePath+'/'+req.params.filename+'.txt';
+    res.download(file); // Set disposition and send it.
+});
 //生成word
-
 
 
 /**
@@ -466,7 +511,7 @@ router.get('/back/login', function (req, res, next) {
 });
 //创建用户
 router.get('/register', function (req, res, next) {
-    var subject=(req.query.subject).split(',');
+    var subject = (req.query.subject).split(',');
     var md5 = crypto.createHash('md5');
     md5.update(req.query.password);
     var a = md5.digest('hex');
@@ -489,8 +534,8 @@ router.get('/register', function (req, res, next) {
                         var user = new User({
                             username: req.query.username,
                             password: req.query.password,
-                            subject:subject,
-                            remarks:req.query.remarks
+                            subject: subject,
+                            remarks: req.query.remarks
                         });
 
                         user.save(function (err, next) {
@@ -516,12 +561,18 @@ router.get('/register', function (req, res, next) {
 });
 //更新用户信息
 router.get('/back/update', function (req, res, next) {
-    var subject=(req.query.subject).split(',');
+    var subject = (req.query.subject).split(',');
     User.find({username: req.query.username}, function (err, doc) {
-        if(err){
+        if (err) {
             res.end(err)
         }
-        User.update({username: req.query.username}, {$set: {password:req.query.password,subject:subject,remarks:req.query.remarks }}, function (err, next) {
+        User.update({username: req.query.username}, {
+            $set: {
+                password: req.query.password,
+                subject: subject,
+                remarks: req.query.remarks
+            }
+        }, function (err, next) {
             if (err) {
                 res.end('err', err);
                 return next();
@@ -552,7 +603,7 @@ router.get('/addtestdata', function (req, res, next) {
     var data = Mock.mock({
         'list|10000': [{
             user_id: "582e96460522740cd397ccfa",
-            "subject|1": ["物理","高数","英语"],
+            "subject|1": ["物理", "高数", "英语"],
             "type|1": ["选择题", "判断题", "填空题", "简答题", "解答题"],
             tips: /知识点[0-4][0-9]/,
             "level|1": ["易", "中", "难"],
@@ -572,5 +623,4 @@ router.get('/addtestdata', function (req, res, next) {
     }
 
 });
-
 module.exports = router;
