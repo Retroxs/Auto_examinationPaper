@@ -1,0 +1,66 @@
+//
+   Created by HUI on 2016/11/22.
+
+//
+   Created by HUI on 2016/11/13.
+extends ../components/layout
+
+block styles
+    link(rel='stylesheet', href='http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css')
+    //link(rel='stylesheet', href='../style/style.css')
+block content
+    input(id="page" style="display:none" name= total)
+    nav.navbar.navbar-inverse(role="navigation" style="margin: 0;background-color: #323334")
+        .container-fluid
+            .navbar-header
+                a.navbar-brand(href="" style="color:#fdfeff") 超级管理员管理系统
+            ul.nav.navbar-nav.navbar-right
+                li.dropdown
+                    a.dropdown-toggle(href='#' data-toggle="dropdown" style="color:#fff") 菜单
+                        span.caret
+                    ul.dropdown-menu(role="menu")
+                        li
+                            a(href="/back/createuser") 创建用户
+                        li
+                            a(href="/back/question-manage") 试题难度管理
+                li
+                    a(href="/back/logout" style="color:#fff") 退出
+    table.table.table-bordered.table-hover.table-striped
+        tr
+            th  学科
+            th  题目
+            th  答案
+            th  难度
+            th  操作
+        each item in questions_info
+            tr
+                th  #{item.subject}
+                th  #{item.question}
+                th  #{item.answer}
+                th  #{item.level}
+                th
+                    a(href='/api/back/update_questionInfo/'+'#{item._id}') 修改
+    #demo1(style="text-align:center")
+block scripts
+    script(src='http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js')
+    script(src='../js/show_questions.js')
+    script.
+            var total_page = document.getElementById("page").name;
+            layui.use(['laypage', 'layer'], function () {
+                var laypage = layui.laypage,
+                    layer = layui.layer;
+                laypage({
+                    cont: 'demo1',
+                    pages: total_page,
+                    groups: 10, //连续显示分页数
+                    curr: function () { //通过url获取当前页，也可以同上（pages）方式获取
+                        var page = location.search.match(/page=(\d+)/);
+                        return page ? page[1] : 1;
+                    }(),
+                    jump: function (e, first) { //触发分页后的回调
+                        if (!first) { //一定要加此判断，否则初始时会无限刷新
+                            location.href = '?page=' + e.curr;
+                        }
+                    }
+                });
+            })

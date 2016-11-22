@@ -11,8 +11,13 @@ block content
         blockquote.layui-elem-quote.layui-quote-nm 云题库-试题库
         fieldset.ayui-elem-field.layui-field-title
             legend 试卷库
+        form.layui-form.layui-form-pane
+            .layui-form-item
+                label.layui-form-label 科目
+                .layui-input-inline
+                    input.layui-input(id='subject' value= subject_default readonly='readonly')
             .layui-field-box
             each item in list
                 blockquote.layui-elem-quote.layui-quote-nm #{item.date}
-                    a.qt-delete(name="#{item._id}" onclick="delete_question(this)") 删除
-                    a.qt-detail(id="#{item._id}" href='/api/download/'+'#{item.date}') 下载
+                    a.qt-delete(href='/api/paper/'+'#{item._id}'+'/delete') 删除
+                    a.qt-detail(href='/api/download/'+'#{item.date}') 下载

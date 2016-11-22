@@ -55,6 +55,25 @@ router.get('/back/dashboard', function (req, res, next) {
 
 
 });
+router.get('/back/question-manage', function (req, res, next) {
+    var count = 0;
+    var page = req.query.page;
+    var rows = 10;
+    var query = Bank.find({});
+    query.skip((page - 1) * rows);
+    query.limit(rows);
+    //计算分页数据
+    query.exec(function (err, rs) {
+        if (err) {
+            res.send(err);
+        } else {
+            // 计算数据总数
+            Bank.find({},function (err, result) {
+                res.render('back/question-manage', {title: '公开题库', questions_info: rs, total: Math.ceil(result.length / rows)});
+            });
+        }
+    });
+});
 
 router.get('/login', function (req, res, next) {
     res.render('login', {title: '后台登陆'});
@@ -131,6 +150,31 @@ router.get('/paper-bank', authToken, function (req, res, next) {
             // 计算数据总数
             Paper.find({'user_id':user_id,'subject':req.session.user.subject_default},function (err, result) {
                 res.render('paper-bank', {title: '试卷中心', list: rs, total: Math.ceil(result.length / rows),subject:req.session.user.subject,subject_default:req.session.user.subject_default});
+            });
+        }
+    });
+
+});
+
+router.get('/public-bank', authToken, function (req, res, next) {
+    var user_id = req.session.user.user_id;
+    var count = 0;
+    var page = req.query.page;
+    var rows = 5;
+    var query = Bank.find({});
+    query.skip((page - 1) * rows);
+    query.limit(rows);
+    if (user_id) {
+        query.where('subject',req.session.user.subject_default).where('public',true).sort({_id:-1});
+    }
+    //计算分页数据
+    query.exec(function (err, rs) {
+        if (err) {
+            res.send(err);
+        } else {
+            // 计算数据总数
+            Bank.find({'subject':req.session.user.subject_default,'public':true},function (err, result) {
+                res.render('public-bank', {title: '公开题库', list: rs, total: Math.ceil(result.length / rows),subject:req.session.user.subject,subject_default:req.session.user.subject_default});
             });
         }
     });

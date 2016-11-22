@@ -487,11 +487,23 @@ router.get('/createpaper/:num/:level', function (req, res, next) {
     })
 
 });
-
+//下载试卷
 router.get('/download/:filename',function (req,res,next) {
     var file =filePath+'/'+req.params.filename+'.txt';
     res.download(file); // Set disposition and send it.
 });
+
+//删除试卷
+router.get('/paper/:id/delete',function (req,res,next) {
+   Paper.findOne({_id: req.params.id}, function (err, doc) {
+        if (err) {
+            res.end('err', err);
+            return next();
+        }
+
+        doc.remove();
+        res.redirect('/paper-bank')
+    })})
 //生成word
 
 

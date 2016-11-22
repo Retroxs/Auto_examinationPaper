@@ -17,23 +17,26 @@ function submitTest() {
     addQ_obj.answer = $('#answer').val();
     addQ_obj.public = $("#isPublic").is(':checked');
 
-    $.ajax({
-        url: '/api/bank/create',
-        type: 'post',
-        dataType: 'json',
-        contentType: 'application/json',
-        data: JSON.stringify(addQ_obj),
-        beforeSend: function (a) {
-            // layer.load(1, {
-            //     shade: [0.1, '#fff'] //0.1透明度的白色背景
-            // });
-        },
-        success: function () {
+    if(addQ_obj.tips!="请选择知识点"){
+        $.ajax({
+            url: '/api/bank/create',
+            type: 'post',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(addQ_obj),
+            beforeSend: function (a) {
+                // layer.load(1, {
+                //     shade: [0.1, '#fff'] //0.1透明度的白色背景
+                // });
+            },
+            success: function () {
                 layer.alert('success')
-        },
-        error: function () {
+            },
+            error: function () {
 
-        }
-    })
+            }
+        })
+    }
+
 
 }
