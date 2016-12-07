@@ -8,7 +8,7 @@ var Joi = require('joi');
 var Mock = require('mockjs');
 var Random = Mock.Random;
 var fs = require("fs");
-var path= require("path");
+var path = require("path");
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var filePath = path.join(__dirname, '../public/tmp');
@@ -351,8 +351,8 @@ router.post('/make_paper', function (req, res) {
                                                 "type": 1,
                                                 "tips": 1,
                                                 "level": 1,
-                                                "question":1,
-                                                "answer":1
+                                                "question": 1,
+                                                "answer": 1
                                             },
                                             function (err, docs) {
                                                 if (docs.length > 0) {
@@ -374,10 +374,10 @@ router.post('/make_paper', function (req, res) {
                                                                 res.end('error', err);
                                                                 return next();
                                                             }
-                                                            fs.writeFile(filePath+'/'+paper.date+'.txt',paper_list,function (err) {
-                                                                if (err) throw err ;
+                                                            fs.writeFile(filePath + '/' + paper.date + '.txt', paper_list, function (err) {
+                                                                if (err) throw err;
                                                                 console.log("File Saved !"); //文件被保存
-                                                            }) ;
+                                                            });
                                                             res.status(200).send({
                                                                 message: "ok",
                                                                 data: paper_list,
@@ -412,10 +412,10 @@ router.post('/make_paper', function (req, res) {
                                                                     res.end('error', err);
                                                                     return next();
                                                                 }
-                                                                fs.writeFile("bb.txt",paper_list,function (err) {
-                                                                    if (err) throw err ;
+                                                                fs.writeFile("bb.txt", paper_list, function (err) {
+                                                                    if (err) throw err;
                                                                     console.log("File Saved !"); //文件被保存
-                                                                }) ;
+                                                                });
                                                                 res.status(200).send({
                                                                     message: "ok",
                                                                     data: paper_list,
@@ -488,14 +488,14 @@ router.get('/createpaper/:num/:level', function (req, res, next) {
 
 });
 //下载试卷
-router.get('/download/:filename',function (req,res,next) {
-    var file =filePath+'/'+req.params.filename+'.txt';
+router.get('/download/:filename', function (req, res, next) {
+    var file = filePath + '/' + req.params.filename + '.txt';
     res.download(file); // Set disposition and send it.
 });
 
 //删除试卷
-router.get('/paper/:id/delete',function (req,res,next) {
-   Paper.findOne({_id: req.params.id}, function (err, doc) {
+router.get('/paper/:id/delete', function (req, res, next) {
+    Paper.findOne({_id: req.params.id}, function (err, doc) {
         if (err) {
             res.end('err', err);
             return next();
@@ -503,7 +503,8 @@ router.get('/paper/:id/delete',function (req,res,next) {
 
         doc.remove();
         res.redirect('/paper-bank')
-    })})
+    })
+})
 //生成word
 
 
