@@ -23,7 +23,6 @@ var docx = officegen('docx');
 //初始化
 
 
-
 router.use(cookieParser());
 router.use(session({
     secret: '12345',
@@ -301,6 +300,11 @@ router.post('/bank/pagelist', function (req, res) {
 //测试出卷新算法
 router.post('/make_paper', function (req, res) {
     var type_num = [];
+    var type1_list = [];
+    var type2_list = [];
+    var type3_list = [];
+    var type4_list = [];
+    var type5_list = [];
     var paper_list = [];
     var total_length = 0;
     var tips = req.body.tips; //用户指定的知识点
@@ -312,7 +316,7 @@ router.post('/make_paper', function (req, res) {
     }
 
     //每个题型循环一次
-    for (var i = 0; i < type_items.length; i++) {
+    for (let i = 0; i < type_items.length; i++) {
         (function (arg1) {
             Bank.find({tips: {$in: tips}, type: type_items[i]}, {"type": 1, "tips": 1, "level": 1}, //检索包含给定知识点的第i个题型
                 function (err, docs) {
@@ -340,7 +344,7 @@ router.post('/make_paper', function (req, res) {
                         }
 
                         for (var j = 0; j < type_num[arg1]; j++) {
-                            (function (arg, arg4, arg5) {
+                            (function (arg, arg4, arg5, list1, list2, list3, list4, list5) {
                                 Bank.find({tips: tipsByType[i], type: type_items[arg1]}, {
                                     "type": 1,
                                     "tips": 1,
@@ -365,9 +369,36 @@ router.post('/make_paper', function (req, res) {
                                                 if (docs.length > 0) {
                                                     var rdIndex = Math.ceil(Math.random() * (docs.length - 1));
                                                     var select_finally = docs[rdIndex];
-                                                    arg4.push(select_finally);
-                                                    if (arg4.length == total_length) {
+                                                    var q_type = select_finally.type;
+                                                    if (q_type == '选择题') {
+                                                        list1.push(select_finally)
+                                                    }
+                                                    else if (q_type == '填空题') {
+                                                        list2.push(select_finally)
 
+                                                    }
+                                                    else if (q_type == '判断题') {
+                                                        list3.push(select_finally)
+
+                                                    }
+                                                    else if (q_type == '简答题') {
+                                                        list4.push(select_finally)
+
+                                                    }
+                                                    else {
+                                                        list5.push(select_finally)
+
+                                                    }
+                                                    arg4.push(select_finally);
+                                                    if (arg + 1 == type_num[arg5]) {
+                                                        console.log(select_finally.type)
+                                                    }
+                                                    if (arg4.length == total_length) {
+                                                        console.log(list1.length)
+                                                        console.log(list2.length)
+                                                        console.log(list3.length)
+                                                        console.log(list4.length)
+                                                        console.log(list5.length)
                                                         var paper = new Paper({
                                                             user_id: req.session.user.user_id,
                                                             subject: req.session.user.subject_default,
@@ -381,12 +412,10 @@ router.post('/make_paper', function (req, res) {
                                                                 res.end('error', err);
                                                                 return next();
                                                             }
-                                                            //todo 输出txt
                                                             // fs.writeFile(filePath + '/' + paper.date + '.txt', paper_list, function (err) {
                                                             //     if (err) throw err;
                                                             //     console.log("File Saved !"); //文件被保存
                                                             // });
-                                                            // todo  输出docx
                                                             docx.on('finalize', function (written) {
                                                                 console.log('Finish to create Word file.\nTotal bytes created: ' + written + '\n');
                                                             });
@@ -394,36 +423,151 @@ router.post('/make_paper', function (req, res) {
                                                             docx.on('error', function (err) {
                                                                 console.log(err);
                                                             });
-                                                            var arr_paper =[{}];
+                                                            var arr_paper1 = [{}];
+                                                            var arr_paper2 = [{}];
+                                                            var arr_paper3 = [{}];
+                                                            var arr_paper4 = [{}];
+                                                            var arr_paper5 = [{}];
 
-                                                            for (let i =0;i<paper.data.length;i++){
-                                                                arr_paper.push(
+                                                            for (let i = 0; i < list1.length; i++) {
+                                                                arr_paper1.push(
                                                                     {
                                                                         type: "dotlist"
                                                                     },
                                                                     {
                                                                         type: "text",
                                                                         text: "dotlist1.",
-                                                                        val:paper.data[i].question
+                                                                        val: list1[i].question
+                                                                    }
+                                                                )
+                                                            }
+                                                            for (let i = 0; i < list2.length; i++) {
+                                                                arr_paper2.push(
+                                                                    {
+                                                                        type: "dotlist"
+                                                                    },
+                                                                    {
+                                                                        type: "text",
+                                                                        text: "dotlist1.",
+                                                                        val:list2[i].question
+                                                                    }
+                                                                )
+                                                            }
+                                                            for (let i = 0; i < list3.length; i++) {
+                                                                arr_paper3.push(
+                                                                    {
+                                                                        type: "dotlist"
+                                                                    },
+                                                                    {
+                                                                        type: "text",
+                                                                        text: "dotlist1.",
+                                                                        val: list3[i].question
+                                                                    }
+                                                                )
+                                                            }
+                                                            for (let i = 0; i < list4.length; i++) {
+                                                                arr_paper4.push(
+                                                                    {
+                                                                        type: "dotlist"
+                                                                    },
+                                                                    {
+                                                                        type: "text",
+                                                                        text: "dotlist1.",
+                                                                        val: list4[i].question
+                                                                    }
+                                                                )
+                                                            }
+                                                            for (let i = 0; i < list5.length; i++) {
+                                                                arr_paper5.push(
+                                                                    {
+                                                                        type: "dotlist"
+                                                                    },
+                                                                    {
+                                                                        type: "text",
+                                                                        text: "dotlist1.",
+                                                                        val:  list5[i].question
                                                                     }
                                                                 )
                                                             }
 
                                                             var data_paper = [
                                                                 [
+                                                                    {align: 'right'},
+                                                                    {
+                                                                        type: "text",
+                                                                        val: "Created"
+                                                                    },
+                                                                    {
+                                                                        type: "text",
+                                                                        val: " by YunTi",
+                                                                        opt: {color: '000088'}
+                                                                    },
+                                                                ],
+
+                                                                {
+                                                                    type: "horizontalline"
+                                                                },
+
+                                                                [
                                                                     {align: 'center'},
                                                                     {
                                                                         type: "text",
-                                                                        val: "XXX大学期末试卷",
-                                                                        opt: {font_face: 'Arial', font_size: 40}
+                                                                        val: "XXX大学期末试卷("+req.session.user.subject_default+")",
+                                                                        opt: {font_face: 'Arial', font_size: 30}
                                                                     }
                                                                 ],
-                                                                arr_paper
+
+                                                                [
+                                                                    {align: 'left'},
+                                                                    {
+                                                                        type: "text",
+                                                                        val: "选择题",
+                                                                        opt: {font_face: 'Arial', font_size: 20}
+                                                                    }
+                                                                ],
+                                                                arr_paper1,
+                                                                [
+                                                                    {align: 'left'},
+                                                                    {
+                                                                        type: "text",
+                                                                        val: "填空题",
+                                                                        opt: {font_face: 'Arial', font_size: 20}
+                                                                    }
+                                                                ],
+                                                                arr_paper2,
+                                                                [
+                                                                    {align: 'left'},
+                                                                    {
+                                                                        type: "text",
+                                                                        val: "判断题",
+                                                                        opt: {font_face: 'Arial', font_size: 20}
+                                                                    }
+                                                                ],
+                                                                arr_paper3,
+                                                                [
+                                                                    {align: 'left'},
+                                                                    {
+                                                                        type: "text",
+                                                                        val: "解答题",
+                                                                        opt: {font_face: 'Arial', font_size: 20}
+                                                                    }
+                                                                ],
+                                                                arr_paper4,
+                                                                [
+                                                                    {align: 'left'},
+                                                                    {
+                                                                        type: "text",
+                                                                        val: "简答题",
+                                                                        opt: {font_face: 'Arial', font_size: 20}
+                                                                    }
+                                                                ],
+                                                                arr_paper5
+
                                                             ]
 
                                                             var pObj = docx.createByJson(data_paper);
 
-                                                            var out = fs.createWriteStream(filePath+'/'+paper.date+'.docx');
+                                                            var out = fs.createWriteStream(filePath + '/' + paper.date + '.docx');
 
                                                             out.on('error', function (err) {
                                                                 console.log(err);
@@ -483,7 +627,7 @@ router.post('/make_paper', function (req, res) {
 
                                 })
 
-                            })(j, paper_list, arg1)
+                            })(j, paper_list, arg1, type1_list, type2_list, type3_list, type4_list, type5_list)
                         }
                     }
                 })
@@ -662,7 +806,7 @@ router.get('/back/delete/:username', function (req, res, next) {
 
 
 //修改题目难度
-router.get('/back/find_question/:q_id',function (req,res,next) {
+router.get('/back/find_question/:q_id', function (req, res, next) {
     Bank.find({_id: req.params.q_id}, function (err, doc) {
         if (err) {
             res.end(err)
