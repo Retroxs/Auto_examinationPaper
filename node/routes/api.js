@@ -16,7 +16,14 @@ var User = mongoose.model('User');
 var Bank = mongoose.model('Bank');
 var Paper = mongoose.model('Paper');
 
-var all = require('../models/makepaper.server');
+var officegen = require('officegen');
+var fs = require('fs');
+var docx = officegen('docx');
+
+//初始化
+
+
+
 router.use(cookieParser());
 router.use(session({
     secret: '12345',
@@ -374,10 +381,55 @@ router.post('/make_paper', function (req, res) {
                                                                 res.end('error', err);
                                                                 return next();
                                                             }
-                                                            fs.writeFile(filePath + '/' + paper.date + '.txt', paper_list, function (err) {
-                                                                if (err) throw err;
-                                                                console.log("File Saved !"); //文件被保存
+                                                            //todo 输出txt
+                                                            // fs.writeFile(filePath + '/' + paper.date + '.txt', paper_list, function (err) {
+                                                            //     if (err) throw err;
+                                                            //     console.log("File Saved !"); //文件被保存
+                                                            // });
+                                                            // todo  输出docx
+                                                            docx.on('finalize', function (written) {
+                                                                console.log('Finish to create Word file.\nTotal bytes created: ' + written + '\n');
                                                             });
+
+                                                            docx.on('error', function (err) {
+                                                                console.log(err);
+                                                            });
+                                                            var arr_paper =[{}];
+
+                                                            for (let i =0;i<paper.data.length;i++){
+                                                                arr_paper.push(
+                                                                    {
+                                                                        type: "dotlist"
+                                                                    },
+                                                                    {
+                                                                        type: "text",
+                                                                        text: "dotlist1.",
+                                                                        val:paper.data[i].question
+                                                                    }
+                                                                )
+                                                            }
+
+                                                            var data_paper = [
+                                                                [
+                                                                    {align: 'center'},
+                                                                    {
+                                                                        type: "text",
+                                                                        val: "XXX大学期末试卷",
+                                                                        opt: {font_face: 'Arial', font_size: 40}
+                                                                    }
+                                                                ],
+                                                                arr_paper
+                                                            ]
+
+                                                            var pObj = docx.createByJson(data_paper);
+
+                                                            var out = fs.createWriteStream(filePath+'/'+paper.date+'.docx');
+
+                                                            out.on('error', function (err) {
+                                                                console.log(err);
+                                                            });
+                                                            docx.generate(out);
+
                                                             res.status(200).send({
                                                                 message: "ok",
                                                                 data: paper_list,
@@ -386,6 +438,7 @@ router.post('/make_paper', function (req, res) {
                                                         })
                                                     }
                                                 }
+                                                //todo 下载题目
                                                 else {
                                                     Bank.find({
                                                         tips: tipsByType[arg],
@@ -489,7 +542,7 @@ router.get('/createpaper/:num/:level', function (req, res, next) {
 });
 //下载试卷
 router.get('/download/:filename', function (req, res, next) {
-    var file = filePath + '/' + req.params.filename + '.txt';
+    var file = filePath + '/' + req.params.filename + '.docx';
     res.download(file); // Set disposition and send it.
 });
 
@@ -604,6 +657,37 @@ router.get('/back/delete/:username', function (req, res, next) {
         }
         doc.remove();
         res.redirect('/back/dashboard')
+    })
+});
+
+
+//修改题目难度
+router.get('/back/find_question/:q_id',function (req,res,next) {
+    Bank.find({_id: req.params.q_id}, function (err, doc) {
+        if (err) {
+            res.end(err)
+        }
+        console.log(doc)
+        res.render('back/find_question', {title: '更新信息', qInfo: doc[0]});
+    })
+});
+
+router.get('/back/update_qLevel/:q_id', function (req, res, next) {
+    Bank.find({_id: req.params.q_id}, function (err, doc) {
+        if (err) {
+            res.end(err)
+        }
+        Bank.update({_id: req.params.q_id}, {
+            $set: {
+                level: req.query.level,
+            }
+        }, function (err, next) {
+            if (err) {
+                res.end('err', err);
+                return next();
+            }
+            res.redirect('/back/question-manage')
+        })
     })
 });
 

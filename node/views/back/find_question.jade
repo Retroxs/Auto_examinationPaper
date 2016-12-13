@@ -1,0 +1,28 @@
+//
+   Created by HUI on 12/12/2016.
+
+extends ../components/layout
+
+block styles
+    link(rel='stylesheet', href='http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css')
+block content
+    nav.navbar.navbar-default(role="navigation" style="margin: 0;background-color: #323334")
+        .container-fluid
+            .navbar-header
+                a.navbar-brand(href="/back/dashboard" style="color:#fdfeff") 超级管理员管理系统
+            ul.nav.navbar-nav.navbar-right
+                li
+                    a(href="/back/logout" style="color:#fff") 退出
+    h1(style="text-align:center") 审核题目难度
+    form(action='/api/back/update_qLevel/'+'#{qInfo._id}' style="width:30%;margin:0 auto")
+        if(qInfo)
+            .input-group.input-group-lg
+                span.input-group-addon 题目
+                input.form-control(type="text" name='question' value='#{qInfo.question}' readonly)
+            .input-group.input-group-lg
+                span.input-group-addon 答案
+                input.form-control(type="text" name='answer' value='#{qInfo.answer}' readonly)
+            .input-group.input-group-lg
+                span.input-group-addon 难度
+                input.form-control(type="text" name='level' value='#{qInfo.level}')
+            button 提交

@@ -181,4 +181,5 @@ router.get('/public-bank', authToken, function (req, res, next) {
 
 });
 
+
 module.exports = router;

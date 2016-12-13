@@ -1,7 +1,4 @@
 //
-   Created by HUI on 2016/11/22.
-
-//
    Created by HUI on 2016/11/13.
 extends ../components/layout
 
@@ -13,7 +10,7 @@ block content
     nav.navbar.navbar-inverse(role="navigation" style="margin: 0;background-color: #323334")
         .container-fluid
             .navbar-header
-                a.navbar-brand(href="" style="color:#fdfeff") 超级管理员管理系统
+                a.navbar-brand(href="/back/dashboard" style="color:#fdfeff") 超级管理员管理系统
             ul.nav.navbar-nav.navbar-right
                 li.dropdown
                     a.dropdown-toggle(href='#' data-toggle="dropdown" style="color:#fff") 菜单
@@ -39,7 +36,7 @@ block content
                 th  #{item.answer}
                 th  #{item.level}
                 th
-                    a(href='/api/back/update_questionInfo/'+'#{item._id}') 修改
+                    a(href='/api/back/find_question/'+'#{item._id}') 修改
     #demo1(style="text-align:center")
 block scripts
     script(src='http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js')
