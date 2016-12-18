@@ -1,6 +1,15 @@
 /**
  * Created by HUI on 2016/11/10.
  */
+layui.use('layedit', function() {
+    var layedit = layui.layedit;
+    layedit.build('answer',{
+        uploadImage:{
+            url: '/api/upload' //接口url
+            ,type: '' //默认post
+        }
+    });
+})
 function submitTest() {
     var addQ_obj = {};
     var tips=document.getElementById("tips");

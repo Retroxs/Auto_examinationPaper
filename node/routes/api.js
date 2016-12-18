@@ -9,9 +9,11 @@ var Mock = require('mockjs');
 var Random = Mock.Random;
 var fs = require("fs");
 var path = require("path");
+var multer = require ('multer');
+var upload = multer({ dest:  path.join(__dirname, '../public/tmp/image_tmp')});
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
-var filePath = path.join(__dirname, '../public/tmp');
+var filePath = path.join(__dirname, '../public/tmp/paper_tmp');
 var User = mongoose.model('User');
 var Bank = mongoose.model('Bank');
 var Paper = mongoose.model('Paper');
@@ -296,6 +298,10 @@ router.post('/bank/pagelist', function (req, res) {
     });
 
 });
+
+/**
+ * 生成试卷
+ */
 
 //测试出卷新算法
 router.post('/make_paper', function (req, res) {
@@ -637,7 +643,8 @@ router.post('/make_paper', function (req, res) {
 
 });
 
-//生成题目
+
+
 //测试 20 -》 5  level 1.8
 router.get('/createpaper/:num/:level', function (req, res, next) {
     var num = req.params.num;
@@ -704,7 +711,15 @@ router.get('/paper/:id/delete', function (req, res, next) {
 })
 //生成word
 
+//上传图片
+router.post('/upload',upload.single('avatar'),function (req,res,next) {
+    // req.file is the `avatar` file
+    // req.body will hold the text fields, if there were any
+    console.log(req.file);
+    console.log(req.body);
 
+    res.end("上传成功");
+})
 /**
  * root用户接口
  **/
@@ -851,6 +866,7 @@ router.get('/addtestdata', function (req, res, next) {
             "public|1": true,
             question: /云题题库:题目[a-z]+[A-Z]+[1-9]/,
             answer: /云题题库:答案[a-z]+[A-Z]+[1-9]/,
+            qimgPath:''
         }]
     });
     Bank.collection.insert(data.list, onInsert);
@@ -865,3 +881,5 @@ router.get('/addtestdata', function (req, res, next) {
 
 });
 module.exports = router;
+
+
