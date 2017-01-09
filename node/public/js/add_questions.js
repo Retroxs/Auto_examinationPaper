@@ -1,22 +1,14 @@
 /**
  * Created by HUI on 2016/11/10.
  */
-layui.use('layedit', function() {
-    var layedit = layui.layedit;
-    layedit.build('answer',{
-        uploadImage:{
-            url: '/api/upload' //接口url
-            ,type: '' //默认post
-        }
-    });
-})
+
 function submitTest() {
     var addQ_obj = {};
-    var tips=document.getElementById("tips");
-    var tips_index=tips.selectedIndex ;
+    var tips = document.getElementById("tips");
+    var tips_index = tips.selectedIndex;
 
-    var type=document.getElementById("type");
-    var type_index=type.selectedIndex ;
+    var type = document.getElementById("type");
+    var type_index = type.selectedIndex;
 
     addQ_obj.subject = subject.value;
     addQ_obj.type = type.options[type_index].text;
@@ -26,7 +18,7 @@ function submitTest() {
     addQ_obj.answer = $('#answer').val();
     addQ_obj.public = $("#isPublic").is(':checked');
 
-    if(addQ_obj.tips!="请选择知识点"){
+    if (addQ_obj.tips != "请选择知识点") {
         $.ajax({
             url: '/api/bank/create',
             type: 'post',
@@ -39,7 +31,14 @@ function submitTest() {
                 // });
             },
             success: function () {
-                layer.alert('success')
+                layer.open({
+                    content: '录入成功',
+                    yes: function (index, layero) {
+                        window.location.href='/home '
+                        layer.close(index); //如果设定了yes回调，需进行手工关闭
+                    }
+                })
+
             },
             error: function () {
 

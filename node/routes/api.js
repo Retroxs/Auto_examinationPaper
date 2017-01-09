@@ -1,26 +1,25 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 
-var mongoose = require('mongoose');
-var db = mongoose.connection;
-var crypto = require('crypto');
-var Joi = require('joi');
-var Mock = require('mockjs');
-var Random = Mock.Random;
-var fs = require("fs");
-var path = require("path");
-var multer = require ('multer');
-var upload = multer({ dest:  path.join(__dirname, '../public/tmp/image_tmp')});
-var session = require('express-session');
-var cookieParser = require('cookie-parser');
-var filePath = path.join(__dirname, '../public/tmp/paper_tmp');
-var User = mongoose.model('User');
-var Bank = mongoose.model('Bank');
-var Paper = mongoose.model('Paper');
+let mongoose = require('mongoose');
+let db = mongoose.connection;
+let crypto = require('crypto');
+let Joi = require('joi');
+let Mock = require('mockjs');
+let Random = Mock.Random;
+let fs = require("fs");
+let path = require("path");
+let multer = require ('multer');
+let upload = multer({ dest:  path.join(__dirname, '../public/tmp/image_tmp')});
+let session = require('express-session');
+let cookieParser = require('cookie-parser');
+let filePath = path.join(__dirname, '../public/tmp/paper_tmp');
+let User = mongoose.model('User');
+let Bank = mongoose.model('Bank');
+let Paper = mongoose.model('Paper');
 
-var officegen = require('officegen');
-var fs = require('fs');
-var docx = officegen('docx');
+let officegen = require('officegen');
+let docx = officegen('docx');
 
 //初始化
 
@@ -48,10 +47,10 @@ function randArray(m, len) {
     });
     return m.slice(0, len);
 }
-var level_select;
+let level_select;
 //抽取难度的概率控制
 function level_random(level) {
-    var rand = Math.random();
+    let rand = Math.random();
     if (rand <= 0.3) {
         level_select = "中"
     } else if (rand > 0.3 && rand <= 0.3 + (level * 0.7)) {
@@ -78,10 +77,10 @@ router.get('/test', function (req, res, next) {
 
 //登录
 router.post('/login', function (req, res, next) {
-    var md5 = crypto.createHash('md5');
+    let md5 = crypto.createHash('md5');
     md5.update(req.body.password);
-    var d = md5.digest('hex');
-    var user_session = {
+    let d = md5.digest('hex');
+    let user_session = {
         username: req.body.username,
         password: req.body.password
     }
@@ -139,7 +138,7 @@ router.get('/selectSubject', function (req, res, next) {
 //插入题目
 router.post('/bank/create', function (req, res, next) {
 
-    var schema = Joi.object().keys({
+    let schema = Joi.object().keys({
         subject: Joi.string().required(),
         type: Joi.string().required(),
         tips: Joi.string().required(),
@@ -162,7 +161,7 @@ router.post('/bank/create', function (req, res, next) {
             res.status(400).send(err);
         }
         else {
-            var bank = new Bank({
+            let bank = new Bank({
                 user_id: req.session.user.user_id,
                 subject: req.body.subject,
                 type: req.body.type,
@@ -174,7 +173,6 @@ router.post('/bank/create', function (req, res, next) {
             });
 
             bank.save(function (err, next) {
-                debugger;
                 if (err) {
                     res.end('error', err);
                     return next();
@@ -202,7 +200,7 @@ router.get('/bank/:id/delete', function (req, res, next) {
 
 //修改题目
 router.post('/bank/:id/update', function (req, res, next) {
-    var schema = Joi.object().keys({
+    let schema = Joi.object().keys({
         subject: Joi.string().required(),
         options: Joi.string().required(),
         question: Joi.string().required(),
@@ -271,13 +269,13 @@ router.get('/findQuestion/:q_id', function (req, res, next) {
 
 //题库分页
 router.post('/bank/pagelist', function (req, res) {
-    var count = 0;
-    var page = req.body.page;
-    var rows = req.body.rows;
-    var user_id = req.body.user_id;
+    let count = 0;
+    let page = req.body.page;
+    let rows = req.body.rows;
+    let user_id = req.body.user_id;
     console.log("page:" + page + ",rows:" + rows);
 
-    var query = Bank.find({});
+    let query = Bank.find({});
     query.skip((page - 1) * rows);
     query.limit("知识点11");
     if (user_id) {
@@ -305,17 +303,17 @@ router.post('/bank/pagelist', function (req, res) {
 
 //测试出卷新算法
 router.post('/make_paper', function (req, res) {
-    var type_num = [];
-    var type1_list = [];
-    var type2_list = [];
-    var type3_list = [];
-    var type4_list = [];
-    var type5_list = [];
-    var paper_list = [];
-    var total_length = 0;
-    var tips = req.body.tips; //用户指定的知识点
-    var level = req.body.level; //用户指定的知识点
-    var type_items = Object.keys(req.body.type_items); //用户指定的题型
+    let type_num = [];
+    let type1_list = [];
+    let type2_list = [];
+    let type3_list = [];
+    let type4_list = [];
+    let type5_list = [];
+    let paper_list = [];
+    let total_length = 0;
+    let tips = req.body.tips; //用户指定的知识点
+    let level = req.body.level; //用户指定的知识点
+    let type_items = Object.keys(req.body.type_items); //用户指定的题型
     for (item in req.body.type_items) {
         type_num.push(req.body.type_items[item])  //用户指定的题型数量
         total_length = total_length + req.body.type_items[item]; //用户指定的题型数量总和
@@ -330,17 +328,17 @@ router.post('/make_paper', function (req, res) {
                         res.send(err);
                     }
                     else {
-                        var M = docs.map(function (o) {
+                        let M = docs.map(function (o) {
                             return o.tips;
                         });
-                        var tips_selected = Array.from(new Set(M));//对检索出的知识点进行去重
+                        let tips_selected = Array.from(new Set(M));//对检索出的知识点进行去重
                         if (tips_selected.length >= type_num[arg1]) {
-                            var tipsByType = randArray(tips_selected, type_num[arg1]);
+                            let tipsByType = randArray(tips_selected, type_num[arg1]);
 
                         } else {
-                            var tipsByType_arr = tips_selected;
-                            var tipsByType = [];
-                            for (var x = 1; x < parseInt(type_num[arg1] / tips_selected.length); x++) {
+                            let tipsByType_arr = tips_selected;
+                            let tipsByType = [];
+                            for (let x = 1; x < parseInt(type_num[arg1] / tips_selected.length); x++) {
                                 //知识点的个数少于对应提醒的提数
                                 tipsByType_arr = tipsByType_arr.concat(tips_selected);
                             }
@@ -349,7 +347,7 @@ router.post('/make_paper', function (req, res) {
                             tipsByType = tipsByType_arr.concat(tipsByType);
                         }
 
-                        for (var j = 0; j < type_num[arg1]; j++) {
+                        for (let j = 0; j < type_num[arg1]; j++) {
                             (function (arg, arg4, arg5, list1, list2, list3, list4, list5) {
                                 Bank.find({tips: tipsByType[i], type: type_items[arg1]}, {
                                     "type": 1,
@@ -373,9 +371,9 @@ router.post('/make_paper', function (req, res) {
                                             },
                                             function (err, docs) {
                                                 if (docs.length > 0) {
-                                                    var rdIndex = Math.ceil(Math.random() * (docs.length - 1));
-                                                    var select_finally = docs[rdIndex];
-                                                    var q_type = select_finally.type;
+                                                    let rdIndex = Math.ceil(Math.random() * (docs.length - 1));
+                                                    let select_finally = docs[rdIndex];
+                                                    let q_type = select_finally.type;
                                                     if (q_type == '选择题') {
                                                         list1.push(select_finally)
                                                     }
@@ -396,16 +394,15 @@ router.post('/make_paper', function (req, res) {
 
                                                     }
                                                     arg4.push(select_finally);
-                                                    if (arg + 1 == type_num[arg5]) {
-                                                        console.log(select_finally.type)
-                                                    }
+                                                    // if (arg + 1 == type_num[arg5]) {
+                                                    //     console.log(select_finally.type)
+                                                    // }
                                                     if (arg4.length == total_length) {
-                                                        console.log(list1.length)
-                                                        console.log(list2.length)
-                                                        console.log(list3.length)
-                                                        console.log(list4.length)
-                                                        console.log(list5.length)
-                                                        var paper = new Paper({
+                                                        // console.log(list2.length)
+                                                        // console.log(list3.length)
+                                                        // console.log(list4.length)
+                                                        // console.log(list5.length)
+                                                        let paper = new Paper({
                                                             user_id: req.session.user.user_id,
                                                             subject: req.session.user.subject_default,
                                                             tips: req.body.tips,
@@ -429,11 +426,11 @@ router.post('/make_paper', function (req, res) {
                                                             docx.on('error', function (err) {
                                                                 console.log(err);
                                                             });
-                                                            var arr_paper1 = [{}];
-                                                            var arr_paper2 = [{}];
-                                                            var arr_paper3 = [{}];
-                                                            var arr_paper4 = [{}];
-                                                            var arr_paper5 = [{}];
+                                                            let arr_paper1 = [{}];
+                                                            let arr_paper2 = [{}];
+                                                            let arr_paper3 = [{}];
+                                                            let arr_paper4 = [{}];
+                                                            let arr_paper5 = [{}];
 
                                                             for (let i = 0; i < list1.length; i++) {
                                                                 arr_paper1.push(
@@ -496,7 +493,7 @@ router.post('/make_paper', function (req, res) {
                                                                 )
                                                             }
 
-                                                            var data_paper = [
+                                                            let data_paper = [
                                                                 [
                                                                     {align: 'right'},
                                                                     {
@@ -571,9 +568,9 @@ router.post('/make_paper', function (req, res) {
 
                                                             ]
 
-                                                            var pObj = docx.createByJson(data_paper);
+                                                            let pObj = docx.createByJson(data_paper);
 
-                                                            var out = fs.createWriteStream(filePath + '/' + paper.date + '.docx');
+                                                            let out = fs.createWriteStream(filePath + '/' + paper.date + '.docx');
 
                                                             out.on('error', function (err) {
                                                                 console.log(err);
@@ -598,11 +595,11 @@ router.post('/make_paper', function (req, res) {
                                                         "tips": 1,
                                                         "level": 1
                                                     }, function (err, doc) {
-                                                        var rdIndex = Math.ceil(Math.random() * (doc.length - 1));
-                                                        var select_finally = doc[rdIndex]
+                                                        let rdIndex = Math.ceil(Math.random() * (doc.length - 1));
+                                                        let select_finally = doc[rdIndex]
                                                         arg4.push(select_finally)
                                                         if (arg4.length == total_length) {
-                                                            var paper = new Paper({
+                                                            let paper = new Paper({
                                                                 user_id: req.session.user.user_id,
                                                                 subject: req.session.user.subject_default,
                                                                 tips: req.body.tips,
@@ -647,30 +644,30 @@ router.post('/make_paper', function (req, res) {
 
 //测试 20 -》 5  level 1.8
 router.get('/createpaper/:num/:level', function (req, res, next) {
-    var num = req.params.num;
-    var level = req.params.level;
-    var level_1 = Math.floor(num * ((level / 3) / 2));
-    var level_2 = Math.floor(num / 2);
-    var level_3 = num - level_1 - level_2;
-    var arr1 = [];
+    let num = req.params.num;
+    let level = req.params.level;
+    let level_1 = Math.floor(num * ((level / 3) / 2));
+    let level_2 = Math.floor(num / 2);
+    let level_3 = num - level_1 - level_2;
+    let arr1 = [];
 
-    var p1 = all.getAll("选择题", "易", level_3, arr1);
-    var p2 = all.getAll("选择题", "中", level_2, arr1);
-    var p3 = all.getAll("选择题", "难", level_1, arr1);
-    var p4 = all.getAll("简答题", "易", level_3, arr1);
-    var p5 = all.getAll("简答题", "中", level_2, arr1);
-    var p6 = all.getAll("简答题", "难", level_1, arr1);
+    let p1 = all.getAll("选择题", "易", level_3, arr1);
+    let p2 = all.getAll("选择题", "中", level_2, arr1);
+    let p3 = all.getAll("选择题", "难", level_1, arr1);
+    let p4 = all.getAll("简答题", "易", level_3, arr1);
+    let p5 = all.getAll("简答题", "中", level_2, arr1);
+    let p6 = all.getAll("简答题", "难", level_1, arr1);
 
-    var sp = Promise.all([p1, p2, p3, p4, p5, p6]).then(function () {
+    let sp = Promise.all([p1, p2, p3, p4, p5, p6]).then(function () {
 
 
-        var M = arr1.map(function (o) {
+        let M = arr1.map(function (o) {
             return o.tips
         })
-        var set1 = Array.from(new Set(M))
+        let set1 = Array.from(new Set(M))
         console.log(set1.length / 10)
         if (set1.length / 10 >= 0.6) {
-            var paper = new Paper({
+            let paper = new Paper({
                 subject: "物理",
                 level: level,
                 data: arr1
@@ -693,7 +690,7 @@ router.get('/createpaper/:num/:level', function (req, res, next) {
 });
 //下载试卷
 router.get('/download/:filename', function (req, res, next) {
-    var file = filePath + '/' + req.params.filename + '.docx';
+    let file = filePath + '/' + req.params.filename + '.docx';
     res.download(file); // Set disposition and send it.
 });
 
@@ -736,12 +733,12 @@ router.get('/back/login', function (req, res, next) {
 });
 //创建用户
 router.get('/register', function (req, res, next) {
-    var subject = (req.query.subject).split(',');
-    var md5 = crypto.createHash('md5');
+    let subject = (req.query.subject).split(',');
+    let md5 = crypto.createHash('md5');
     md5.update(req.query.password);
-    var a = md5.digest('hex');
+    let a = md5.digest('hex');
 
-    var schema = Joi.object().keys({
+    let schema = Joi.object().keys({
         username: Joi.string().regex(/^[a-zA-Z0-9]{6,18}$/).required(),
         password: Joi.string().regex(/^[a-zA-Z0-9]{6,18}$/).required(),
     });
@@ -756,7 +753,7 @@ router.get('/register', function (req, res, next) {
                 }
                 else {
                     if (docs.length == 0) {
-                        var user = new User({
+                        let user = new User({
                             username: req.query.username,
                             password: req.query.password,
                             subject: subject,
@@ -786,7 +783,7 @@ router.get('/register', function (req, res, next) {
 });
 //更新用户信息
 router.get('/back/update', function (req, res, next) {
-    var subject = (req.query.subject).split(',');
+    let subject = (req.query.subject).split(',');
     User.find({username: req.query.username}, function (err, doc) {
         if (err) {
             res.end(err)
@@ -856,7 +853,7 @@ router.get('/back/update_qLevel/:q_id', function (req, res, next) {
 
 //造数据
 router.get('/addtestdata', function (req, res, next) {
-    var data = Mock.mock({
+    let data = Mock.mock({
         'list|10000': [{
             user_id: "582e96460522740cd397ccfa",
             "subject|1": ["物理", "高数", "英语"],

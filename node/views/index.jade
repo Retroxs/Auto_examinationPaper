@@ -1,7 +1,7 @@
 extends components/layout
 
 block styles
-    link(rel='stylesheet',href='style/style.css')
+    link(rel='stylesheet',href='/style/style.css')
 block content
     include  ./components/head
     include  ./components/side
@@ -14,16 +14,19 @@ block content
                     input.layui-input(id='subject' value= subject_default readonly='readonly')
                 label.layui-form-label 题型
                 .layui-input-inline
-                    select(name="type" id='type')
-                        option(value="0" selected) 选择题
+                    select(name="type" id='type' )
+                        option(value="0" "#{qInfo.type=='选择题'?'selected':''}") 选择题
                         option(value="1") 填空题
                         option(value="2") 判断题
                         option(value="3") 简答题
                         option(value="4") 解答题
                 label.layui-form-label 知识点
                 .layui-input-inline
-                    select(name="type" id='tips')
-                        option(value="") 请选择知识点
+                    select(name="type" id='tips' lay-verify="required")
+                        if(qInfo)
+                            option(value="0") #{qInfo.tips}
+                        else
+                            option(value="") 请选择知识点
                         for tips_item in allTips
                             option(value="0") #{tips_item}
             .layui-form-item
@@ -33,27 +36,40 @@ block content
             .layui-form-item.layui-form-text
                 label.layui-form-label 题目
                 .layui-input-block
-                    textarea.layui-textarea(placeholder="请输入题目" id='question' style="display: none;")
+                    textarea.layui-textarea(placeholder="请输入题目" id='question' lay-verify="required")  #{qInfo?qInfo.question:''}
             .layui-form-item.layui-form-text
                 label.layui-form-label 答案
                 .layui-input-block
-                    textarea.layui-textarea(placeholder="请输入答案" id='answer')
+                    textarea.layui-textarea(placeholder="请输入答案" id='answer' lay-verify="required") #{qInfo?qInfo.answer:''}
             .layui-form-item
                 label.layui-form-label LEVEL
                 .layui-input-block
-                    input(type="radio" name="level" title="容易" value="1.0")
-                    input(type="radio" name="level" title="普通" value="2.0" checked="")
-                    input(type="radio" name="level" title="有难度" value="3.0")
+                    if(qInfo)
+                        if(qInfo.level==='2.0')
+                            input(type="radio" name="level" title="容易" value="1.0"  )
+                            input(type="radio" name="level" title="普通" value="2.0" checked="")
+                            input(type="radio" name="level" title="有难度" value="3.0")
+                        else if(qInfo.level==='2.0')
+                            input(type="radio" name="level" title="容易" value="1.0"  checked="")
+                            input(type="radio" name="level" title="普通" value="2.0")
+                            input(type="radio" name="level" title="有难度" value="3.0")
+                        else
+                            input(type="radio" name="level" title="容易" value="1.0"  )
+                            input(type="radio" name="level" title="普通" value="2.0" )
+                            input(type="radio" name="level" title="有难度" value="3.0" checked="")
+                    else
+                        input(type="radio" name="level" title="容易" value="1.0"  )
+                        input(type="radio" name="level" title="普通" value="2.0" checked="")
+                        input(type="radio" name="level" title="有难度" value="3.0")
             hr
             .layui-form-item
                 label.layui-form-label 分享
                 .layui-input-block
                     input(type="checkbox" name="public" lay-skin="switch" title="分享" id='isPublic')
             hr
-            button.layui-btn.layui-btn-radius.layui-btn-normal(style="display:block;margin:0 auto" onclick='submitTest()')  提交保存
-
+            button.layui-btn.layui-btn-radius.layui-btn-normal(lay-submit lay-filter="formDemo" style="display:block;margin:0 auto" onclick='submitTest()')  提交保存
 block scripts
     script(src='//cdn.bootcss.com/jquery/3.1.1/jquery.min.js')
-    script(src='js/add_questions.js')
+    script(src='/js/add_questions.js')
 
 

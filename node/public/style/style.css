@@ -57,6 +57,10 @@
 }
 .qt-detail{
     position: absolute;
+    right: 125px;
+}
+.qt-edit{
+    position: absolute;
     right: 75px;
 }
 .logout{

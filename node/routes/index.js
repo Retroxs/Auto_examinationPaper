@@ -1,23 +1,23 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 
-var mongoose = require('mongoose');
-var db = mongoose.connection;
-var crypto = require('crypto');
-var Joi = require('joi');
+let mongoose = require('mongoose');
+let db = mongoose.connection;
+let crypto = require('crypto');
+let Joi = require('joi');
 
-var session = require('express-session');
-var cookieParser = require('cookie-parser');
+let session = require('express-session');
+let cookieParser = require('cookie-parser');
 
-var User = mongoose.model('User');
-var Bank = mongoose.model('Bank');
-var Paper = mongoose.model('Paper');
+let User = mongoose.model('User');
+let Bank = mongoose.model('Bank');
+let Paper = mongoose.model('Paper');
 
 router.use(cookieParser());
 router.use(session({
     secret: '12345',
     name: 'testapp',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
-    cookie: {maxAge: 24 * 60 * 60 * 1000},  //设置maxAge是ms，session和相应的cookie失效过期
+    cookie: {maxAge: 365 * 24 * 60 * 60 * 1000},  //设置maxAge是ms，session和相应的cookie失效过期
     resave: false,
     saveUninitialized: true,
 }))
@@ -31,20 +31,43 @@ function authToken(req, res, next) {
     }
 }
 /* GET home page. */
+router.get('/',function (req,res,next) {
+    res.redirect('/home')
+})
 router.get('/home', authToken, function (req, res, next) {
     Bank.find({user_id:req.session.user.user_id},function (err,docs) {
         if(err){
             res.end(err)
         }
-        var M = docs.map(function (o) {
+        let M = docs.map(function (o) {
             return o.tips;
         });
-        var allTips = Array.from(new Set(M));//对检索出的知识点进行去重
+        let allTips = Array.from(new Set(M));//对检索出的知识点进行去重
         res.render('index', {title: '录入题目',subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips});
 
     })
 });
+router.get('/edit_question/:q_id',authToken,function (req,res,next) {
+    Bank.find({user_id:req.session.user.user_id},function (err,docs) {
+        if(err){
+            res.end(err)
+        }
+        let M = docs.map(function (o) {
+            return o.tips;
+        });
+        let allTips = Array.from(new Set(M));//对检索出的知识点进行去重
+        Bank.find({_id: req.params.q_id}, function (err, doc) {
+            if (err) {
+                res.end(err)
+            }
+            console.log(doc)
+            res.render('index', {title: '编辑题目', qInfo: doc[0],subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips});
+        })
 
+    })
+
+
+})
 router.get('/back/dashboard', function (req, res, next) {
     User.find({},function (err,docs) {
         if(err){
@@ -56,10 +79,10 @@ router.get('/back/dashboard', function (req, res, next) {
 
 });
 router.get('/back/question-manage', function (req, res, next) {
-    var count = 0;
-    var page = req.query.page;
-    var rows = 10;
-    var query = Bank.find({});
+    let count = 0;
+    let page = req.query.page;
+    let rows = 10;
+    let query = Bank.find({});
     query.skip((page - 1) * rows);
     query.limit(rows);
     //计算分页数据
@@ -92,11 +115,11 @@ router.get('/back/createuser', function (req, res, next) {
 });
 
 router.get('/banks-list', authToken, function (req, res, next) {
-    var user_id = req.session.user.user_id;
-    var count = 0;
-    var page = req.query.page;
-    var rows = 5;
-    var query = Bank.find({});
+    let user_id = req.session.user.user_id;
+    let count = 0;
+    let page = req.query.page;
+    let rows = 5;
+    let query = Bank.find({});
     query.skip((page - 1) * rows);
     query.limit(rows);
     if (user_id) {
@@ -121,10 +144,10 @@ router.get('/make-paper', authToken, function (req, res, next) {
             if(err){
                 res.end(err)
             }
-        var M = docs.map(function (o) {
+        let M = docs.map(function (o) {
             return o.tips;
         });
-        var allTips = Array.from(new Set(M));//对检索出的知识点进行去重
+        let allTips = Array.from(new Set(M));//对检索出的知识点进行去重
         res.render('make-paper', {title: '组卷中心',subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips});
 
     })
@@ -132,11 +155,11 @@ router.get('/make-paper', authToken, function (req, res, next) {
 });
 
 router.get('/paper-bank', authToken, function (req, res, next) {
-    var user_id = req.session.user.user_id;
-    var count = 0;
-    var page = req.query.page;
-    var rows = 5;
-    var query = Paper.find({});
+    let user_id = req.session.user.user_id;
+    let count = 0;
+    let page = req.query.page;
+    let rows = 5;
+    let query = Paper.find({});
     query.skip((page - 1) * rows);
     query.limit(rows);
     if (user_id) {
@@ -157,11 +180,11 @@ router.get('/paper-bank', authToken, function (req, res, next) {
 });
 
 router.get('/public-bank', authToken, function (req, res, next) {
-    var user_id = req.session.user.user_id;
-    var count = 0;
-    var page = req.query.page;
-    var rows = 5;
-    var query = Bank.find({});
+    let user_id = req.session.user.user_id;
+    let count = 0;
+    let page = req.query.page;
+    let rows = 5;
+    let query = Bank.find({});
     query.skip((page - 1) * rows);
     query.limit(rows);
     if (user_id) {

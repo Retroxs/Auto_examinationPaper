@@ -1,8 +1,6 @@
 //
    Created by HUI on 2016/11/3.
-
 extends components/layout
-
 block styles
     link(rel='stylesheet',href='style/style.css')
 block content
@@ -22,6 +20,7 @@ block content
             each item in list
                 blockquote.layui-elem-quote.layui-quote-nm #{item.question}
                     a.qt-delete(name="#{item._id}" onclick="delete_question(this)") 删除
+                    a.qt-edit(href="/edit_question/#{item._id}") 编辑
                     a.qt-detail(id="#{item._id}" onclick="show_question(this)") 预览
             #demo1(style="text-align:center")
 block scripts
