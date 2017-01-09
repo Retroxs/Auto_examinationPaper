@@ -1,5 +1,4 @@
 .idea
 node_modules
-./node/node_modules
-./node/public/tmp
+public/tmp
 *.docx

@@ -301,7 +301,7 @@ router.post('/bank/pagelist', function (req, res) {
  * 生成试卷
  */
 
-//测试出卷新算法
+//出卷算法
 router.post('/make_paper', function (req, res) {
     let type_num = [];
     let type1_list = [];
@@ -310,6 +310,8 @@ router.post('/make_paper', function (req, res) {
     let type4_list = [];
     let type5_list = [];
     let paper_list = [];
+    let tipsByType = [];
+
     let total_length = 0;
     let tips = req.body.tips; //用户指定的知识点
     let level = req.body.level; //用户指定的知识点
@@ -337,7 +339,7 @@ router.post('/make_paper', function (req, res) {
 
                         } else {
                             let tipsByType_arr = tips_selected;
-                            let tipsByType = [];
+                            tipsByType = [];
                             for (let x = 1; x < parseInt(type_num[arg1] / tips_selected.length); x++) {
                                 //知识点的个数少于对应提醒的提数
                                 tipsByType_arr = tipsByType_arr.concat(tips_selected);
@@ -345,6 +347,7 @@ router.post('/make_paper', function (req, res) {
 
                             tipsByType = randArray(tips_selected, type_num[arg1] % tips_selected.length);
                             tipsByType = tipsByType_arr.concat(tipsByType);
+                            console.log(tipsByType)
                         }
 
                         for (let j = 0; j < type_num[arg1]; j++) {
@@ -394,14 +397,7 @@ router.post('/make_paper', function (req, res) {
 
                                                     }
                                                     arg4.push(select_finally);
-                                                    // if (arg + 1 == type_num[arg5]) {
-                                                    //     console.log(select_finally.type)
-                                                    // }
                                                     if (arg4.length == total_length) {
-                                                        // console.log(list2.length)
-                                                        // console.log(list3.length)
-                                                        // console.log(list4.length)
-                                                        // console.log(list5.length)
                                                         let paper = new Paper({
                                                             user_id: req.session.user.user_id,
                                                             subject: req.session.user.subject_default,

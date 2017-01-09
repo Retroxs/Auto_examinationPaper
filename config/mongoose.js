@@ -11,4 +11,4 @@ module.exports=function () {
     require('../models/bank.server.model');
     require('../models/paper.server.model');
     return db;
-}
+};
