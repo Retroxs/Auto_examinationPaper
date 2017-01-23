@@ -2,3 +2,4 @@
 node_modules
 public/tmp
 *.docx
+.DS_Store
