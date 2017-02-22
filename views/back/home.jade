@@ -35,8 +35,23 @@ block content
                 th  #{item.subject}
                 th  #{item.remarks}
                 th
-                    a(href='/api/back/find_userInfo/'+'#{item.username}') 修改
-                    a(href='/api/back/delete/'+'#{item.username}' style="position:relative;left:10px") 删除
+                    a(href='/back/update/'+'#{item.username}') 修改
+                    a(onclick='del_user("#{item.username}")' href='javascript:void(0)' style="position:relative;left:10px") 删除
 
 block scripts
     script(src='http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js')
+    script.
+            function del_user(username) {
+                $.ajax({
+                    url: '/back/api/delete/'+username,
+                    type: 'DELETE',
+                    success: function () {
+                        layer.msg('删除'+username+'成功')
+                        window.location.reload()
+                    },
+                    error: function () {
+                        layer.msg('删除失败')
+                    }
+                })
+            }
+

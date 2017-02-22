@@ -1,17 +1,26 @@
-let express = require('express');
-let router = express.Router();
+/**
+ * Created by HUI on 2017/2/22.
+ */
+const express = require('express');
+const router = express.Router();
+const path = require("path");
+const mongoose = require('mongoose');
+const db = mongoose.connection;
+const User = mongoose.model('User');
+const Bank = mongoose.model('Bank');
+const Paper = mongoose.model('Paper');
 
-let mongoose = require('mongoose');
-let db = mongoose.connection;
-let crypto = require('crypto');
-let Joi = require('joi');
+const crypto = require('crypto');
+const Joi = require('joi');
+const Mock = require('mockjs');
+const Random = Mock.Random;
+const multer = require('multer');
+// const upload = multer({dest: path.join(__dirname, '../public/tmp/image_tmp')});
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 
-let session = require('express-session');
-let cookieParser = require('cookie-parser');
+// const createFile = require('../../servers/creatFile');
 
-let User = mongoose.model('User');
-let Bank = mongoose.model('Bank');
-let Paper = mongoose.model('Paper');
 
 router.use(cookieParser());
 router.use(session({
@@ -20,7 +29,8 @@ router.use(session({
     cookie: {maxAge: 365 * 24 * 60 * 60 * 1000},  //设置maxAge是ms，session和相应的cookie失效过期
     resave: false,
     saveUninitialized: true,
-}))
+}));
+
 //登录认证
 
 function authToken(req, res, next) {
@@ -30,10 +40,28 @@ function authToken(req, res, next) {
         next();
     }
 }
+
+
 /* GET home page. */
 router.get('/',function (req,res,next) {
     res.redirect('/home')
-})
+});
+
+router.get('/login', function (req, res) {
+    res.render('login', {title: '登陆'});
+});
+
+router.get('/logout', function (req, res) {
+    req.session.user = null;
+    if (req.session.user == null) {
+        res.redirect('/login')
+    }
+    else {
+        res.status(400).send({error: "fail"})
+    }
+});
+
+
 router.get('/home', authToken, function (req, res, next) {
     Bank.find({user_id:req.session.user.user_id},function (err,docs) {
         if(err){
@@ -47,6 +75,8 @@ router.get('/home', authToken, function (req, res, next) {
 
     })
 });
+
+
 router.get('/edit_question/:q_id',authToken,function (req,res,next) {
     Bank.find({user_id:req.session.user.user_id},function (err,docs) {
         if(err){
@@ -68,51 +98,9 @@ router.get('/edit_question/:q_id',authToken,function (req,res,next) {
 
 
 })
-router.get('/back/dashboard', function (req, res, next) {
-    User.find({},function (err,docs) {
-        if(err){
-            res.end(err);
-        }
-        res.render('back/home', {title: '超级管理员系统',user_info:docs});
-    })
 
 
-});
-router.get('/back/question-manage', function (req, res, next) {
-    let count = 0;
-    let page = req.query.page;
-    let rows = 10;
-    let query = Bank.find({});
-    query.skip((page - 1) * rows);
-    query.limit(rows);
-    //计算分页数据
-    query.exec(function (err, rs) {
-        if (err) {
-            res.send(err);
-        } else {
-            // 计算数据总数
-            Bank.find({},function (err, result) {
-                res.render('back/question-manage', {title: '公开题库', questions_info: rs, total: Math.ceil(result.length / rows)});
-            });
-        }
-    });
-});
 
-router.get('/login', function (req, res, next) {
-    res.render('login', {title: '后台登陆'});
-});
-
-router.get('/back/login', function (req, res, next) {
-    res.render('back/login', {title: 'root登陆'});
-});
-
-router.get('/back/logout', function (req, res, next) {
-    res.render('back/login', {title: 'root登陆'});
-});
-
-router.get('/back/createuser', function (req, res, next) {
-    res.render('back/create_user', {title: '创建用户'});
-});
 
 router.get('/banks-list', authToken, function (req, res, next) {
     let user_id = req.session.user.user_id;
@@ -141,9 +129,9 @@ router.get('/banks-list', authToken, function (req, res, next) {
 
 router.get('/make-paper', authToken, function (req, res, next) {
     Bank.find({user_id:req.session.user.user_id,subject:req.session.user.subject_default},function (err,docs) {
-            if(err){
-                res.end(err)
-            }
+        if(err){
+            res.end(err)
+        }
         let M = docs.map(function (o) {
             return o.tips;
         });
@@ -203,6 +191,4 @@ router.get('/public-bank', authToken, function (req, res, next) {
     });
 
 });
-
-
 module.exports = router;

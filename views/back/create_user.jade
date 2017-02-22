@@ -16,7 +16,7 @@ block content
 
     if userInfo
         h1(style="text-align:center")  更新信息
-        form(action='/api/back/update' style="width:30%;margin:0 auto")
+        form(action='/back/update' method="post" style="width:30%;margin:0 auto")
             .input-group.input-group-lg
                 span.input-group-addon 用户名
                 input.form-control(type="text" placeholder="Username" name='username' value="#{userInfo.username}" readonly="readonly")
@@ -30,18 +30,53 @@ block content
                 span.input-group-addon 备注
                 input.form-control(type="text" placeholder="remarks" name='remarks' value="#{userInfo.remarks}")
             button 更新
+    else if(userModify)
+        h1(style="text-align:center") 创建用户
+        form(action='/back/update' method='post' style="width:30%;margin:0 auto")
+            .input-group.input-group-lg
+                span.input-group-addon 用户名
+                input.form-control(type="text" placeholder="Username" name='username' value= userModify.username)
+            .input-group.input-group-lg
+                span.input-group-addon 密码
+                input.form-control(type="text" placeholder="password" name='password'  value= userModify.password)
+            .input-group.input-group-lg
+                span.input-group-addon 科目
+                input.form-control(type="text" placeholder="subject" name='subject' value= userModify.subject )
+            .input-group.input-group-lg
+                span.input-group-addon 备注
+                input.form-control(type="text" placeholder="remarks" name='remarks' value= userModify.remarks)
+            button 提交
+            p #{error.message}
+    else if(user)
+        h1(style="text-align:center") 创建用户
+        form(action='/back/createuser' method='post' style="width:30%;margin:0 auto")
+            .input-group.input-group-lg
+                span.input-group-addon 用户名
+                input.form-control(type="text" placeholder="Username" name='username' value= user.username)
+            .input-group.input-group-lg
+                span.input-group-addon 密码
+                input.form-control(type="text" placeholder="password" name='password'  value= user.password)
+            .input-group.input-group-lg
+                span.input-group-addon 科目
+                input.form-control(type="text" placeholder="subject" name='subject' value= user.subject )
+            .input-group.input-group-lg
+                span.input-group-addon 备注
+                input.form-control(type="text" placeholder="remarks" name='remarks' value= user.remarks)
+            button 提交
+            p #{error.message}
+
     else
         h1(style="text-align:center") 创建用户
-        form(action='/api/register' style="width:30%;margin:0 auto")
+        form(action='/back/createuser' method='post' style="width:30%;margin:0 auto")
             .input-group.input-group-lg
                 span.input-group-addon 用户名
                 input.form-control(type="text" placeholder="Username" name='username')
             .input-group.input-group-lg
                 span.input-group-addon 密码
-                input.form-control(type="text" placeholder="password" name='password')
+                input.form-control(type="text" placeholder="password" name='password' )
             .input-group.input-group-lg
                 span.input-group-addon 科目
-                input.form-control(type="text" placeholder="subject" name='subject')
+                input.form-control(type="text" placeholder="subject" name='subject' )
             .input-group.input-group-lg
                 span.input-group-addon 备注
                 input.form-control(type="text" placeholder="remarks" name='remarks')

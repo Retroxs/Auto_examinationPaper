@@ -14,7 +14,7 @@ block content
                 li
                     a(href="/back/logout" style="color:#fff") 退出
     h1(style="text-align:center") 审核题目难度
-    form(action='/api/back/update_qLevel/'+'#{qInfo._id}' style="width:30%;margin:0 auto")
+    form(action='/back/update_qLevel/'+'#{qInfo._id}' method='post' style="width:30%;margin:0 auto")
         if(qInfo)
             .input-group.input-group-lg
                 span.input-group-addon 题目

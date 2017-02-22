@@ -159,7 +159,7 @@ function createFile(type1_list,type2_list,type3_list,type4_list,type5_list,req,p
 
     let pObj = docx.createByJson(data_paper);
 
-    let out = fs.createWriteStream(filePath + '/' + paper.date + '.docx');
+    let out = fs.createWriteStream(filePath + '/' +paper.date + '.docx');
 
     out.on('error', function (err) {
         console.log(err);

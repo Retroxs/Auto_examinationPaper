@@ -20,6 +20,7 @@
     "mongoose": "^4.6.0",
     "morgan": "~1.7.0",
     "multer": "^1.2.1",
+    "nodemon": "^1.11.0",
     "officegen": "^0.4.0",
     "serve-favicon": "~2.3.0"
   },

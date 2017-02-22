@@ -1,21 +1,24 @@
-let express = require('express');
-let router = express.Router();
+/**
+ * Created by HUI on 2017/2/22.
+ */
+const express = require('express');
+const router = express.Router();
 
-let mongoose = require('mongoose');
-let db = mongoose.connection;
-let crypto = require('crypto');
-let Joi = require('joi');
-let Mock = require('mockjs');
-let Random = Mock.Random;
-let path = require("path");
-let multer = require('multer');
-let upload = multer({dest: path.join(__dirname, '../public/tmp/image_tmp')});
-let session = require('express-session');
-let cookieParser = require('cookie-parser');
-let User = mongoose.model('User');
-let Bank = mongoose.model('Bank');
-let Paper = mongoose.model('Paper');
-let createFile = require('../servers/creatFile');
+const mongoose = require('mongoose');
+const db = mongoose.connection;
+const crypto = require('crypto');
+const Joi = require('joi');
+const Mock = require('mockjs');
+const Random = Mock.Random;
+const path = require("path");
+const multer = require('multer');
+const upload = multer({dest: path.join(__dirname, '../public/tmp/image_tmp')});
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const User = mongoose.model('User');
+const Bank = mongoose.model('Bank');
+const Paper = mongoose.model('Paper');
+// const createFile = require('../servers/creatFile');
 //初始化
 
 
@@ -70,56 +73,11 @@ router.get('/test', function (req, res, next) {
  **/
 
 
-//登录
-router.post('/login', function (req, res, next) {
-    let md5 = crypto.createHash('md5');
-    md5.update(req.body.password);
-    let d = md5.digest('hex');
-    let user_session = {
-        username: req.body.username,
-        password: req.body.password
-    };
-    console.log(user_session);
-    User.find({username: req.body.username, password: req.body.password}, function (err, docs) {
-        if (err) {
-            res.end(err);
-        } else {
-            if (docs.length == 0) {
-                res.status(400).send({error: 'username or password is flase'});
-            } else {
-                user_session.user_id = docs[0]._id
-                user_session.subject = docs[0].subject
-                user_session.subject_default = docs[0].subject[0]
-                req.session.user = user_session;
-                res.redirect('/home')
 
-            }
-        }
 
-    })
-});
 
-//注销登录
-router.get('/logout', function (req, res, next) {
-    req.session.user = null;
-    if (req.session.user == null) {
-        res.redirect('/login')
-    }
-    else {
-        res.status(400).send({error: "fail"})
-    }
-});
 
-//更改密码
-router.get('/back/find_userInfo/:username', function (req, res, next) {
-    User.find({username: req.params.username}, function (err, doc) {
-        if (err) {
-            res.end(err)
-        }
-        console.log(doc)
-        res.render('back/create_user', {title: '更新信息', userInfo: doc[0]});
-    })
-});
+
 
 /**
  * 题库接口
@@ -130,54 +88,7 @@ router.get('/selectSubject', function (req, res, next) {
         res.redirect('/home');
     }
 });
-//插入题目
-router.post('/bank/create', function (req, res, next) {
 
-    let schema = Joi.object().keys({
-        subject: Joi.string().required(),
-        type: Joi.string().required(),
-        tips: Joi.string().required(),
-        level: Joi.string().required(),
-        public: Joi.boolean().required(),
-        question: Joi.string().required(),
-        answer: Joi.string().required(),
-    });
-
-    Joi.validate({
-        subject: req.body.subject,
-        type: req.body.type,
-        tips: req.body.tips,
-        level: req.body.level,
-        public: req.body.public,
-        question: req.body.question,
-        answer: req.body.answer,
-    }, schema, function (err, value) {
-        if (err) {
-            res.status(400).send(err);
-        }
-        else {
-            let bank = new Bank({
-                user_id: req.session.user.user_id,
-                subject: req.body.subject,
-                type: req.body.type,
-                tips: req.body.tips,
-                level: req.body.level,
-                public: req.body.public,
-                question: req.body.question,
-                answer: req.body.answer,
-            });
-
-            bank.save(function (err, next) {
-                if (err) {
-                    res.end('error', err);
-                    return next();
-                }
-
-                res.status(200).send({message: 'create success'});
-            })
-        }
-    })
-});
 
 //删除题目
 router.get('/bank/:id/delete', function (req, res, next) {
@@ -359,29 +270,27 @@ router.post('/make_paper', function (req, res) {
                                 "answer": 1
                             },
                             function (err, docs) {
-                                let type_number=type_num[i];
-                                console.log(docs.length);
-                                if (docs.length >0 ) {
-                                        let rdIndex = Math.floor((Math.random() * docs.length));
-                                        let select_finally = docs[rdIndex];
-                                        switch (select_finally.type) {
-                                            case '选择题':
-                                                type1_list.push(select_finally);
-                                                break;
-                                            case '填空题':
-                                                type2_list.push(select_finally);
-                                                break;
-                                            case '判断题':
-                                                type3_list.push(select_finally);
-                                                break;
-                                            case '简答题':
-                                                type4_list.push(select_finally);
-                                                break;
-                                            case '解答题':
-                                                type5_list.push(select_finally);
-                                                break;
-                                        }
-                                        paper_list.push(select_finally);
+                                if (docs.length > 0) {
+                                    let rdIndex = Math.floor((Math.random() * docs.length));
+                                    let select_finally = docs[rdIndex];
+                                    switch (select_finally.type) {
+                                        case '选择题':
+                                            type1_list.push(select_finally);
+                                            break;
+                                        case '填空题':
+                                            type2_list.push(select_finally);
+                                            break;
+                                        case '判断题':
+                                            type3_list.push(select_finally);
+                                            break;
+                                        case '简答题':
+                                            type4_list.push(select_finally);
+                                            break;
+                                        case '解答题':
+                                            type5_list.push(select_finally);
+                                            break;
+                                    }
+                                    paper_list.push(select_finally);
 
 
                                     if (paper_list.length == total_length) {
@@ -398,7 +307,7 @@ router.post('/make_paper', function (req, res) {
                                                 res.end('error', err);
                                                 return next();
                                             }
-                                            createFile.createFile(type1_list,type2_list,type3_list,type4_list,type5_list,req,paper);
+                                            createFile.createFile(type1_list, type2_list, type3_list, type4_list, type5_list, req, paper);
 
                                             res.status(200).send({
                                                 message: "ok",
@@ -418,7 +327,7 @@ router.post('/make_paper', function (req, res) {
                                         "tips": 1,
                                         "level": 1
                                     }, function (err, doc) {
-                                        let rdIndex =  Math.floor((Math.random() * doc.length));
+                                        let rdIndex = Math.floor((Math.random() * doc.length));
                                         let select_finally = doc[rdIndex];
                                         paper_list.push(select_finally);
                                         if (paper_list.length == total_length) {
@@ -435,7 +344,7 @@ router.post('/make_paper', function (req, res) {
                                                     res.end('error', err);
                                                     return next();
                                                 }
-                                                createFile.createFile(type1_list,type2_list,type3_list,type4_list,type5_list,req,paper);
+                                                createFile.createFile(type1_list, type2_list, type3_list, type4_list, type5_list, req, paper);
 
                                                 res.status(200).send({
                                                     message: "ok",
@@ -529,166 +438,8 @@ router.post('/upload', upload.single('avatar'), function (req, res, next) {
 
     res.end("上传成功");
 })
-/**
- * root用户接口
- **/
-
-//登陆
-router.get('/back/login', function (req, res, next) {
-    if (req.query.username == 'root' && req.query.password == '123456') {
-        res.redirect('/back/dashboard ')
-    }
-    else {
-        res.status(400).send({error: 'username or password is flase'});
-    }
-
-});
-//创建用户
-router.get('/register', function (req, res, next) {
-    let subject = (req.query.subject).split(',');
-    let md5 = crypto.createHash('md5');
-    md5.update(req.query.password);
-    let a = md5.digest('hex');
-
-    let schema = Joi.object().keys({
-        username: Joi.string().regex(/^[a-zA-Z0-9]{6,18}$/).required(),
-        password: Joi.string().regex(/^[a-zA-Z0-9]{6,18}$/).required(),
-    });
-    Joi.validate({username: req.query.username, password: req.query.password}, schema, function (err, value) {
-        if (err) {
-            res.status(400).send(err);
-        }
-        else {
-            User.find({username: req.query.username}, function (err, docs) {
-                if (err) {
-                    res.end(err)
-                }
-                else {
-                    if (docs.length == 0) {
-                        let user = new User({
-                            username: req.query.username,
-                            password: req.query.password,
-                            subject: subject,
-                            remarks: req.query.remarks
-                        });
-
-                        user.save(function (err, next) {
-                            if (err) {
-                                res.end("error");
-                                return next();
-                            }
-                            // res.end()
-                            res.redirect('/back/dashboard')
 
 
-                        })
-                    } else {
-                        res.status(400).send({error: 'username is used'});
-                    }
-
-                }
-            })
-        }
-
-    });
-
-});
-//更新用户信息
-router.get('/back/update', function (req, res, next) {
-    let subject = (req.query.subject).split(',');
-    User.find({username: req.query.username}, function (err, doc) {
-        if (err) {
-            res.end(err)
-        }
-        User.update({username: req.query.username}, {
-            $set: {
-                password: req.query.password,
-                subject: subject,
-                remarks: req.query.remarks
-            }
-        }, function (err, next) {
-            if (err) {
-                res.end('err', err);
-                return next();
-            }
-            res.redirect('/back/dashboard')
-        })
-    })
-});
-//删除用户
-router.get('/back/delete/:username', function (req, res, next) {
-
-    User.findOne({username: req.params.username}, function (err, doc) {
-        if (err) {
-            res.end('err', err);
-            return next();
-        }
-        doc.remove();
-        res.redirect('/back/dashboard')
-    })
-});
-
-
-//修改题目难度
-router.get('/back/find_question/:q_id', function (req, res, next) {
-    Bank.find({_id: req.params.q_id}, function (err, doc) {
-        if (err) {
-            res.end(err)
-        }
-        console.log(doc)
-        res.render('back/find_question', {title: '更新信息', qInfo: doc[0]});
-    })
-});
-
-router.get('/back/update_qLevel/:q_id', function (req, res, next) {
-    Bank.find({_id: req.params.q_id}, function (err, doc) {
-        if (err) {
-            res.end(err)
-        }
-        Bank.update({_id: req.params.q_id}, {
-            $set: {
-                level: req.query.level,
-            }
-        }, function (err, next) {
-            if (err) {
-                res.end('err', err);
-                return next();
-            }
-            res.redirect('/back/question-manage')
-        })
-    })
-});
-
-/**
- * testAPI
- **/
-
-//造数据
-router.get('/addtestdata', function (req, res, next) {
-    let data = Mock.mock({
-        'list|10000': [{
-            user_id: "582e96460522740cd397ccfa",
-            "subject|1": ["物理", "高数", "英语"],
-            "type|1": ["选择题", "判断题", "填空题", "简答题", "解答题"],
-            tips: /知识点[0-4][0-9]/,
-            "level|1": ["易", "中", "难"],
-            "public|1": true,
-            question: /题目[a-z]+[A-Z]+[1-9]/,
-            answer: /答案[a-z]+[A-Z]+[1-9]/,
-            qimgPath: ''
-        }]
-    });
-    Bank.collection.insert(data.list, onInsert);
-    function onInsert(err, docs) {
-        if (err) {
-            res.end("error");
-            return next();
-        } else {
-            res.status(200).send({message: "done"});
-        }
-    }
-
-});
 module.exports = router;
 
 
