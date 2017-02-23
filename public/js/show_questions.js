@@ -40,7 +40,7 @@ function show_question(self) {
 function delete_question(self) {
     $.ajax({
         url: '/api/bank/'+self.name+'/delete',
-        type: 'get',
+        type: 'delete',
         dataType: 'json',
         contentType: 'application/json',
         beforeSend: function (a) {

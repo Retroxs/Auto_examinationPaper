@@ -7,7 +7,7 @@ block content
     include  components/side
     .content
         blockquote.layui-elem-quote.layui-quote-nm 云题库-录入题目
-        form.layui-form.layui-form-pane(method='post' action='/home')
+        form.layui-form.layui-form-pane(onsubmit='return false')
             .layui-form-item
                 label.layui-form-label 科目
                 .layui-input-inline
@@ -67,11 +67,11 @@ block content
                 .layui-input-block
                     input(type="checkbox" name="public" lay-skin="switch" title="分享" id='isPublic')
             hr
-            button.layui-btn.layui-btn-radius.layui-btn-normal(lay-submit lay-filter="formDemo" style="display:block;margin:0 auto")  提交保存
+            button.layui-btn.layui-btn-radius.layui-btn-normal(lay-submit lay-filter="formDemo" style="display:block;margin:0 auto" onclick='submitTest()')  提交保存
             p.hidden#message #{message}
 block scripts
     script(src='//cdn.bootcss.com/jquery/3.1.1/jquery.min.js')
-    //script(src='/js/add_questions.js')
+    script(src='/js/add_questions.js')
     script.
         $(document).ready(function () {
             if ($('#message').text()) {

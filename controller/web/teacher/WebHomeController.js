@@ -9,19 +9,8 @@ const db = mongoose.connection;
 const User = mongoose.model('User');
 const Bank = mongoose.model('Bank');
 const Paper = mongoose.model('Paper');
-
-const crypto = require('crypto');
-const Joi = require('joi');
-const Mock = require('mockjs');
-const Random = Mock.Random;
-const multer = require('multer');
-// const upload = multer({dest: path.join(__dirname, '../public/tmp/image_tmp')});
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-
-// const createFile = require('../../servers/creatFile');
-
-
 router.use(cookieParser());
 router.use(session({
     secret: '12345',
@@ -32,7 +21,6 @@ router.use(session({
 }));
 
 //登录认证
-
 function authToken(req, res, next) {
     if (!req.session.user) {
         res.redirect('/login')
@@ -47,10 +35,12 @@ router.get('/',function (req,res,next) {
     res.redirect('/home')
 });
 
+//登陆页面
 router.get('/login', function (req, res) {
     res.render('login', {title: '登陆'});
 });
 
+//注销
 router.get('/logout', function (req, res) {
     req.session.user = null;
     if (req.session.user == null) {
@@ -61,8 +51,8 @@ router.get('/logout', function (req, res) {
     }
 });
 
-
-router.get('/home', authToken, function (req, res, next) {
+//主页
+router.get('/home', authToken, function (req, res) {
     Bank.find({user_id:req.session.user.user_id},function (err,docs) {
         if(err){
             res.end(err)
@@ -76,33 +66,8 @@ router.get('/home', authToken, function (req, res, next) {
     })
 });
 
-
-router.get('/edit_question/:q_id',authToken,function (req,res,next) {
-    Bank.find({user_id:req.session.user.user_id},function (err,docs) {
-        if(err){
-            res.end(err)
-        }
-        let M = docs.map(function (o) {
-            return o.tips;
-        });
-        let allTips = Array.from(new Set(M));//对检索出的知识点进行去重
-        Bank.find({_id: req.params.q_id}, function (err, doc) {
-            if (err) {
-                res.end(err)
-            }
-            console.log(doc)
-            res.render('index', {title: '编辑题目', qInfo: doc[0],subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips});
-        })
-
-    })
-
-
-})
-
-
-
-
-router.get('/banks-list', authToken, function (req, res, next) {
+//题库
+router.get('/banks-list', authToken, function (req, res) {
     let user_id = req.session.user.user_id;
     let count = 0;
     let page = req.query.page;
@@ -127,7 +92,31 @@ router.get('/banks-list', authToken, function (req, res, next) {
 
 });
 
-router.get('/make-paper', authToken, function (req, res, next) {
+//更新题目
+router.get('/edit_question/:q_id',authToken,function (req,res) {
+    Bank.find({user_id:req.session.user.user_id},function (err,docs) {
+        if(err){
+            res.end(err)
+        }
+        let M = docs.map(function (o) {
+            return o.tips;
+        });
+        let allTips = Array.from(new Set(M));//对检索出的知识点进行去重
+        Bank.find({_id: req.params.q_id}, function (err, doc) {
+            if (err) {
+                res.end(err)
+            }
+            console.log(doc)
+            res.render('index', {title: '编辑题目', qInfo: doc[0],subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips});
+        })
+
+    })
+
+
+})
+
+//出卷页面
+router.get('/make-paper', authToken, function (req, res) {
     Bank.find({user_id:req.session.user.user_id,subject:req.session.user.subject_default},function (err,docs) {
         if(err){
             res.end(err)
@@ -142,7 +131,8 @@ router.get('/make-paper', authToken, function (req, res, next) {
 
 });
 
-router.get('/paper-bank', authToken, function (req, res, next) {
+//试卷库
+router.get('/paper-bank', authToken, function (req, res) {
     let user_id = req.session.user.user_id;
     let count = 0;
     let page = req.query.page;
@@ -167,7 +157,8 @@ router.get('/paper-bank', authToken, function (req, res, next) {
 
 });
 
-router.get('/public-bank', authToken, function (req, res, next) {
+//公共题库
+router.get('/public-bank', authToken, function (req, res) {
     let user_id = req.session.user.user_id;
     let count = 0;
     let page = req.query.page;
@@ -184,7 +175,7 @@ router.get('/public-bank', authToken, function (req, res, next) {
             res.send(err);
         } else {
             // 计算数据总数
-            Bank.find({'subject':req.session.user.subject_default,'public':true},function (err, result) {
+                Bank.find({'subject':req.session.user.subject_default,'public':true},function (err, result) {
                 res.render('public-bank', {title: '公开题库', list: rs, total: Math.ceil(result.length / rows),subject:req.session.user.subject,subject_default:req.session.user.subject_default});
             });
         }

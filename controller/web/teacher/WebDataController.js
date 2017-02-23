@@ -49,30 +49,4 @@ router.post('/login', function (req, res, next) {
     })
 });
 
-//插入题目
-router.post('/home', function (req, res, next) {
-
-    let bank = new Bank({
-        user_id: req.session.user.user_id,
-        subject: req.body.subject,
-        type: req.body.type,
-        tips: req.body.tips,
-        level: req.body.level,
-        public: req.body.public,
-        question: req.body.question,
-        answer: req.body.answer,
-    });
-
-    bank.save(function (err, next) {
-        if (err) {
-            res.end('error', err);
-            return next();
-        }else{
-            res.render('index', {title: '录入题目',subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips,message:'create success'})
-
-        }
-
-    })
-});
-
 module.exports = router;
