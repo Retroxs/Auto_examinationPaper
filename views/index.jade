@@ -14,21 +14,56 @@ block content
                     input.layui-input(id='subject' value= subject_default readonly='readonly')
                 label.layui-form-label 题型
                 .layui-input-inline
-                    select(name="type" id='type' )
-                        option(value="0" "#{qInfo.type=='选择题'?'selected':''}") 选择题
-                        option(value="1") 填空题
-                        option(value="2") 判断题
-                        option(value="3") 简答题
-                        option(value="4") 解答题
+                    if qInfo
+                        select( id='type' )
+                            if qInfo.type === "选择题"
+                                option(value="0" selected) 选择题
+                                option(value="1") 填空题
+                                option(value="2") 判断题
+                                option(value="3") 简答题
+                                option(value="4") 解答题
+                            else if qInfo.type === "填空题"
+                                option(value="0" ) 选择题
+                                option(value="1" selected) 填空题
+                                option(value="2") 判断题
+                                option(value="3") 简答题
+                                option(value="4") 解答题
+                            else if qInfo.type === "判断题"
+                                option(value="0" ) 选择题
+                                option(value="1") 填空题
+                                option(value="2" selected) 判断题
+                                option(value="3") 简答题
+                                option(value="4") 解答题
+                            else if qInfo.type === "简答题"
+                                option(value="0" ) 选择题
+                                option(value="1") 填空题
+                                option(value="2") 判断题
+                                option(value="3" selected) 简答题
+                                option(value="4") 解答题
+                            else if qInfo.type === "解答题"
+                                option(value="0" ) 选择题
+                                option(value="1") 填空题
+                                option(value="2") 判断题
+                                option(value="3") 简答题
+                                option(value="4" selected) 解答题
+                    else
+                        select(id='type')
+                            option(value="0" selected) 选择题
+                            option(value="1") 填空题
+                            option(value="2") 判断题
+                            option(value="3") 简答题
+                            option(value="4") 解答题
+
                 label.layui-form-label 知识点
                 .layui-input-inline
-                    select(name="type" id='tips' lay-verify="required")
-                        if(qInfo)
-                            option(value="0") #{qInfo.tips}
-                        else
-                            option(value="") 请选择知识点
-                        for tips_item in allTips
-                            option(value="0") #{tips_item}
+                    input.layui-input(id='tips' value="#{qInfo ? qInfo.tips : ''}" )
+                //    select(id='tips' lay-verify="required")
+                //        if(qInfo)
+                //            option(value="0") #{qInfo.tips}
+                //        else
+                //            option(value="") 请选择知识点
+                //        for tips_item in allTips
+                //            option(value="0") #{tips_item}
             .layui-form-item
                 label.layui-form-label 其他知识点
                 .layui-input-block
@@ -36,24 +71,24 @@ block content
             .layui-form-item.layui-form-text
                 label.layui-form-label 题目
                 .layui-input-block
-                    textarea.layui-textarea(placeholder="请输入题目" id='question' lay-verify="required")  #{qInfo?qInfo.question:''}
+                    textarea.layui-textarea(placeholder="请输入题目" id='question' lay-verify="required")  #{qInfo ? qInfo.question : ''}
             .layui-form-item.layui-form-text
                 label.layui-form-label 答案
                 .layui-input-block
-                    textarea.layui-textarea(placeholder="请输入答案" id='answer' lay-verify="required") #{qInfo?qInfo.answer:''}
+                    textarea.layui-textarea(placeholder="请输入答案" id='answer' lay-verify="required") #{qInfo ? qInfo.answer : ''}
             .layui-form-item
                 label.layui-form-label LEVEL
                 .layui-input-block
                     if(qInfo)
-                        if(qInfo.level==='2.0')
+                        if(qInfo.level === '1.0')
+                            input(type="radio" name="level" title="容易" value="1.0"  checked="")
+                            input(type="radio" name="level" title="普通" value="2.0" )
+                            input(type="radio" name="level" title="有难度" value="3.0")
+                        else if(qInfo.level === '2.0')
                             input(type="radio" name="level" title="容易" value="1.0"  )
                             input(type="radio" name="level" title="普通" value="2.0" checked="")
                             input(type="radio" name="level" title="有难度" value="3.0")
-                        else if(qInfo.level==='2.0')
-                            input(type="radio" name="level" title="容易" value="1.0"  checked="")
-                            input(type="radio" name="level" title="普通" value="2.0")
-                            input(type="radio" name="level" title="有难度" value="3.0")
-                        else
+                        else if(qInfo.level === '3.0')
                             input(type="radio" name="level" title="容易" value="1.0"  )
                             input(type="radio" name="level" title="普通" value="2.0" )
                             input(type="radio" name="level" title="有难度" value="3.0" checked="")
@@ -65,9 +100,12 @@ block content
             .layui-form-item
                 label.layui-form-label 分享
                 .layui-input-block
-                    input(type="checkbox" name="public" lay-skin="switch" title="分享" id='isPublic')
+                    input(type="checkbox" name="public" lay-skin="switch" title="分享" id='isPublic' checked= qInfo ? qInfo.public : false )
             hr
-            button.layui-btn.layui-btn-radius.layui-btn-normal(lay-submit lay-filter="formDemo" style="display:block;margin:0 auto" onclick='submitTest()')  提交保存
+            if qInfo
+                button.layui-btn.layui-btn-radius.layui-btn-normal(lay-submit lay-filter="formDemo" style="display:block;margin:0 auto" onclick='updateQuestion("#{qInfo.id}")')  提交保存
+            else
+                button.layui-btn.layui-btn-radius.layui-btn-normal(lay-submit lay-filter="formDemo" style="display:block;margin:0 auto" onclick='createQuestion()')  提交保存
             p.hidden#message #{message}
 block scripts
     script(src='//cdn.bootcss.com/jquery/3.1.1/jquery.min.js')
@@ -75,7 +113,7 @@ block scripts
     script.
         $(document).ready(function () {
             if ($('#message').text()) {
-               layer.alert($('#message').text())
+                layer.alert($('#message').text())
             }
         })
 

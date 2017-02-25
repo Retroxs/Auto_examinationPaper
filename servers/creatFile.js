@@ -7,7 +7,8 @@ let filePath = path.join(__dirname, '../public/tmp/paper_tmp');
 let officegen = require('officegen');
 let docx = officegen('docx');
 
-function createFile(type1_list,type2_list,type3_list,type4_list,type5_list,req,paper) {
+exports.create= function (type1_list,type2_list,type3_list,type4_list,type5_list,req,paper) {
+
     docx.on('finalize', function (written) {
         console.log('Finish to create Word file.\nTotal bytes created: ' + written + '\n');
     });
@@ -104,7 +105,7 @@ function createFile(type1_list,type2_list,type3_list,type4_list,type5_list,req,p
             {align: 'center'},
             {
                 type: "text",
-                val: "XXX大学期末试卷(" + req.session.user.subject_default + ")",
+                val: "XXX大学期末试卷()",
                 opt: {font_face: 'Arial', font_size: 30}
             }
         ],
@@ -164,6 +165,6 @@ function createFile(type1_list,type2_list,type3_list,type4_list,type5_list,req,p
     out.on('error', function (err) {
         console.log(err);
     });
+
     docx.generate(out);
 }
-module.exports.createFile=createFile;
