@@ -4,6 +4,7 @@
 const express = require('express');
 const router = express.Router();
 const path = require("path");
+const filePath = path.join(__dirname, '../../../public/tmp/paper_tmp')
 const mongoose = require('mongoose');
 const db = mongoose.connection;
 const User = mongoose.model('User');
@@ -49,4 +50,22 @@ router.post('/login', function (req, res, next) {
     })
 });
 
+//下载试卷
+router.get('/download/:filename', function (req, res) {
+    let file = filePath + '/' + req.params.filename;
+    res.download(file); // Set disposition and send it.
+});
+
+//删除试卷
+router.get('/paper/:id/delete', function (req, res, next) {
+    Paper.findOne({_id: req.params.id}, function (err, doc) {
+        if (err) {
+            res.end('err', err);
+            return next();
+        }
+
+        doc.remove();
+        res.redirect('/paper-bank')
+    })
+})
 module.exports = router;

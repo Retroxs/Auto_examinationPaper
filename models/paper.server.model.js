@@ -9,6 +9,7 @@ var PaperSchema = mongoose.Schema({
     tips:Array,
     level:String,
     data:Array,
-    date:Date
+    date:Date,
+    filename:String
 });
 mongoose.model('Paper', PaperSchema);

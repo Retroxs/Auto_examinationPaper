@@ -19,5 +19,5 @@ block content
             .layui-field-box
             each item in list
                 blockquote.layui-elem-quote.layui-quote-nm #{item.subject+item.date}
-                    a.qt-delete(href='/api/paper/'+'#{item._id}'+'/delete') 删除
-                    a.qt-detail(href='/api/download/'+'#{item.date}') 下载
+                    a.qt-delete(href='/paper/'+'#{item._id}'+'/delete') 删除
+                    a.qt-detail(href='/download/'+'#{item.filename}') 下载

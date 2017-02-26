@@ -18,8 +18,6 @@ const express = require('express')
     , Bank = mongoose.model('Bank')
     , Paper = mongoose.model('Paper')
 const createFile = require('../../../servers/creatFile');
-//初始化
-
 
 router.use(cookieParser());
 //设置服务器session
@@ -222,34 +220,35 @@ router.post('/make_paper', function (req, res, next) {
                                     }
                                     paper_list.push(select_finally);
 
-                                        if (paper_list.length == total_length) {
-                                            let paper = new Paper({
-                                                // user_id: req.session.user.user_id,
-                                                // subject: req.session.user.subject_default,
-                                                user_id: "582e96460522740cd397ccfa",
-                                                subject: "高数",
-                                                tips: req.body.tips,
-                                                level: req.body.level,
-                                                data: paper_list,
-                                                date: new Date()
-                                            });
-                                            paper.save(function (err, next) {
-                                                if (err) {
-                                                    res.end('error', err);
-                                                    return next();
-                                                }
-                                                else {
-                                                    // createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, req, paper);
+                                    if (paper_list.length == total_length) {
+                                        var timestamp = new Date().getTime();
+                                        let paper = new Paper({
+                                            // user_id: req.session.user.user_id,
+                                            // subject: req.session.user.subject_default,
+                                            user_id: "582e96460522740cd397ccfa",
+                                            subject: "高数",
+                                            tips: req.body.tips,
+                                            level: req.body.level,
+                                            data: paper_list,
+                                            date: timestamp,
+                                            filename: "582e96460522740cd397ccfa_" + timestamp + ".docx"
+                                        });
+                                        paper.save(function (err, next) {
+                                            if (err) {
+                                                res.end('error', err);
+                                                return next();
+                                            }
+                                            else {
+                                                createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp);
+                                                res.status(200).send({
+                                                    message: "ok",
+                                                    data: paper_list,
+                                                    length: paper_list.length
+                                                })
+                                            }
 
-                                                    res.status(200).send({
-                                                        message: "ok",
-                                                        data: paper_list,
-                                                        length: paper_list.length
-                                                    })
-                                                }
-
-                                            })
-                                        }
+                                        })
+                                    }
 
                                 }
                                 else if (docs.length == 0) {
@@ -264,30 +263,32 @@ router.post('/make_paper', function (req, res, next) {
                                         let rdIndex = Math.floor((Math.random() * doc.length));
                                         let select_finally = doc[rdIndex];
                                         paper_list.push(select_finally);
-                                            if (paper_list.length == total_length) {
-                                                let paper = new Paper({
-                                                    // user_id: req.session.user.user_id,
-                                                    user_id: "582e96460522740cd397ccfa",
-                                                    subject: "高数",
-                                                    // subject: req.session.user.subject_default,
-                                                    tips: req.body.tips,
-                                                    level: req.body.level,
+                                        if (paper_list.length == total_length) {
+                                            var timestamp = new Date().getTime();
+                                            let paper = new Paper({
+                                                // user_id: req.session.user.user_id,
+                                                user_id: "582e96460522740cd397ccfa",
+                                                subject: "高数",
+                                                // subject: req.session.user.subject_default,
+                                                tips: req.body.tips,
+                                                level: req.body.level,
+                                                data: paper_list,
+                                                date: timestamp,
+                                                filename: "582e96460522740cd397ccfa_" + timestamp + ".docx"
+                                            });
+                                            paper.save(function (err, next) {
+                                                if (err) {
+                                                    res.end('error', err);
+                                                    return next();
+                                                }
+                                                createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp);
+                                                res.status(200).send({
+                                                    message: "ok",
                                                     data: paper_list,
-                                                    date: new Date()
+                                                    length: paper_list.length
                                                 });
-                                                paper.save(function (err, next) {
-                                                    if (err) {
-                                                        res.end('error', err);
-                                                        return next();
-                                                    }
-                                                    // createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, req, paper);
-                                                    res.status(200).send({
-                                                        message: "ok",
-                                                        data: paper_list,
-                                                        length: paper_list.length
-                                                    });
-                                                })
-                                            }
+                                            })
+                                        }
                                     })
                                 }
                             }
@@ -301,6 +302,7 @@ router.post('/make_paper', function (req, res, next) {
         )
     }
 });
+
 
 //造数据
 router.get('/addtestdata', function (req, res, next) {
