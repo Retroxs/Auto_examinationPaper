@@ -11,7 +11,6 @@ const express = require('express')
     , Random = Mock.Random
     , path = require("path")
     , multer = require('multer')
-    , upload = multer({dest: path.join(__dirname, '../public/tmp/image_tmp')})
     , session = require('express-session')
     , cookieParser = require('cookie-parser')
     , User = mongoose.model('User')
@@ -75,6 +74,12 @@ function level_random(level) {
 
 }
 
+//设置全局科目
+router.get('/selectSubject', function (req, res) {
+    if (req.session.user.subject_default = req.query.subject_default) {
+        res.redirect('/home');
+    }
+});
 //录入题目
 router.post('/bank/create', function (req, res) {
 
@@ -159,14 +164,12 @@ router.post('/make_paper', function (req, res, next) {
     let level = req.body.level; //用户指定的难度[string]
     let type_items = Object.keys(req.body.type_items); //用户指定的题型[object]
     let tip = [];//最终筛选出的每道题目的知识点[array]
-    let type1_list = [],
-        type2_list = [],
-        type3_list = [],
-        type4_list = [],
-        type5_list = [],
-        paper_list = [];
-    let scsc = 0;
-
+    let type1_list = [],//选择
+        type2_list = [],//填空
+        type3_list = [],//判断
+        type4_list = [],//简答
+        type5_list = [],//解答
+        paper_list = [];//试卷
     let type_num = [];//每个类型对应的题数[array]
     let total_length = 0; //试卷的总长度[string]
     //计算每种题型的数量，以及试题的总长度
@@ -179,14 +182,17 @@ router.post('/make_paper', function (req, res, next) {
     //每个题型循环一次
     for (let i = 0; i < type_items.length; i++) {
         Bank.find({tips: {$in: tips}, type: type_items[i]}, {"type": 1, "tips": 1, "level": 1}, function (err, docs) {
+
                 if (docs.length === 0) {
                     console.log(type_items[i] + '不包含所选的知识点')
                 }
+
                 else {
                     tip = calTips(docs, type_num[i]);//最终筛选出的知识点
                     //每个题型中每道题目筛选出的process
                     for (let j = 0; j < type_num[i]; j++) {
                         let level_select = level_random(level);
+                        let tipTmp =tip;//由于闭包转换临时变量
                         Bank.find({
                                 tips: tip[j],
                                 type: type_items[i],
@@ -201,6 +207,7 @@ router.post('/make_paper', function (req, res, next) {
                             },
                             function (err, docs) {
                                 //如果找到就继续 没有找到就不考虑难度了
+                                // console.log(type_items[i]+'  '+docs.length+' 中包含 '+tip.length+' 个知识点 '+'正在搜索第'+j)
                                 if (docs.length > 0) {
                                     let rdIndex = Math.floor((Math.random() * docs.length));
                                     let select_finally = docs[rdIndex];
@@ -256,8 +263,8 @@ router.post('/make_paper', function (req, res, next) {
                                 }
                                 else if (docs.length == 0) {
                                     Bank.find({
-                                        tips: tip[j],
                                         type: type_items[i],
+                                        tips: tipTmp[j],
                                     }, {
                                         "type": 1,
                                         "tips": 1,
@@ -266,6 +273,14 @@ router.post('/make_paper', function (req, res, next) {
                                         "answer": 1,
                                         "filepath":1
                                     }, function (err, doc) {
+                                        //test
+                                        if(doc.length==0){
+                                            // console.log(type_items[i]+' '+j+' 找不到'+tip)
+                                            // console.log(j)
+                                            // console.log(tip,tip.length)
+                                        }else{
+                                            // console.log(type_items[i]+' '+j+' 找到'+tip)
+                                        }
                                         let rdIndex = Math.floor((Math.random() * doc.length));
                                         let select_finally = doc[rdIndex];
                                         paper_list.push(select_finally);

@@ -3,3 +3,7 @@ node_modules
 public/tmp
 *.docx
 .DS_Store
+uploads
+controller/web/public/
+test/for.js
+test/tmp/
