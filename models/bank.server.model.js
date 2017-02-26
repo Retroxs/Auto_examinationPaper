@@ -14,6 +14,7 @@ var BankSchema = mongoose.Schema({
     level:String,//难度
     public:Boolean,//是否公开
     question:String,//题目
+    filepath:String,//题目文件
     answer:String,//答案
 });
 

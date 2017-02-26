@@ -7,7 +7,7 @@ block content
     include  components/side
     .content
         blockquote.layui-elem-quote.layui-quote-nm 云题库-录入题目
-        form.layui-form.layui-form-pane(onsubmit='return false')
+        form.layui-form.layui-form-pane(id="createItem" onsubmit='return false')
             .layui-form-item
                 label.layui-form-label 科目
                 .layui-input-inline
@@ -57,45 +57,48 @@ block content
                 label.layui-form-label 知识点
                 .layui-input-inline
                     input.layui-input(id='tips' value="#{qInfo ? qInfo.tips : ''}" )
-                //    select(id='tips' lay-verify="required")
+                //    select(id='tips'  )
                 //        if(qInfo)
                 //            option(value="0") #{qInfo.tips}
                 //        else
                 //            option(value="") 请选择知识点
                 //        for tips_item in allTips
                 //            option(value="0") #{tips_item}
-            .layui-form-item
-                label.layui-form-label 其他知识点
-                .layui-input-block
-                    input.layui-input
+
             .layui-form-item.layui-form-text
                 label.layui-form-label 题目
                 .layui-input-block
-                    textarea.layui-textarea(placeholder="请输入题目" id='question' lay-verify="required")  #{qInfo ? qInfo.question : ''}
+                    textarea.layui-textarea(placeholder="请输入题目" id='question'  )  #{qInfo ? qInfo.question : ''}
+            .layui-form-item
+                label.layui-form-label 附件图片
+                .layui-input-block
+                    input(name="fileImg" id='upfile' type='file')
+                    input(type='button' value='提交' onclick="up()")
+                    input(name="attachment" id='attachment' type='text' value= qInfo?fileName:'' readonly )
             .layui-form-item.layui-form-text
                 label.layui-form-label 答案
                 .layui-input-block
-                    textarea.layui-textarea(placeholder="请输入答案" id='answer' lay-verify="required") #{qInfo ? qInfo.answer : ''}
+                    textarea.layui-textarea(placeholder="请输入答案" id='answer'  ) #{qInfo ? qInfo.answer : ''}
             .layui-form-item
                 label.layui-form-label LEVEL
                 .layui-input-block
                     if(qInfo)
-                        if(qInfo.level === '1.0')
-                            input(type="radio" name="level" title="容易" value="1.0"  checked="")
-                            input(type="radio" name="level" title="普通" value="2.0" )
-                            input(type="radio" name="level" title="有难度" value="3.0")
-                        else if(qInfo.level === '2.0')
-                            input(type="radio" name="level" title="容易" value="1.0"  )
-                            input(type="radio" name="level" title="普通" value="2.0" checked="")
-                            input(type="radio" name="level" title="有难度" value="3.0")
-                        else if(qInfo.level === '3.0')
-                            input(type="radio" name="level" title="容易" value="1.0"  )
-                            input(type="radio" name="level" title="普通" value="2.0" )
-                            input(type="radio" name="level" title="有难度" value="3.0" checked="")
+                        if(qInfo.level === '易')
+                            input(type="radio" name="level" title="容易" value="易"  checked="")
+                            input(type="radio" name="level" title="普通" value="中" )
+                            input(type="radio" name="level" title="有难度" value="难")
+                        else if(qInfo.level === '中')
+                            input(type="radio" name="level" title="容易" value="易"  )
+                            input(type="radio" name="level" title="普通" value="中" checked="")
+                            input(type="radio" name="level" title="有难度" value="难")
+                        else if(qInfo.level === '难')
+                            input(type="radio" name="level" title="容易" value="易"  )
+                            input(type="radio" name="level" title="普通" value="中" )
+                            input(type="radio" name="level" title="有难度" value="难" checked="")
                     else
-                        input(type="radio" name="level" title="容易" value="1.0"  )
-                        input(type="radio" name="level" title="普通" value="2.0" checked="")
-                        input(type="radio" name="level" title="有难度" value="3.0")
+                        input(type="radio" name="level" title="容易" value="易"  )
+                        input(type="radio" name="level" title="普通" value="中" checked="")
+                        input(type="radio" name="level" title="有难度" value="难")
             hr
             .layui-form-item
                 label.layui-form-label 分享
@@ -116,5 +119,24 @@ block scripts
                 layer.alert($('#message').text())
             }
         })
+        function up() {
+            var formData = new FormData($("#createItem")[0]);
+            $.ajax({
+                type: "POST",
+                url: "/upload",
+                data: formData,
+                processData: false, 	//必须false才会自动加上正确的Content-Type
+                contentType: false,
+                beforeSend: function () {
+                },
+                success: function (data) {
+                    $('#attachment').val(data.message)
+                },
+                error: function (data) {
+                    $('#attachment').val('no')
+                }
+            })
+
+        }
 
 

@@ -10,6 +10,7 @@ function createQuestion() {
     var type = document.getElementById("type");
     var type_index = type.selectedIndex;
 
+    addQ_obj.filepath="../uploads/"+$("#attachment").val()
     addQ_obj.subject = subject.value;
     addQ_obj.type = type.options[type_index].text;
     addQ_obj.tips = tips.value;
@@ -17,8 +18,7 @@ function createQuestion() {
     addQ_obj.question = $('#question').val();
     addQ_obj.answer = $('#answer').val();
     addQ_obj.public = $("#isPublic").is(':checked');
-
-    if (addQ_obj.tips != "请选择知识点") {
+    if(addQ_obj.tips&&addQ_obj.question&&$("#attachment").val()&&addQ_obj.answer){
         $.ajax({
             url: '/api/bank/create',
             type: 'post',
@@ -45,6 +45,9 @@ function createQuestion() {
             }
         })
     }
+    else {
+            layer.alert('请填写必要项')
+    }
 
 
 }
@@ -64,8 +67,8 @@ function updateQuestion(id) {
     addQ_obj.question = $('#question').val();
     addQ_obj.answer = $('#answer').val();
     addQ_obj.public = $("#isPublic").is(':checked');
-
-    if (addQ_obj.tips != "请选择知识点") {
+    addQ_obj.filepath="../uploads/"+$("#attachment").val()
+    if(addQ_obj.tips&&addQ_obj.question&&$("#attachment").val()&&addQ_obj.answer){
         $.ajax({
             url: '/api/bank/'+id+'/update',
             type: 'post',
@@ -91,6 +94,9 @@ function updateQuestion(id) {
 
             }
         })
+    }
+    else {
+        layer.alert('请填写必要项')
     }
 
 

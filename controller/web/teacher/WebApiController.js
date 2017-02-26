@@ -87,6 +87,7 @@ router.post('/bank/create', function (req, res) {
         public: req.body.public,
         question: req.body.question,
         answer: req.body.answer,
+        filepath: req.body.filepath,
     });
 
     bank.save(function (err, next) {
@@ -140,6 +141,7 @@ router.post('/bank/:id/update', function (req, res, next) {
             public: req.body.public,
             question: req.body.question,
             answer: req.body.answer,
+            filepath: req.body.filepath,
         }
     }, function (err, next) {
         if (err) {
@@ -194,7 +196,8 @@ router.post('/make_paper', function (req, res, next) {
                                 "tips": 1,
                                 "level": 1,
                                 "question": 1,
-                                "answer": 1
+                                "answer": 1,
+                                "filepath":1
                             },
                             function (err, docs) {
                                 //如果找到就继续 没有找到就不考虑难度了
@@ -258,7 +261,10 @@ router.post('/make_paper', function (req, res, next) {
                                     }, {
                                         "type": 1,
                                         "tips": 1,
-                                        "level": 1
+                                        "level": 1,
+                                        "question": 1,
+                                        "answer": 1,
+                                        "filepath":1
                                     }, function (err, doc) {
                                         let rdIndex = Math.floor((Math.random() * doc.length));
                                         let select_finally = doc[rdIndex];
@@ -316,7 +322,7 @@ router.get('/addtestdata', function (req, res, next) {
             "public|1": true,
             question: /题目[a-z]+[A-Z]+[1-9]/,
             answer: /答案[a-z]+[A-Z]+[1-9]/,
-            qimgPath: ''
+            filepath: '../uploads/avatar.jpeg'
         }]
     });
     Bank.collection.insert(data.list, onInsert);

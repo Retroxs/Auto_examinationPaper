@@ -24,9 +24,8 @@ exports.create= function (type1_list,type2_list,type3_list,type4_list,type5_list
     for (let i = 0; i < type1_list.length; i++) {
 
         var pObj = docx.createListOfNumbers ();
-
         pObj.addText ( type1_list[i].level + ' ' + type1_list[i].type + ' ' + type1_list[i].tips + ' ' + type1_list[i].question );
-
+        pObj.addImage (path.join(__dirname, type1_list[i].filepath), { cx: 100, cy: 100 }  );
 
     }
     var pObj = docx.createP ({ align: 'left' });

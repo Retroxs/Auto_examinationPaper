@@ -106,8 +106,8 @@ router.get('/edit_question/:q_id',authToken,function (req,res) {
             if (err) {
                 res.end(err)
             }
-            console.log(doc)
-            res.render('index', {title: '编辑题目', qInfo: doc[0],subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips});
+            var filename = ((doc[0].filepath).split('../uploads/'))[1];
+            res.render('index', {title: '编辑题目', qInfo: doc[0],subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips,fileName:filename});
         })
 
     })
@@ -182,4 +182,10 @@ router.get('/public-bank', authToken, function (req, res) {
     });
 
 });
+
+
+//上传
+router.get('/upload',function (req,res) {
+    res.render('upload');
+})
 module.exports = router;
