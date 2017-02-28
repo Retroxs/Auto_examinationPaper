@@ -172,6 +172,7 @@ router.post('/make_paper', function (req, res, next) {
         paper_list = [];//试卷
     let type_num = [];//每个类型对应的题数[array]
     let total_length = 0; //试卷的总长度[string]
+    let errorArr=[];//错误集合
     //计算每种题型的数量，以及试题的总长度
     for (item in req.body.type_items) {
         type_num.push(req.body.type_items[item])  //用户指定的题型数量
@@ -184,10 +185,10 @@ router.post('/make_paper', function (req, res, next) {
         Bank.find({tips: {$in: tips}, type: type_items[i]}, {"type": 1, "tips": 1, "level": 1}, function (err, docs) {
 
                 if (docs.length === 0) {
-                    console.log(type_items[i] + '不包含所选的知识点')
+                    errorArr.push(type_items[i] + '不包含所选的知识点')
                 }
 
-                else {
+                // else {
                     tip = calTips(docs, type_num[i]);//最终筛选出的知识点
                     //每个题型中每道题目筛选出的process
                     for (let j = 0; j < type_num[i]; j++) {
@@ -231,6 +232,12 @@ router.post('/make_paper', function (req, res, next) {
                                     paper_list.push(select_finally);
 
                                     if (paper_list.length == total_length) {
+                                        if(errorArr.length>0){
+                                            res.status(400).send({
+                                                error: errorArr
+                                            });
+                                        }
+                                        else {
                                         var timestamp = new Date().getTime();
                                         let paper = new Paper({
                                             // user_id: req.session.user.user_id,
@@ -258,7 +265,7 @@ router.post('/make_paper', function (req, res, next) {
                                             }
 
                                         })
-                                    }
+                                    }}
 
                                 }
                                 else if (docs.length == 0) {
@@ -285,6 +292,12 @@ router.post('/make_paper', function (req, res, next) {
                                         let select_finally = doc[rdIndex];
                                         paper_list.push(select_finally);
                                         if (paper_list.length == total_length) {
+                                            if(errorArr.length>0){
+                                                res.status(400).send({
+                                                    error: errorArr
+                                                });
+                                            }
+                                            else {
                                             var timestamp = new Date().getTime();
                                             let paper = new Paper({
                                                 // user_id: req.session.user.user_id,
@@ -309,14 +322,14 @@ router.post('/make_paper', function (req, res, next) {
                                                     length: paper_list.length
                                                 });
                                             })
-                                        }
+                                        }}
                                     })
                                 }
                             }
                         )
                     }
 
-                }
+                // }
 
 
             }
@@ -328,15 +341,15 @@ router.post('/make_paper', function (req, res, next) {
 //造数据
 router.get('/addtestdata', function (req, res, next) {
     let data = Mock.mock({
-        'list|10000': [{
+        'list|1000': [{
             user_id: "582e96460522740cd397ccfa",
             "subject|1": ["物理", "高数", "英语"],
             "type|1": ["选择题", "判断题", "填空题", "简答题", "解答题"],
             tips: /知识点[0-4][0-9]/,
             "level|1": ["易", "中", "难"],
             "public|1": true,
-            question: /题目[a-z]+[A-Z]+[1-9]/,
-            answer: /答案[a-z]+[A-Z]+[1-9]/,
+            question: /题目[a-z]+[A-Z]+[1-9]{300}/,
+            answer: /答案[a-z]+[A-Z]+[1-9]{300}/,
             filepath: '../uploads/avatar.jpeg'
         }]
     });
