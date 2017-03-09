@@ -35,7 +35,24 @@ function randArray(m, len) {
     });
     return m.slice(0, len);
 }
-
+//
+function arrCheck(arr){
+    let newArr = [];
+    for(let i=0;i<arr.length;i++){
+        let temp=arr[i];
+        let count=0;
+        for(let j=0;j<arr.length;j++){
+            if(arr[j]==temp){
+                count++;
+                arr[j]=-1;
+            }
+        }
+        if(temp != -1){
+            newArr.push(temp+":"+count)
+        }
+    }
+    return newArr;
+}
 function calTips(doc, type_num) {
 
     let M = doc.map(function (o) {
@@ -46,7 +63,7 @@ function calTips(doc, type_num) {
 
     //检索出的知识点数数量大于题量(从知识点中随即筛选)
     if (tips_selected.length >= type_num) {
-        return randArray(tips_selected, type_num);
+        return arrCheck(randArray(tips_selected, type_num));
 
     }
     //检索出的知识点数数量小于题量(从知识点中随即筛选)
@@ -59,7 +76,7 @@ function calTips(doc, type_num) {
         }
 
         let tip1 = randArray(tips_selectedTmp, type_num % tips_selected.length);
-        return tips_selected.concat(tip1);
+        return arrCheck(tips_selected.concat(tip1));
     }
 }
 function level_random(level) {
@@ -159,6 +176,7 @@ router.post('/bank/:id/update', function (req, res, next) {
 });
 
 //出卷
+//Todo  change main line to tips on base
 router.post('/make_paper', function (req, res, next) {
     let tips = req.body.tips; //用户指定的知识点[array]
     let level = req.body.level; //用户指定的难度[string]
@@ -172,164 +190,187 @@ router.post('/make_paper', function (req, res, next) {
         paper_list = [];//试卷
     let type_num = [];//每个类型对应的题数[array]
     let total_length = 0; //试卷的总长度[string]
-    let errorArr=[];//错误集合
+    let errorArr = [];//错误集合
+
     //计算每种题型的数量，以及试题的总长度
     for (item in req.body.type_items) {
         type_num.push(req.body.type_items[item])  //用户指定的题型数量
         total_length = total_length + req.body.type_items[item]; //用户指定的题型数量总和
     }
 
-
     //每个题型循环一次
     for (let i = 0; i < type_items.length; i++) {
-        Bank.find({tips: {$in: tips}, type: type_items[i]}, {"type": 1, "tips": 1, "level": 1}, function (err, docs) {
+        Bank.find({tips: {$in: tips}, type: type_items[i], user_id: "582e96460522740cd397ccfa"}, {
+                "type": 1,
+                "tips": 1,
+                "level": 1
+            }, function (err, docs) {
 
                 if (docs.length === 0) {
                     errorArr.push(type_items[i] + '不包含所选的知识点')
                 }
-
-                // else {
-                    tip = calTips(docs, type_num[i]);//最终筛选出的知识点
-                    //每个题型中每道题目筛选出的process
-                    for (let j = 0; j < type_num[i]; j++) {
-                        let level_select = level_random(level);
-                        let tipTmp =tip;//由于闭包转换临时变量
-                        Bank.find({
-                                tips: tip[j],
-                                type: type_items[i],
-                                level: level_select
-                            }, {
-                                "type": 1,
-                                "tips": 1,
-                                "level": 1,
-                                "question": 1,
-                                "answer": 1,
-                                "filepath":1
-                            },
-                            function (err, docs) {
-                                //如果找到就继续 没有找到就不考虑难度了
-                                // console.log(type_items[i]+'  '+docs.length+' 中包含 '+tip.length+' 个知识点 '+'正在搜索第'+j)
-                                if (docs.length > 0) {
-                                    let rdIndex = Math.floor((Math.random() * docs.length));
-                                    let select_finally = docs[rdIndex];
-                                    switch (select_finally.type) {
-                                        case '选择题':
-                                            type1_list.push(select_finally);
-                                            break;
-                                        case '填空题':
-                                            type2_list.push(select_finally);
-                                            break;
-                                        case '判断题':
-                                            type3_list.push(select_finally);
-                                            break;
-                                        case '简答题':
-                                            type4_list.push(select_finally);
-                                            break;
-                                        case '解答题':
-                                            type5_list.push(select_finally);
-                                            break;
-                                    }
-                                    paper_list.push(select_finally);
-
-                                    if (paper_list.length == total_length) {
-                                        if(errorArr.length>0){
-                                            res.status(400).send({
-                                                error: errorArr
-                                            });
-                                        }
-                                        else {
-                                        var timestamp = new Date().getTime();
-                                        let paper = new Paper({
-                                            // user_id: req.session.user.user_id,
-                                            // subject: req.session.user.subject_default,
-                                            user_id: "582e96460522740cd397ccfa",
-                                            subject: "高数",
-                                            tips: req.body.tips,
-                                            level: req.body.level,
-                                            data: paper_list,
-                                            date: timestamp,
-                                            filename: "582e96460522740cd397ccfa_" + timestamp + ".docx"
-                                        });
-                                        paper.save(function (err, next) {
-                                            if (err) {
-                                                res.end('error', err);
-                                                return next();
-                                            }
-                                            else {
-                                                createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp);
-                                                res.status(200).send({
-                                                    message: "ok",
-                                                    data: paper_list,
-                                                    length: paper_list.length
-                                                })
-                                            }
-
-                                        })
-                                    }}
-
-                                }
-                                else if (docs.length == 0) {
-                                    Bank.find({
-                                        type: type_items[i],
-                                        tips: tipTmp[j],
-                                    }, {
-                                        "type": 1,
-                                        "tips": 1,
-                                        "level": 1,
-                                        "question": 1,
-                                        "answer": 1,
-                                        "filepath":1
-                                    }, function (err, doc) {
-                                        //test
-                                        if(doc.length==0){
-                                            // console.log(type_items[i]+' '+j+' 找不到'+tip)
-                                            // console.log(j)
-                                            // console.log(tip,tip.length)
-                                        }else{
-                                            // console.log(type_items[i]+' '+j+' 找到'+tip)
-                                        }
-                                        let rdIndex = Math.floor((Math.random() * doc.length));
-                                        let select_finally = doc[rdIndex];
-                                        paper_list.push(select_finally);
-                                        if (paper_list.length == total_length) {
-                                            if(errorArr.length>0){
-                                                res.status(400).send({
-                                                    error: errorArr
-                                                });
-                                            }
-                                            else {
-                                            var timestamp = new Date().getTime();
-                                            let paper = new Paper({
-                                                // user_id: req.session.user.user_id,
-                                                user_id: "582e96460522740cd397ccfa",
-                                                subject: "高数",
-                                                // subject: req.session.user.subject_default,
-                                                tips: req.body.tips,
-                                                level: req.body.level,
-                                                data: paper_list,
-                                                date: timestamp,
-                                                filename: "582e96460522740cd397ccfa_" + timestamp + ".docx"
-                                            });
-                                            paper.save(function (err, next) {
-                                                if (err) {
-                                                    res.end('error', err);
-                                                    return next();
-                                                }
-                                                createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp);
-                                                res.status(200).send({
-                                                    message: "ok",
-                                                    data: paper_list,
-                                                    length: paper_list.length
-                                                });
-                                            })
-                                        }}
-                                    })
-                                }
-                            }
-                        )
-                    }
-
+                tip = calTips(docs, type_num[i]);//最终筛选出的知识点
+            console.log(tip)
+                //每个题型中每道题目筛选出的process
+                // for (let j = 0; j < type_num[i]; j++) {
+                //     let level_select = level_random(level);
+                //     let tipTmp = tip;//由于闭包转换临时变量
+                //     Bank.find({
+                //             tips: tip[j],
+                //             type: type_items[i],
+                //             level: level_select,
+                //             user_id: "582e96460522740cd397ccfa"
+                //         }, {
+                //             "type": 1,
+                //             "tips": 1,
+                //             "level": 1,
+                //             "question": 1,
+                //             "answer": 1,
+                //             "filepath": 1
+                //         },
+                //         function (err, docs) {
+                //             //如果找到就继续 没有找到就不考虑难度了
+                //             // console.log(type_items[i]+'  '+docs.length+' 中包含 '+tip.length+' 个知识点 '+'正在搜索第'+j)
+                //             if (docs.length > 0) {
+                //                 let rdIndex = Math.floor((Math.random() * docs.length));
+                //                 let select_finally = docs[rdIndex];
+                //                 switch (select_finally.type) {
+                //                     case '选择题':
+                //                         type1_list.push(select_finally);
+                //                         break;
+                //                     case '填空题':
+                //                         type2_list.push(select_finally);
+                //                         break;
+                //                     case '判断题':
+                //                         type3_list.push(select_finally);
+                //                         break;
+                //                     case '简答题':
+                //                         type4_list.push(select_finally);
+                //                         break;
+                //                     case '解答题':
+                //                         type5_list.push(select_finally);
+                //                         break;
+                //                 }
+                //                 paper_list.push(select_finally);
+                //
+                //                 if (paper_list.length == total_length) {
+                //                     if (errorArr.length > 0) {
+                //                         res.status(400).send({
+                //                             error: errorArr
+                //                         });
+                //                     }
+                //                     else {
+                //                         var timestamp = new Date().getTime();
+                //                         let paper = new Paper({
+                //                             // user_id: req.session.user.user_id,
+                //                             user_id: "582e96460522740cd397ccfa",
+                //                             // subject: req.session.user.subject_default,
+                //                             subject: "计算机学科基础",
+                //                             tips: req.body.tips,
+                //                             level: req.body.level,
+                //                             data: paper_list,
+                //                             date: timestamp,
+                //                             filename: "582e96460522740cd397ccfa_" + timestamp + ".docx"
+                //                         });
+                //                         paper.save(function (err, next) {
+                //                             if (err) {
+                //                                 res.end('error', err);
+                //                                 return next();
+                //                             }
+                //                             else {
+                //                                 createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp);
+                //                                 res.status(200).send({
+                //                                     message: "ok",
+                //                                     data: paper_list,
+                //                                     length: paper_list.length
+                //                                 })
+                //                             }
+                //
+                //                         })
+                //                     }
+                //                 }
+                //
+                //             }
+                //             else if (docs.length == 0) {
+                //                 Bank.find({
+                //                     type: type_items[i],
+                //                     tips: tipTmp[j],
+                //                     user_id: "582e96460522740cd397ccfa"
+                //                 }, {
+                //                     "type": 1,
+                //                     "tips": 1,
+                //                     "level": 1,
+                //                     "question": 1,
+                //                     "answer": 1,
+                //                     "filepath": 1
+                //                 }, function (err, doc) {
+                //                     //test
+                //                     if (doc.length == 0) {
+                //                         // console.log(type_items[i]+' '+j+' 找不到'+tip)
+                //                         // console.log(j)
+                //                         // console.log(tip,tip.length)
+                //                     } else {
+                //                         // console.log(type_items[i]+' '+j+' 找到'+tip)
+                //                     }
+                //                     let rdIndex = Math.floor((Math.random() * doc.length));
+                //                     let select_finally = doc[rdIndex];
+                //                     switch (select_finally.type) {
+                //                         case '选择题':
+                //                             type1_list.push(select_finally);
+                //                             break;
+                //                         case '填空题':
+                //                             type2_list.push(select_finally);
+                //                             break;
+                //                         case '判断题':
+                //                             type3_list.push(select_finally);
+                //                             break;
+                //                         case '简答题':
+                //                             type4_list.push(select_finally);
+                //                             break;
+                //                         case '解答题':
+                //                             type5_list.push(select_finally);
+                //                             break;
+                //                     }
+                //                     paper_list.push(select_finally);
+                //                     if (paper_list.length == total_length) {
+                //                         if (errorArr.length > 0) {
+                //                             res.status(400).send({
+                //                                 error: errorArr
+                //                             });
+                //                         }
+                //                         else {
+                //                             var timestamp = new Date().getTime();
+                //                             let paper = new Paper({
+                //                                 // user_id: req.session.user.user_id,
+                //                                 user_id: "582e96460522740cd397ccfa",
+                //                                 // subject: req.session.user.subject_default,
+                //                                 subject: "计算机学科基础",
+                //                                 tips: req.body.tips,
+                //                                 level: req.body.level,
+                //                                 data: paper_list,
+                //                                 date: timestamp,
+                //                                 filename: "582e96460522740cd397ccfa_" + timestamp + ".docx"
+                //                             });
+                //                             paper.save(function (err, next) {
+                //                                 if (err) {
+                //                                     res.end('error', err);
+                //                                     return next();
+                //                                 }
+                //                                 createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp);
+                //                                 res.status(200).send({
+                //                                     message: "ok",
+                //                                     data: paper_list,
+                //                                     length: paper_list.length
+                //                                 });
+                //                             })
+                //                         }
+                //                     }
+                //                 })
+                //             }
+                //         }
+                //     )
                 // }
+
 
 
             }
@@ -341,15 +382,15 @@ router.post('/make_paper', function (req, res, next) {
 //造数据
 router.get('/addtestdata', function (req, res, next) {
     let data = Mock.mock({
-        'list|1000': [{
+        'list|10000': [{
             user_id: "582e96460522740cd397ccfa",
             "subject|1": ["物理", "高数", "英语"],
             "type|1": ["选择题", "判断题", "填空题", "简答题", "解答题"],
             tips: /知识点[0-4][0-9]/,
             "level|1": ["易", "中", "难"],
             "public|1": true,
-            question: /题目[a-z]+[A-Z]+[1-9]{300}/,
-            answer: /答案[a-z]+[A-Z]+[1-9]{300}/,
+            question: /题目[a-z]+[A-Z]+[1-9]/,
+            answer: /答案[a-z]+[A-Z]+[1-9]/,
             filepath: '../uploads/avatar.jpeg'
         }]
     });

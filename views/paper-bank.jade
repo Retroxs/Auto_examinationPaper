@@ -8,6 +8,7 @@ block content
     include  components/head
     include  components/side
     .content
+        input(id="page" style="display:none" name= total)
         blockquote.layui-elem-quote.layui-quote-nm 云题库-试题库
         fieldset.ayui-elem-field.layui-field-title
             legend 试卷库
@@ -21,3 +22,26 @@ block content
                 blockquote.layui-elem-quote.layui-quote-nm #{item.subject+item.date}
                     a.qt-delete(href='/paper/'+'#{item._id}'+'/delete') 删除
                     a.qt-detail(href='/download/'+'#{item.filename}') 下载
+            #demo1(style="text-align:center")
+block scripts
+    script.
+        var total_page = document.getElementById("page").name;
+        layui.use(['laypage', 'layer'], function () {
+            var laypage = layui.laypage,
+                layer = layui.layer;
+
+            laypage({
+                cont: 'demo1',
+                pages: total_page,
+                groups: 10, //连续显示分页数
+                curr: function () { //通过url获取当前页，也可以同上（pages）方式获取
+                    var page = location.search.match(/page=(\d+)/);
+                    return page ? page[1] : 1;
+                }(),
+                jump: function (e, first) { //触发分页后的回调
+                    if (!first) { //一定要加此判断，否则初始时会无限刷新
+                        location.href = '?page=' + e.curr;
+                    }
+                }
+            });
+        })
