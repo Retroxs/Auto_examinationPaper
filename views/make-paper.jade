@@ -83,11 +83,11 @@ block scripts
                 beforeSend: function (a) {
                     console.log('start')
                 },
-                success: function (paper) {
+                success: function (data) {
                         layer.alert('试卷生成成功')
                 },
-                error: function () {
-                        layer.alert('试卷生成失败')
+                error: function (data) {
+                        layer.alert(data.responseText)
                 }
             })
         }

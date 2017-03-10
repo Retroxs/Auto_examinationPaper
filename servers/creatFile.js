@@ -7,7 +7,7 @@ let path = require("path");
 let filePath = path.join(__dirname, '../public/tmp/paper_tmp');
 let officegen = require('officegen');
 
-exports.create = function (type1_list, type2_list, type3_list, type4_list, type5_list, time) {
+exports.create = function (type1_list, type2_list, type3_list, type4_list, type5_list, time,id) {
     let docx = officegen('docx')
     docx.on('error', function (err) {
         console.log(err);
@@ -132,7 +132,7 @@ exports.create = function (type1_list, type2_list, type3_list, type4_list, type5
         pObj.addText(type5_list[i].answer);
     }
 
-    let out = fs.createWriteStream(filePath + "/" + "582e96460522740cd397ccfa_" + time + ".docx");
+    let out = fs.createWriteStream(filePath + "/" + id + time + ".docx");
 
     out.on('error', function (err) {
         console.log(err);
