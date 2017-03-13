@@ -16,7 +16,11 @@ const express = require('express')
     , User = mongoose.model('User')
     , Bank = mongoose.model('Bank')
     , Paper = mongoose.model('Paper')
-    , createFile = require('../../../servers/creatFile');
+    , createFile = require('../../../servers/creatFile')
+    , randArray = require('../../../servers/utils/randArray')
+    , arrCheck = require('../../../servers/utils/arrCheck')
+    , calTips = require('../../../servers/utils/calTips')
+    , level_random = require('../../../servers/utils/level_random')
 
 router.use(cookieParser());
 //设置服务器session
@@ -27,69 +31,6 @@ router.use(session({
     resave: false,
     saveUninitialized: true,
 }));
-
-//数组 m 中随机取出 n 个值(m is array;len is num)
-function randArray(m, len) {
-    m.sort(function () {
-        return Math.random() - 0.5;
-    });
-    return m.slice(0, len);
-}
-//
-function arrCheck(arr) {
-    let newArr = [];
-    for (let i = 0; i < arr.length; i++) {
-        let temp = arr[i];
-        let count = 0;
-        for (let j = 0; j < arr.length; j++) {
-            if (arr[j] == temp) {
-                count++;
-                arr[j] = -1;
-            }
-        }
-        if (temp != -1) {
-            newArr.push(temp + ":" + count)
-        }
-    }
-    return newArr;
-}
-function calTips(doc, type_num) {
-
-    let M = doc.map(function (o) {
-        return o.tips;
-    });
-
-    let tips_selected = Array.from(new Set(M));//对检索出的知识点进行去重
-
-    //检索出的知识点数数量大于题量(从知识点中随即筛选)
-    if (tips_selected.length >= type_num) {
-        return arrCheck(randArray(tips_selected, type_num));
-
-    }
-    //检索出的知识点数数量小于题量(从知识点中随即筛选)
-    else {
-        let tips_selectedTmp = tips_selected;
-        let parse_int = parseInt(type_num / tips_selected.length)
-        for (let x = 1; x < parse_int; x++) {
-            //如果是倍数增长就把数组复制相应份数组合
-            tips_selected = tips_selected.concat(tips_selectedTmp);
-        }
-
-        let tip1 = randArray(tips_selectedTmp, type_num % tips_selected.length);
-        return arrCheck(tips_selected.concat(tip1));
-    }
-}
-function level_random(level) {
-    let rand = Math.random();
-    if (rand <= 0.5) {
-        return "中"
-    } else if (rand > 0.5 && rand <= 0.5 + (level * 0.5)) {
-        return "难"
-    } else {
-        return "易"
-    }
-
-}
 
 //设置全局科目
 router.get('/selectSubject', function (req, res) {
@@ -177,6 +118,7 @@ router.post('/bank/:id/update', function (req, res, next) {
 
 //出卷
 //Todo  change main line to tips on base
+//is redo!
 router.post('/make_paper', function (req, res, next) {
     const user_id = req.session.user.user_id;
     const subject_default = req.session.user.subject_default;
@@ -528,4 +470,5 @@ router.get('/addtestdata', function (req, res, next) {
     }
 
 });
+
 module.exports = router;
