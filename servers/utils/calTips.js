@@ -7,6 +7,8 @@
  * @param type_num
  * @returns {Array}
  */
+const arrCheck=require('./arrCheck').arrCheck;
+const randArray=require('./randArray').randArray
 exports.calTips=function calTips(doc, type_num) {
 
     let M = doc.map(function (o) {

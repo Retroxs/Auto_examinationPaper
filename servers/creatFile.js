@@ -8,6 +8,7 @@ let filePath = path.join(__dirname, '../public/tmp/paper_tmp');
 let officegen = require('officegen');
 
 exports.create = function (type1_list, type2_list, type3_list, type4_list, type5_list, time,id) {
+    // console.log(type1_list.length+','+type2_list.length+','+type3_list.length+','+type4_list.length+','+type5_list.length)
     let docx = officegen('docx')
     docx.on('error', function (err) {
         console.log(err);
@@ -137,7 +138,7 @@ exports.create = function (type1_list, type2_list, type3_list, type4_list, type5
     out.on('error', function (err) {
         console.log(err);
     });
-    
+
     async.parallel([
         function (done) {
             out.on('close', function () {

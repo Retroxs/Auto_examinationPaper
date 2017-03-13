@@ -17,10 +17,10 @@ const express = require('express')
     , Bank = mongoose.model('Bank')
     , Paper = mongoose.model('Paper')
     , createFile = require('../../../servers/creatFile')
-    , randArray = require('../../../servers/utils/randArray')
-    , arrCheck = require('../../../servers/utils/arrCheck')
-    , calTips = require('../../../servers/utils/calTips')
-    , level_random = require('../../../servers/utils/level_random')
+    , randArray = require('../../../servers/utils/randArray').randArray
+    , arrCheck = require('../../../servers/utils/arrCheck').arrCheck
+    , calTips = require('../../../servers/utils/calTips').calTips
+    , level_random = require('../../../servers/utils/level_random').level_random
 
 router.use(cookieParser());
 //设置服务器session
@@ -121,6 +121,8 @@ router.post('/bank/:id/update', function (req, res, next) {
 //is redo!
 router.post('/make_paper', function (req, res, next) {
     const user_id = req.session.user.user_id;
+    // const user_id ='58bbf1b8fe3d19194b924a5e';
+    // const subject_default = '计算机学科基础';
     const subject_default = req.session.user.subject_default;
     let tips = req.body.tips; //用户指定的知识点[array]
     let level = req.body.level; //用户指定的难度[string]
@@ -135,310 +137,398 @@ router.post('/make_paper', function (req, res, next) {
     let type_num = [];//每个类型对应的题数[array]
     let total_length = 0; //试卷的总长度[string]
     let errorArr = [];//错误集合
-    let isContinue=[];
+    let isContinue = [];
     //计算每种题型的数量，以及试题的总长度
-    for (item in req.body.type_items) {
-        let item1= item;
-        Bank.count({user_id:user_id,type:item1,subject:subject_default},function (err,docs) {
-            if(docs<req.body.type_items[item1]){
-                isContinue.push(item1+'题目不足');
-                if(item1==='解答题'){
+    for (let item in req.body.type_items) {
+        let item1 = item;
+        Bank.count({user_id: user_id, type: item1, subject: subject_default}, function (err, docs) {
+            if (docs < req.body.type_items[item1]) {
+                isContinue.push(item1 + '题目不足');
+                type_num.push(item1 + '题目不足');
+                if (type_num.length === 5) {
                     makePaper();
                 }
-            }else{
+            } else {
                 type_num.push(req.body.type_items[item1])
                 total_length = total_length + req.body.type_items[item1]; //用户指定的题型数量总和
-                if(item1==='解答题'){
+                if (type_num.length === 5) {
                     makePaper()
                 }
             }
         })
     }
-function makePaper() {
-    if(isContinue.length>0){
-        res.status(400).send({error:isContinue})
-    }
-    else{
-        console.log(type_num+''+total_length)
-        //每个题型循环一次
-        for (let i = 0; i < type_items.length; i++) {
-            Bank.find(
-                {
-                    tips: {$in: tips},
-                    type: type_items[i],
-                    user_id: user_id,
-                    subject:subject_default
-                },
-                function (err, docs) {
 
-                    //该题目类型不包含指定的任一知识点
-                    if (docs.length === 0) {
-                        console.log(type_items[i] + '不包含所选的任一知识点');
-                        errorArr.push(type_items[i] + '不包含所选的知识点')
-                        let select_finally = [];
-                        select_finally.length = type_num[i];
-                        paper_list = paper_list.concat(select_finally);
-                        //出卷结束判定
-                        if (paper_list.length == total_length) {
-
-                            if (errorArr.length > 0) {
-                                res.status(400).send({
-                                    error: errorArr
-                                });
-                            }
-                            else {
-                                res.status(200).send({
-                                    message: "ok",
-                                    data: paper_list,
-                                    length: paper_list.length
-                                })
-                            }
-                        }
-                    }
-
-                    else {
-                        tip = calTips(docs, type_num[i]);//最终筛选出的知识点[知识点:知识点所需题目数量]
-
-                        // 每个题型中每个知识点每个题目筛选出的process
-                        for (let j = 0; j < tip.length; j++) {
-
-
-                            let tipTmp = tip;//由于闭包转换临时变量
-                            let tip_temp = (tipTmp[j].split(':'))[0];
-                            let tip_num = (tipTmp[j].split(':'))[1];
-                            let level_select = level_random(level);
-
-                            Bank.find(
-                                {
-                                    tips: tip_temp,
-                                    type: type_items[i],
-                                    level: level_select,
-                                    user_id: user_id
-                                },
-                                function (err, docs) {
-                                    if (docs.length > 0 && docs.length >= tip_num) {
-
-                                        let select_finally = randArray(docs, tip_num);
-
-                                        switch (type_items[i]) {
-                                            case '选择题':
-                                                type1_list = type1_list.concat(select_finally);
-                                                break;
-                                            case '填空题':
-                                                type2_list = type2_list.concat(select_finally);
-                                                break;
-                                            case '判断题':
-                                                type3_list = type3_list.concat(select_finally);
-                                                break;
-                                            case '简答题':
-                                                type4_list = type4_list.concat(select_finally);
-                                                break;
-                                            case '解答题':
-                                                type5_list = type5_list.concat(select_finally);
-                                                break;
-                                        }
-
-                                        paper_list = paper_list.concat(select_finally);
-
-                                        //出卷结束判定
-                                        if (paper_list.length == total_length) {
-
-                                            if (errorArr.length > 0) {
-                                                res.status(400).send({
-                                                    error: errorArr
-                                                });
-                                            }
-                                            else {
-                                                let timestamp = new Date().getTime();
-                                                let paper = new Paper({
-                                                    user_id: user_id,
-                                                    subject: subject_default,
-                                                    tips: req.body.tips,
-                                                    level: req.body.level,
-                                                    data: paper_list,
-                                                    date: timestamp,
-                                                    filename: user_id + timestamp + ".docx"
-                                                });
-                                                paper.save(function (err, next) {
-                                                    if (err) {
-                                                        res.end('error', err);
-                                                        return next();
-                                                    }
-                                                    createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp);
-                                                    res.status(200).send({
-                                                        message: "ok",
-                                                        data: paper_list,
-                                                        length: paper_list.length
-                                                    });
-                                                })
-                                            }
-                                        }
-
-                                    }
-
-
-                                    else if (docs.length > 0 && docs.length < tip_num) {
-                                        let choose_temp = docs;
-                                        paper_list = paper_list.concat(choose_temp);
-                                        Bank.find(
-                                            {
-                                                tips: tip_temp,
-                                                type: type_items[i],
-                                                user_id: user_id,
-                                                subject:subject_default
-                                            },
-                                            function (err, docs) {
-                                                if (docs.length < (tip_num - choose_temp.length)) {
-                                                    console.log('错误2');
-                                                    errorArr.push(type_items[i] + '错误');
-                                                    let select_finally = [];
-                                                    select_finally.length = (tip_num - choose_temp.length)
-                                                    paper_list = paper_list.concat(select_finally);
-                                                }
-                                                else {
-                                                    let select_finally = randArray(docs, tip_num - choose_temp.length);
-                                                    switch (type_items[i]) {
-                                                        case '选择题':
-                                                            type1_list = type1_list.concat(select_finally);
-                                                            break;
-                                                        case '填空题':
-                                                            type2_list = type2_list.concat(select_finally);
-                                                            break;
-                                                        case '判断题':
-                                                            type3_list = type3_list.concat(select_finally);
-                                                            break;
-                                                        case '简答题':
-                                                            type4_list = type4_list.concat(select_finally);
-                                                            break;
-                                                        case '解答题':
-                                                            type5_list = type5_list.concat(select_finally);
-                                                            break;
-                                                    }
-                                                    paper_list = paper_list.concat(select_finally);
-
-                                                }
-
-                                                //出卷结束判定
-                                                if (paper_list.length == total_length) {
-
-                                                    if (errorArr.length > 0) {
-                                                        res.status(400).send({
-                                                            error: errorArr
-                                                        });
-                                                    }
-                                                    else {
-                                                        let timestamp = new Date().getTime();
-                                                        let paper = new Paper({
-                                                            user_id: user_id,
-                                                            subject: subject_default,
-                                                            tips: req.body.tips,
-                                                            level: req.body.level,
-                                                            data: paper_list,
-                                                            date: timestamp,
-                                                            filename: user_id + timestamp + ".docx"
-                                                        });
-                                                        paper.save(function (err, next) {
-                                                            if (err) {
-                                                                res.end('error', err);
-                                                                return next();
-                                                            }
-                                                            createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp);
-                                                            res.status(200).send({
-                                                                message: "ok",
-                                                                data: paper_list,
-                                                                length: paper_list.length
-                                                            });
-                                                        })
-                                                    }
-                                                }
-                                            })
-
-                                    }
-                                    else {
-                                        Bank.find(
-                                            {
-                                                tips: tip_temp,
-                                                type: type_items[i],
-                                                user_id: user_id,
-                                                subject:subject_default
-                                            },
-                                            function (err, docs) {
-                                                if (docs.length == 0) {
-                                                    console.log('错误3');
-                                                    errorArr.push(type_items[i] + '错误3');
-                                                    let select_finally = [];
-                                                    select_finally.length = tip_num;
-                                                    paper_list = paper_list.concat(select_finally);
-                                                }
-                                                else {
-                                                    let select_finally = randArray(docs, tip_num);
-                                                    switch (type_items[i]) {
-                                                        case '选择题':
-                                                            type1_list = type1_list.concat(select_finally);
-                                                            break;
-                                                        case '填空题':
-                                                            type2_list = type2_list.concat(select_finally);
-                                                            break;
-                                                        case '判断题':
-                                                            type3_list = type3_list.concat(select_finally);
-                                                            break;
-                                                        case '简答题':
-                                                            type4_list = type4_list.concat(select_finally);
-                                                            break;
-                                                        case '解答题':
-                                                            type5_list = type5_list.concat(select_finally);
-                                                            break;
-                                                    }
-                                                    paper_list = paper_list.concat(select_finally);
-
-                                                }
-
-                                                //出卷结束判定
-                                                if (paper_list.length == total_length) {
-
-                                                    if (errorArr.length > 0) {
-                                                        res.status(400).send({
-                                                            error: errorArr
-                                                        });
-                                                    }
-                                                    else {
-                                                        let timestamp = new Date().getTime();
-                                                        let paper = new Paper({
-                                                            user_id: user_id,
-                                                            subject: subject_default,
-                                                            tips: req.body.tips,
-                                                            level: req.body.level,
-                                                            data: paper_list,
-                                                            date: timestamp,
-                                                            filename: user_id + timestamp + ".docx"
-                                                        });
-                                                        paper.save(function (err, next) {
-                                                            if (err) {
-                                                                res.end('error', err);
-                                                                return next();
-                                                            }
-                                                            createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp,user_id);
-                                                            res.status(200).send({
-                                                                message: "ok",
-                                                                data: paper_list,
-                                                                length: paper_list.length
-                                                            });
-                                                        })
-                                                    }
-                                                }
-                                            })
-
-                                    }
-                                })
-
-
-                        }
-                    }
-                })
-
+    function makePaper() {
+        if (isContinue.length > 0) {
+            res.status(400).send({error: isContinue})
         }
-    }}
+        else {
+            // console.log(total_length)
+            //每个题型循环一次
+            for (let i = 0; i < type_items.length; i++) {
+                // console.log(type_items[i] + '：' + type_num[i])
+                Bank.find(
+                    {
+                        tips: {$in: tips},
+                        type: type_items[i],
+                        user_id: user_id,
+                        subject: subject_default
+                    },
+                    function (err, docs) {
 
+                        //该题目类型不包含指定的任一知识点
+                        if (docs.length === 0) {
+                            console.log(type_items[i] + '不包含所选的任一知识点');
+                            errorArr.push(type_items[i] + '不包含所选的知识点')
+                            let select_finally = [];
+                            select_finally.length = type_num[i];
+                            paper_list = paper_list.concat(select_finally);
+                            //出卷结束判定
+                            if (paper_list.length == total_length) {
+
+                                if (errorArr.length > 0) {
+                                    res.status(400).send({
+                                        error: errorArr
+                                    });
+                                }
+                                else {
+                                    res.status(200).send({
+                                        message: "ok",
+                                        data: paper_list,
+                                        length: paper_list.length
+                                    })
+                                }
+                            }
+                        }
+
+                        else {
+                            tip = calTips(docs, type_num[i]);//最终筛选出的知识点[知识点:知识点所需题目数量]
+
+                            // 每个题型中每个知识点每个题目筛选出的process
+                            for (let j = 0; j < tip.length; j++) {
+
+
+                                let tipTmp = tip;//由于闭包转换临时变量
+                                let tip_temp = (tipTmp[j].split(':'))[0];
+                                let tip_num = (tipTmp[j].split(':'))[1];
+                                let level_select = level_random(level);
+
+                                Bank.find(
+                                    {
+                                        tips: tip_temp,
+                                        type: type_items[i],
+                                        level: level_select,
+                                        user_id: user_id
+                                    },
+                                    function (err, docs) {
+                                        if (docs.length > 0 && docs.length >= tip_num) {
+
+                                            let select_finally = randArray(docs, tip_num);
+
+                                            switch (type_items[i]) {
+                                                case '选择题':
+                                                    type1_list = type1_list.concat(select_finally);
+                                                    break;
+                                                case '填空题':
+                                                    type2_list = type2_list.concat(select_finally);
+                                                    break;
+                                                case '判断题':
+                                                    type3_list = type3_list.concat(select_finally);
+                                                    break;
+                                                case '简答题':
+                                                    type4_list = type4_list.concat(select_finally);
+                                                    break;
+                                                case '解答题':
+                                                    type5_list = type5_list.concat(select_finally);
+                                                    break;
+                                            }
+
+                                            paper_list = paper_list.concat(select_finally);
+
+                                            //出卷结束判定
+                                            if (paper_list.length == total_length) {
+
+                                                if (errorArr.length > 0) {
+                                                    res.status(400).send({
+                                                        error: errorArr
+                                                    });
+                                                }
+                                                else {
+                                                    let timestamp = new Date().getTime();
+                                                    let paper = new Paper({
+                                                        user_id: user_id,
+                                                        subject: subject_default,
+                                                        tips: req.body.tips,
+                                                        level: req.body.level,
+                                                        data: paper_list,
+                                                        date: timestamp,
+                                                        filename: user_id + timestamp + ".docx"
+                                                    });
+                                                    paper.save(function (err, next) {
+                                                        if (err) {
+                                                            res.end('error', err);
+                                                            return next();
+                                                        }
+                                                        createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp, user_id);
+                                                        res.status(200).send({
+                                                            message: "ok",
+                                                            data: paper_list,
+                                                            length: paper_list.length
+                                                        });
+                                                    })
+                                                }
+                                            }
+
+                                        }
+
+
+                                        else if (docs.length > 0 && docs.length < tip_num) {
+                                            let choose_temp = docs;
+                                            switch (type_items[i]) {
+                                                case '选择题':
+                                                    type1_list = type1_list.concat(choose_temp);
+                                                    break;
+                                                case '填空题':
+                                                    type2_list = type2_list.concat(choose_temp);
+                                                    break;
+                                                case '判断题':
+                                                    type3_list = type3_list.concat(choose_temp);
+                                                    break;
+                                                case '简答题':
+                                                    type4_list = type4_list.concat(choose_temp);
+                                                    break;
+                                                case '解答题':
+                                                    type5_list = type5_list.concat(choose_temp);
+                                                    break;
+                                            }
+                                            paper_list = paper_list.concat(choose_temp);
+                                            Bank.find(
+                                                {
+                                                    tips: tip_temp,
+                                                    type: type_items[i],
+                                                    user_id: user_id,
+                                                    subject: subject_default
+                                                },
+                                                function (err, docs) {
+                                                    if (docs.length < (tip_num - choose_temp.length)) {
+                                                        console.log('错误2');
+                                                        errorArr.push(type_items[i] + '错误');
+                                                        let select_finally = [];
+                                                        select_finally.length = (tip_num - choose_temp.length)
+                                                        paper_list = paper_list.concat(select_finally);
+                                                        //出卷结束判定
+                                                        if (paper_list.length == total_length) {
+
+                                                            if (errorArr.length > 0) {
+                                                                res.status(400).send({
+                                                                    error: errorArr
+                                                                });
+                                                            }
+                                                            else {
+                                                                let timestamp = new Date().getTime();
+                                                                let paper = new Paper({
+                                                                    user_id: user_id,
+                                                                    subject: subject_default,
+                                                                    tips: req.body.tips,
+                                                                    level: req.body.level,
+                                                                    data: paper_list,
+                                                                    date: timestamp,
+                                                                    filename: user_id + timestamp + ".docx"
+                                                                });
+                                                                paper.save(function (err, next) {
+                                                                    if (err) {
+                                                                        res.end('error', err);
+                                                                        return next();
+                                                                    }
+                                                                    createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp, user_id);
+                                                                    res.status(200).send({
+                                                                        message: "ok",
+                                                                        data: paper_list,
+                                                                        length: paper_list.length
+                                                                    });
+                                                                })
+                                                            }
+                                                        }
+                                                    }
+                                                    else {
+                                                        let select_finally = randArray(docs, tip_num - choose_temp.length);
+                                                        switch (type_items[i]) {
+                                                            case '选择题':
+                                                                type1_list = type1_list.concat(select_finally);
+                                                                break;
+                                                            case '填空题':
+                                                                type2_list = type2_list.concat(select_finally);
+                                                                break;
+                                                            case '判断题':
+                                                                type3_list = type3_list.concat(select_finally);
+                                                                break;
+                                                            case '简答题':
+                                                                type4_list = type4_list.concat(select_finally);
+                                                                break;
+                                                            case '解答题':
+                                                                type5_list = type5_list.concat(select_finally);
+                                                                break;
+                                                        }
+                                                        paper_list = paper_list.concat(select_finally);
+                                                        //出卷结束判定
+                                                        if (paper_list.length == total_length) {
+
+                                                            if (errorArr.length > 0) {
+                                                                res.status(400).send({
+                                                                    error: errorArr
+                                                                });
+                                                            }
+                                                            else {
+                                                                let timestamp = new Date().getTime();
+                                                                let paper = new Paper({
+                                                                    user_id: user_id,
+                                                                    subject: subject_default,
+                                                                    tips: req.body.tips,
+                                                                    level: req.body.level,
+                                                                    data: paper_list,
+                                                                    date: timestamp,
+                                                                    filename: user_id + timestamp + ".docx"
+                                                                });
+                                                                paper.save(function (err, next) {
+                                                                    if (err) {
+                                                                        res.end('error', err);
+                                                                        return next();
+                                                                    }
+                                                                    createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp, user_id);
+                                                                    res.status(200).send({
+                                                                        message: "ok",
+                                                                        data: paper_list,
+                                                                        length: paper_list.length
+                                                                    });
+                                                                })
+                                                            }
+                                                        }
+
+                                                    }
+
+
+                                                })
+
+                                        }
+
+                                        else {
+                                            Bank.find(
+                                                {
+                                                    tips: tip_temp,
+                                                    type: type_items[i],
+                                                    user_id: user_id,
+                                                    subject: subject_default
+                                                },
+                                                function (err, docs) {
+                                                    if (docs.length == 0) {
+                                                        console.log('错误3');
+                                                        errorArr.push(type_items[i] + '错误3');
+                                                        let select_finally = [];
+                                                        select_finally.length = tip_num;
+                                                        paper_list = paper_list.concat(select_finally);
+                                                        //出卷结束判定
+                                                        if (paper_list.length == total_length) {
+
+                                                            if (errorArr.length > 0) {
+                                                                res.status(400).send({
+                                                                    error: errorArr
+                                                                });
+                                                            }
+                                                            else {
+                                                                let timestamp = new Date().getTime();
+                                                                let paper = new Paper({
+                                                                    user_id: user_id,
+                                                                    subject: subject_default,
+                                                                    tips: req.body.tips,
+                                                                    level: req.body.level,
+                                                                    data: paper_list,
+                                                                    date: timestamp,
+                                                                    filename: user_id + timestamp + ".docx"
+                                                                });
+                                                                paper.save(function (err, next) {
+                                                                    if (err) {
+                                                                        res.end('error', err);
+                                                                        return next();
+                                                                    }
+                                                                    createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp, user_id);
+                                                                    res.status(200).send({
+                                                                        message: "ok",
+                                                                        data: paper_list,
+                                                                        length: paper_list.length
+                                                                    });
+                                                                })
+                                                            }
+                                                        }
+                                                    }
+                                                    else {
+                                                        let select_finally = randArray(docs, tip_num);
+                                                        switch (type_items[i]) {
+                                                            case '选择题':
+                                                                type1_list = type1_list.concat(select_finally);
+                                                                break;
+                                                            case '填空题':
+                                                                type2_list = type2_list.concat(select_finally);
+                                                                break;
+                                                            case '判断题':
+                                                                type3_list = type3_list.concat(select_finally);
+                                                                break;
+                                                            case '简答题':
+                                                                type4_list = type4_list.concat(select_finally);
+                                                                break;
+                                                            case '解答题':
+                                                                type5_list = type5_list.concat(select_finally);
+                                                                break;
+                                                        }
+                                                        paper_list = paper_list.concat(select_finally);
+                                                        //出卷结束判定
+                                                        if (paper_list.length == total_length) {
+
+                                                            if (errorArr.length > 0) {
+                                                                res.status(400).send({
+                                                                    error: errorArr
+                                                                });
+                                                            }
+                                                            else {
+                                                                let timestamp = new Date().getTime();
+                                                                let paper = new Paper({
+                                                                    user_id: user_id,
+                                                                    subject: subject_default,
+                                                                    tips: req.body.tips,
+                                                                    level: req.body.level,
+                                                                    data: paper_list,
+                                                                    date: timestamp,
+                                                                    filename: user_id + timestamp + ".docx"
+                                                                });
+                                                                paper.save(function (err, next) {
+                                                                    if (err) {
+                                                                        res.end('error', err);
+                                                                        return next();
+                                                                    }
+                                                                    createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp, user_id);
+                                                                    res.status(200).send({
+                                                                        message: "ok",
+                                                                        data: paper_list,
+                                                                        length: paper_list.length
+                                                                    });
+                                                                })
+                                                            }
+                                                        }
+
+                                                    }
+
+                                                })
+
+                                        }
+                                    })
+
+
+                            }
+                        }
+                    })
+
+            }
+        }
+    }
 
 
 });
