@@ -17,6 +17,14 @@ block content
                 label.layui-form-label 科目
                 .layui-input-inline
                     input.layui-input(id='subject' value= subject_default readonly='readonly')
+                label.layui-form-label 计算重复率
+                .layui-input-inline
+                    input.layui-input(id='a')
+                .layui-input-inline
+                    input.layui-input(id='b')
+                .layui-input-inline
+                    button.layui-btn(type='button' onclick='semblance()') 计算
+
             .layui-field-box
             each item in list
                 blockquote.layui-elem-quote.layui-quote-nm #{item.subject+item.date}
@@ -45,3 +53,24 @@ block scripts
                 }
             });
         })
+
+        function semblance() {
+            var paper={}
+            paper.a=$('#a').val()
+            paper.b=$('#b').val()
+            $.ajax({
+                url: '/api/semblance',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(paper),
+                beforeSend: function () {
+                },
+                success: function (data) {
+                    layer.alert('重复率:'+data.semblance)
+                },
+                error: function (data) {
+                    layer.alert(data.responseText)
+                }
+            })
+        }

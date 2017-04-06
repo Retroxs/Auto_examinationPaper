@@ -9,6 +9,7 @@ const express = require('express')
     , Joi = require('joi')
     , Mock = require('mockjs')
     , Random = Mock.Random
+    , async = require('async')
     , path = require("path")
     , multer = require('multer')
     , session = require('express-session')
@@ -31,7 +32,26 @@ router.use(session({
     resave: false,
     saveUninitialized: true,
 }));
-
+//数组交集
+function arrayIntersection(a, b) {
+    var ai = 0, bi = 0;
+    var result = new Array();
+    while (ai < a.length && bi < b.length) {
+        if (a[ai] < b[bi]) { ai++; }
+        else if (a[ai] > b[bi]) { bi++; }
+        else /* they're equal */ {
+            result.push(a[ai]);
+            ai++;
+            bi++;
+        }
+    }
+    return result;
+}
+function toPercent(point){
+    var str=Number(point*100).toFixed(1);
+    str+="%";
+    return str;
+}
 //设置全局科目
 router.get('/selectSubject', function (req, res) {
     if (req.session.user.subject_default = req.query.subject_default) {
@@ -127,6 +147,7 @@ router.post('/make_paper', function (req, res, next) {
     let tips = req.body.tips; //用户指定的知识点[array]
     let level = req.body.level; //用户指定的难度[string]
     let type_items = Object.keys(req.body.type_items); //用户指定的题型{object}
+    let type_number =Object.values(req.body.type_items);
     let tip = [];//最终筛选出的每道题目的知识点[array]
     let type1_list = [],//选择
         type2_list = [],//填空
@@ -138,20 +159,28 @@ router.post('/make_paper', function (req, res, next) {
     let total_length = 0; //试卷的总长度[string]
     let errorArr = [];//错误集合
     let isContinue = [];
+    let reg = /^0.[1-9]+$/;
     //计算每种题型的数量，以及试题的总长度
+    for(let i=0;i<type_number.length;i++){
+        total_length=total_length+type_number[i]
+    }
+
     for (let item in req.body.type_items) {
         let item1 = item;
         Bank.count({user_id: user_id, type: item1, subject: subject_default}, function (err, docs) {
             if (docs < req.body.type_items[item1]) {
                 isContinue.push(item1 + '题目不足');
-                type_num.push(item1 + '题目不足');
+                type_num.push(req.body.type_items[item1]);
                 if (type_num.length === 5) {
+                    type_num= type_number;
+                    console.log(total_length)
                     makePaper();
                 }
             } else {
-                type_num.push(req.body.type_items[item1])
-                total_length = total_length + req.body.type_items[item1]; //用户指定的题型数量总和
+                type_num.push(req.body.type_items[item1]);
                 if (type_num.length === 5) {
+                    type_num=type_number;
+                    console.log(total_length)
                     makePaper()
                 }
             }
@@ -162,8 +191,17 @@ router.post('/make_paper', function (req, res, next) {
         if (isContinue.length > 0) {
             res.status(400).send({error: isContinue})
         }
+        else if(tips.length==0){
+            res.status(400).send({error: '未勾选任何知识点'})
+        }
+        else if(reg.test(level)==false){
+            res.status(400).send({error: '输入的难度指数不符合要求（0-1）'})
+        }
+        else if(total_length==0){
+            res.status(400).send({error: '题目总数不能为0'})
+        }
         else {
-            // console.log(total_length)
+            console.log(total_length)
             //每个题型循环一次
             for (let i = 0; i < type_items.length; i++) {
                 // console.log(type_items[i] + '：' + type_num[i])
@@ -533,6 +571,54 @@ router.post('/make_paper', function (req, res, next) {
 
 });
 
+router.post('/semblance',function (req,res,next) {
+    const user_id ='58bbf1b8fe3d19194b924a5e';
+    const subject_default = '计算机学科基础';
+    let paper_a_index = req.body.a;
+    let paper_b_index = req.body.b;
+    Paper.find(
+        {
+            user_id: user_id,
+            subject: subject_default
+        },function (err,doc) {
+
+
+            if(paper_a_index<=0||paper_b_index<=0||paper_a_index>doc.length||paper_b_index>doc.length){
+                res.status(400).send({
+                    error:'所选试卷不存在'
+                })
+            }
+            else {
+                let paper_a = doc[doc.length-paper_a_index].data
+                let paper_b = doc[doc.length-paper_b_index].data
+                if (paper_a.length != paper_b.length) {
+                    res.status(400).send({
+                        error: '所选试卷不是同一标准'
+                    })
+                } else {
+                    let paper_a_arr = []
+                    let paper_b_arr = []
+                    paper_a.forEach(function (element) {
+                        paper_a_arr.push(element._id)
+                    })
+                    paper_b.forEach(function (element) {
+                        paper_b_arr.push(element._id)
+                    })
+
+                    let sameLength = arrayIntersection(paper_a_arr, paper_b_arr)
+
+                    res.status(200).send({
+                        semblance: toPercent(sameLength.length / paper_a.length),
+                        semblance_arr: sameLength
+                    })
+                }
+            }
+
+        })
+
+
+
+})
 
 //造数据
 router.get('/addtestdata', function (req, res, next) {
@@ -560,5 +646,6 @@ router.get('/addtestdata', function (req, res, next) {
     }
 
 });
+
 
 module.exports = router;
