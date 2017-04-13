@@ -14,15 +14,30 @@ block content
                 li
                     a(href="/back/logout" style="color:#fff") 退出
     h1(style="text-align:center") 审核题目难度
-    form(action='/back/update_qLevel/'+'#{qInfo._id}' method='post' style="width:30%;margin:0 auto")
+    form.layui-form.layui-form-pane(action='/back/update_qLevel/'+'#{qInfo._id}' method='post' style="width:30%;margin:0 auto")
         if(qInfo)
-            .input-group.input-group-lg
-                span.input-group-addon 题目
-                input.form-control(type="text" name='question' value='#{qInfo.question}' readonly)
-            .input-group.input-group-lg
-                span.input-group-addon 答案
-                input.form-control(type="text" name='answer' value='#{qInfo.answer}' readonly)
-            .input-group.input-group-lg
-                span.input-group-addon 难度
-                input.form-control(type="text" name='level' value='#{qInfo.level}')
-            button 提交
+            .layui-form-item(pane)
+                label.layui-form-label 题目
+                .layui-input-block
+                    textarea.layui-textarea(type="text" name='question' readonly) #{qInfo.question}
+            .layui-form-item(pane)
+                label.layui-form-label 答案
+                .layui-input-block
+                    textarea.layui-textarea(type="text" name='answer' readonly) #{qInfo.answer}
+            .layui-form-item(pane)
+                label.layui-form-label 难度
+                .layui-input-block
+                    if(qInfo)
+                        if(qInfo.level === '易')
+                            input(type="radio" name="level" title="容易" value="易"  checked="")
+                            input(type="radio" name="level" title="普通" value="中" )
+                            input(type="radio" name="level" title="有难度" value="难")
+                        else if(qInfo.level === '中')
+                            input(type="radio" name="level" title="容易" value="易"  )
+                            input(type="radio" name="level" title="普通" value="中" checked="")
+                            input(type="radio" name="level" title="有难度" value="难")
+                        else if(qInfo.level === '难')
+                            input(type="radio" name="level" title="容易" value="易"  )
+                            input(type="radio" name="level" title="普通" value="中" )
+                            input(type="radio" name="level" title="有难度" value="难" checked="")
+            button.layui-btn 提交

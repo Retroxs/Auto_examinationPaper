@@ -8,11 +8,36 @@ const mongoose = require('mongoose');
 const db = mongoose.connection;
 const User = mongoose.model('User');
 const Bank = mongoose.model('Bank');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+router.use(cookieParser());
+router.use(session({
+    secret: '12345',
+    name: 'teacherapp',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
+    cookie: {maxAge: 365 * 24 * 60 * 60 * 1000},  //设置maxAge是ms，session和相应的cookie失效过期
+    resave: false,
+    saveUninitialized: true,
+}));
+
+//登录认证
+function authToken(req, res, next) {
+    if (!req.session.user||req.session.user.role!=='rooter') {
+        res.redirect('/back/login')
+    } else {
+        next();
+    }
+}
 //登陆
 router.post('/login', function (req, res, next) {
     const username = req.body.username;
     const password = req.body.password;
+    let user_session = {
+        username: username,
+        password: password,
+        role:'rooter'
+    };
     if (username == 'root' && password == '123456') {
+        req.session.user = user_session;
         res.redirect('/back/dashboard ')
     }
     else {
@@ -22,7 +47,7 @@ router.post('/login', function (req, res, next) {
 });
 
 //创建用户
-router.post('/createuser', function (req, res) {
+router.post('/createuser',authToken,function (req, res) {
     let register_info = {};
     register_info.username = req.body.username;
     register_info.password = req.body.password;
@@ -73,7 +98,7 @@ router.post('/createuser', function (req, res) {
 });
 
 //更新用户信息
-router.post('/update', function (req, res) {
+router.post('/update',authToken,function (req, res) {
     let register_info = {};
     register_info.username = req.body.username;
     register_info.password = req.body.password;
@@ -117,7 +142,7 @@ router.post('/update', function (req, res) {
 });
 
 //更新题目难度
-router.post('/update_qLevel/:q_id', function (req, res) {
+router.post('/update_qLevel/:q_id',authToken,function (req, res) {
     Bank.find({_id: req.params.q_id}, function (err, doc) {
         if (err) {
             res.end(err)

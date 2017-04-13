@@ -14,7 +14,7 @@ const cookieParser = require('cookie-parser');
 router.use(cookieParser());
 router.use(session({
     secret: '12345',
-    name: 'testapp',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
+    name: 'teacherapp',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
     cookie: {maxAge: 365 * 24 * 60 * 60 * 1000},  //设置maxAge是ms，session和相应的cookie失效过期
     resave: false,
     saveUninitialized: true,
@@ -22,7 +22,7 @@ router.use(session({
 
 //登录认证
 function authToken(req, res, next) {
-    if (!req.session.user) {
+    if (!req.session.user||req.session.user.role!=='teacher') {
         res.redirect('/login')
     } else {
         next();

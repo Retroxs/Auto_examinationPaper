@@ -8,12 +8,31 @@ const mongoose = require('mongoose');
 const db = mongoose.connection;
 const User = mongoose.model('User');
 const Bank = mongoose.model('Bank');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+router.use(cookieParser());
+router.use(session({
+    secret: '12345',
+    name: 'teacherapp',   //这里的name值得是cookie的name，默认cookie的name是：connect.sid
+    cookie: {maxAge: 365 * 24 * 60 * 60 * 1000},  //设置maxAge是ms，session和相应的cookie失效过期
+    resave: false,
+    saveUninitialized: true,
+}));
 
-router.get('/login', function (req, res) {
+//登录认证
+function authToken(req, res, next) {
+    if (!req.session.user||req.session.user.role!=='rooter') {
+        res.redirect('/back/login')
+    } else {
+        next();
+    }
+}
+
+router.get('/login',function (req, res) {
     res.render('back/login', {title: 'root登陆'});
 });
 
-router.get('/dashboard', function (req, res) {
+router.get('/dashboard',authToken,function (req, res) {
     User.find({}, function (err, docs) {
         if (err) {
             res.end(err);
@@ -27,12 +46,12 @@ router.get('/logout', function (req, res) {
     res.redirect('/back/login');
 });
 
-router.get('/createuser', function (req, res) {
+router.get('/createuser',authToken,function (req, res) {
     res.render('back/create_user', {title: '创建用户'});
 });
 
 //更改密码
-router.get('/update/:username', function (req, res) {
+router.get('/update/:username',authToken,function (req, res) {
     User.find({username: req.params.username}, function (err, doc) {
         if (err) {
             res.end(err)
@@ -42,7 +61,7 @@ router.get('/update/:username', function (req, res) {
     })
 });
 
-router.get('/question-manage', function (req, res) {
+router.get('/question-manage',authToken,function (req, res) {
     let count = 0;
     let page = req.query.page;
     let rows = 10;
@@ -63,7 +82,7 @@ router.get('/question-manage', function (req, res) {
 });
 
 //查找某一个题目
-router.get('/update_qLevel/:q_id', function (req, res) {
+router.get('/update_qLevel/:q_id',authToken,function (req, res) {
     Bank.find({_id: req.params.q_id}, function (err, doc) {
         if (err) {
             res.end(err)

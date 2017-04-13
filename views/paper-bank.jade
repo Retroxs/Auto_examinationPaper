@@ -26,8 +26,8 @@ block content
                     button.layui-btn(type='button' onclick='semblance()') 计算
 
             .layui-field-box
-            each item in list
-                blockquote.layui-elem-quote.layui-quote-nm #{item.subject+item.date}
+            each item,index in list
+                blockquote.layui-elem-quote.layui-quote-nm #{index+1}. #{item.subject+item.date}
                     a.qt-delete(href='/paper/'+'#{item._id}'+'/delete') 删除
                     a.qt-detail(href='/download/'+'#{item.filename}') 下载
             #demo1(style="text-align:center")
