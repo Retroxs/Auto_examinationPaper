@@ -1,8 +1,6 @@
 //
    Created by HUI on 2016/11/3.
-
 extends components/layout
-
 block styles
     link(rel='stylesheet',href='style/style.css')
 block content
@@ -15,6 +13,12 @@ block content
                 label.layui-form-label 科目
                 .layui-input-inline
                     input.layui-input( id="subject" value= subject_default readonly)
+            .layui-form-item
+                label.layui-form-label 知识点操作
+                .layui-input-block
+                    button.layui-btn.layui-btn-primary(type='button' id='checkbox-all') 全选
+                    button.layui-btn.layui-btn-primary(type='button' id='checkbox-cancel') 取消全选
+                    button.layui-btn.layui-btn-primary(type='button' id='checkbox-reverse') 反选
             .layui-form-item
                 label.layui-form-label 知识点
                 .layui-input-block
@@ -51,45 +55,5 @@ block content
                     input(type="checkbox" name="public" lay-skin="switch" title="分享")
             hr
             button.layui-btn.layui-btn-radius.layui-btn-normal(style="display:block;margin:0 auto" type='button' onclick='createPaper()')  开始组卷
-
 block scripts
-    script.
-        function createPaper(){
-            var paperRule={};
-            var type_items_obj={}
-            paperRule.tips=[];
-            paperRule.type_items=type_items_obj;
-            paperRule.level= $('#level').val();
-            var obj = document.getElementsByName('tips');
-            var obj1 =document.getElementsByName('type_items');
-            for (var i = 0; i < obj.length; i++) {
-                if (obj[i].checked){
-                    paperRule.tips.push(obj[i].title)
-                }
-            }
-            for (var j = 0; j < obj1.length; j++) {
-                if (obj1[j].value>=1) {
-                    type_items_obj[obj1[j].id]=parseInt(obj1[j].value)
-                }
-
-            }
-           console.log(paperRule)
-           $.ajax({
-                url: '/api/make_paper',
-                type: 'post',
-                dataType: 'json',
-                contentType: 'application/json',
-                data: JSON.stringify(paperRule),
-                beforeSend: function (a) {
-                    console.log('start')
-                },
-                success: function (paper) {
-                        layer.alert('试卷生成成功')
-                },
-                error: function () {
-                        layer.alert('试卷生成失败')
-                }
-            })
-        }
-
-
+    script(src='/js/makePaper.js')

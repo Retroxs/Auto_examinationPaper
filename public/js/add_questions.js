@@ -18,7 +18,7 @@ function createQuestion() {
     addQ_obj.question = $('#question').val();
     addQ_obj.answer = $('#answer').val();
     addQ_obj.public = $("#isPublic").is(':checked');
-    if(addQ_obj.tips&&addQ_obj.question&&$("#attachment").val()&&addQ_obj.answer){
+    if(addQ_obj.tips&&addQ_obj.question&&addQ_obj.answer){
         $.ajax({
             url: '/api/bank/create',
             type: 'post',
@@ -68,7 +68,7 @@ function updateQuestion(id) {
     addQ_obj.answer = $('#answer').val();
     addQ_obj.public = $("#isPublic").is(':checked');
     addQ_obj.filepath="../uploads/"+$("#attachment").val()
-    if(addQ_obj.tips&&addQ_obj.question&&$("#attachment").val()&&addQ_obj.answer){
+    if(addQ_obj.tips&&addQ_obj.question&&addQ_obj.answer){
         $.ajax({
             url: '/api/bank/'+id+'/update',
             type: 'post',

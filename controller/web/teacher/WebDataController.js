@@ -29,7 +29,8 @@ router.post('/login', function (req, res, next) {
     // let d = md5.digest('hex');
     let user_session = {
         username: req.body.username,
-        password: req.body.password
+        password: req.body.password,
+        role:'teacher'
     };
     User.find({username: req.body.username, password: req.body.password}, function (err, docs) {
         if (err) {
