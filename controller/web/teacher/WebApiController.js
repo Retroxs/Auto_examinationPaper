@@ -51,11 +51,67 @@ function arrayIntersection(a, b) {
     }
     return result;
 }
+Array.intersect = function () {
+    var result = new Array();
+    var obj = {};
+    for (var i = 0; i < arguments.length; i++) {
+        for (var j = 0; j < arguments[i].length; j++) {
+            var str = arguments[i][j];
+            if (!obj[str]) {
+                obj[str] = 1;
+            }
+            else {
+                obj[str]++;
+                if (obj[str] == arguments.length) {
+                    result.push(str);
+                }
+            }//end else
+        }//end for j
+    }//end for i
+    return result;
+}
+
+
 function toPercent(point) {
     var str = Number(point * 100).toFixed(1);
     str += "%";
     return str;
 }
+function semblance(arr) {
+    let paper_a_arr = []
+    let paper_b_arr = []
+    let zui = arr[1]
+    let sem
+    arr[0].forEach(function (element) {
+        paper_a_arr.push(element._id)
+    })
+    for (let i = 1; i < arr.length; i++) {
+        let _i = i
+        arr[_i].forEach(function (element) {
+            paper_b_arr.push(element._id)
+        })
+        let sameLength = Array.intersect(paper_a_arr, paper_b_arr)
+        sameLength = sameLength.length / arr[0].length
+
+        if (_i == 1) {
+            sem = sameLength
+        } else if (_i == arr.length - 1) {
+            if (sameLength < sem) {
+                sem = sameLength
+                zui = arr[_i]
+            }
+            return [arr[0], zui, toPercent(sem)]
+        } else {
+            if (sameLength < sem) {
+                sem = sameLength
+                zui = arr[_i]
+            }
+        }
+        paper_b_arr = []
+
+    }
+}
+
 //设置全局科目
 router.get('/selectSubject', function (req, res) {
     if (req.session.user.subject_default = req.query.subject_default) {
@@ -145,7 +201,7 @@ router.post('/bank/:id/update', function (req, res, next) {
 //is redo!
 router.post('/make_paper', function (req, res, next) {
     const user_id = req.session.user.user_id;
-    // const user_id ='58bbf1b8fe3d19194b924a5e';
+    // const user_id = '58bbf1b8fe3d19194b924a5e';
     // const subject_default = '计算机学科基础';
     const subject_default = req.session.user.subject_default;
     let tips = req.body.tips; //用户指定的知识点[array]
@@ -153,17 +209,13 @@ router.post('/make_paper', function (req, res, next) {
     let type_items = Object.keys(req.body.type_items); //用户指定的题型{object}
     let type_number = Object.values(req.body.type_items);
     let tip = [];//最终筛选出的每道题目的知识点[array]
-    let type1_list = [],//选择
-        type2_list = [],//填空
-        type3_list = [],//判断
-        type4_list = [],//简答
-        type5_list = [],//解答
-        paper_list = [];//试卷
     let type_num = [];//每个类型对应的题数[array]
     let total_length = 0; //试卷的总长度[string]
     let errorArr = [];//错误集合
     let isContinue = [];
     let reg = /^0.[1-9]+$/;
+    let total_paper = [];//试卷零时集合
+    let c_times = 5;
     //计算每种题型的数量，以及试题的总长度
     for (let i = 0; i < type_number.length; i++) {
         total_length = total_length + type_number[i]
@@ -177,21 +229,31 @@ router.post('/make_paper', function (req, res, next) {
                 type_num.push(req.body.type_items[item1]);
                 if (type_num.length === 5) {
                     type_num = type_number;
-                    console.log(total_length)
-                    makePaper();
+                    // console.log(total_length)
+                    for (let i = 0; i < c_times; i++) {
+                        makePaper(i)
+                    }
                 }
             } else {
                 type_num.push(req.body.type_items[item1]);
                 if (type_num.length === 5) {
                     type_num = type_number;
-                    console.log(total_length)
-                    makePaper()
+                    // console.log(total_length)
+                    for (let i = 0; i < c_times; i++) {
+                        makePaper(i)
+                    }
                 }
             }
         })
     }
 
-    function makePaper() {
+    function makePaper(cc_time) {
+        let type1_list = [],//选择
+            type2_list = [],//填空
+            type3_list = [],//判断
+            type4_list = [],//简答
+            type5_list = [],//解答
+            paper_list = [];//试卷
         if (isContinue.length > 0) {
             res.status(400).send({error: isContinue})
         }
@@ -205,8 +267,8 @@ router.post('/make_paper', function (req, res, next) {
             res.status(400).send({error: '题目总数不能为0'})
         }
         else {
-            console.log(total_length)
             //每个题型循环一次
+
             for (let i = 0; i < type_items.length; i++) {
                 // console.log(type_items[i] + '：' + type_num[i])
                 Bank.find(
@@ -234,11 +296,20 @@ router.post('/make_paper', function (req, res, next) {
                                     });
                                 }
                                 else {
-                                    res.status(200).send({
-                                        message: "ok",
-                                        data: paper_list,
-                                        length: paper_list.length
-                                    })
+                                    total_paper.push(paper_list)
+                                    if (total_paper.length == c_times - 1) {
+                                        let now_data = semblance(total_paper)
+                                        res.status(200).send({
+                                            message: "ok",
+                                            paper1: now_data[0],
+                                            paper2: now_data[1],
+                                            semblance: now_data[2],
+                                            user_id: user_id,
+                                            subject: subject_default,
+                                            tips: req.body.tips,
+                                            level: req.body.level,
+                                        })
+                                    }
                                 }
                             }
                         }
@@ -296,28 +367,20 @@ router.post('/make_paper', function (req, res, next) {
                                                     });
                                                 }
                                                 else {
-                                                    let timestamp = new Date().getTime();
-                                                    let paper = new Paper({
-                                                        user_id: user_id,
-                                                        subject: subject_default,
-                                                        tips: req.body.tips,
-                                                        level: req.body.level,
-                                                        data: paper_list,
-                                                        date: timestamp,
-                                                        filename: user_id + timestamp + ".docx"
-                                                    });
-                                                    paper.save(function (err, next) {
-                                                        if (err) {
-                                                            res.end('error', err);
-                                                            return next();
-                                                        }
-                                                        createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp, user_id);
+                                                    total_paper.push(paper_list)
+                                                    if (total_paper.length == c_times - 1) {
+                                                        let now_data = semblance(total_paper)
                                                         res.status(200).send({
                                                             message: "ok",
-                                                            data: paper_list,
-                                                            length: paper_list.length
-                                                        });
-                                                    })
+                                                            paper1: now_data[0],
+                                                            paper2: now_data[1],
+                                                            semblance: now_data[2],
+                                                            user_id: user_id,
+                                                            subject: subject_default,
+                                                            tips: req.body.tips,
+                                                            level: req.body.level,
+                                                        })
+                                                    }
                                                 }
                                             }
 
@@ -367,28 +430,21 @@ router.post('/make_paper', function (req, res, next) {
                                                                 });
                                                             }
                                                             else {
-                                                                let timestamp = new Date().getTime();
-                                                                let paper = new Paper({
-                                                                    user_id: user_id,
-                                                                    subject: subject_default,
-                                                                    tips: req.body.tips,
-                                                                    level: req.body.level,
-                                                                    data: paper_list,
-                                                                    date: timestamp,
-                                                                    filename: user_id + timestamp + ".docx"
-                                                                });
-                                                                paper.save(function (err, next) {
-                                                                    if (err) {
-                                                                        res.end('error', err);
-                                                                        return next();
-                                                                    }
-                                                                    createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp, user_id);
+                                                                total_paper.push(paper_list)
+                                                                if (total_paper.length == c_times - 1) {
+                                                                    let now_data = semblance(total_paper)
                                                                     res.status(200).send({
                                                                         message: "ok",
-                                                                        data: paper_list,
-                                                                        length: paper_list.length
-                                                                    });
-                                                                })
+                                                                        paper1: now_data[0],
+                                                                        paper2: now_data[1],
+                                                                        semblance: now_data[2],
+                                                                        user_id: user_id,
+                                                                        subject: subject_default,
+                                                                        tips: req.body.tips,
+                                                                        level: req.body.level,
+                                                                    })
+                                                                }
+
                                                             }
                                                         }
                                                     }
@@ -421,28 +477,21 @@ router.post('/make_paper', function (req, res, next) {
                                                                 });
                                                             }
                                                             else {
-                                                                let timestamp = new Date().getTime();
-                                                                let paper = new Paper({
-                                                                    user_id: user_id,
-                                                                    subject: subject_default,
-                                                                    tips: req.body.tips,
-                                                                    level: req.body.level,
-                                                                    data: paper_list,
-                                                                    date: timestamp,
-                                                                    filename: user_id + timestamp + ".docx"
-                                                                });
-                                                                paper.save(function (err, next) {
-                                                                    if (err) {
-                                                                        res.end('error', err);
-                                                                        return next();
-                                                                    }
-                                                                    createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp, user_id);
+                                                                total_paper.push(paper_list)
+                                                                if (total_paper.length == c_times - 1) {
+                                                                    let now_data = semblance(total_paper)
                                                                     res.status(200).send({
                                                                         message: "ok",
-                                                                        data: paper_list,
-                                                                        length: paper_list.length
-                                                                    });
-                                                                })
+                                                                        paper1: now_data[0],
+                                                                        paper2: now_data[1],
+                                                                        semblance: now_data[2],
+                                                                        user_id: user_id,
+                                                                        subject: subject_default,
+                                                                        tips: req.body.tips,
+                                                                        level: req.body.level,
+                                                                    })
+                                                                }
+
                                                             }
                                                         }
 
@@ -477,28 +526,20 @@ router.post('/make_paper', function (req, res, next) {
                                                                 });
                                                             }
                                                             else {
-                                                                let timestamp = new Date().getTime();
-                                                                let paper = new Paper({
-                                                                    user_id: user_id,
-                                                                    subject: subject_default,
-                                                                    tips: req.body.tips,
-                                                                    level: req.body.level,
-                                                                    data: paper_list,
-                                                                    date: timestamp,
-                                                                    filename: user_id + timestamp + ".docx"
-                                                                });
-                                                                paper.save(function (err, next) {
-                                                                    if (err) {
-                                                                        res.end('error', err);
-                                                                        return next();
-                                                                    }
-                                                                    createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp, user_id);
+                                                                total_paper.push(paper_list)
+                                                                if (total_paper.length == c_times - 1) {
+                                                                    let now_data = semblance(total_paper)
                                                                     res.status(200).send({
                                                                         message: "ok",
-                                                                        data: paper_list,
-                                                                        length: paper_list.length
-                                                                    });
-                                                                })
+                                                                        paper1: now_data[0],
+                                                                        paper2: now_data[1],
+                                                                        semblance: now_data[2],
+                                                                        user_id: user_id,
+                                                                        subject: subject_default,
+                                                                        tips: req.body.tips,
+                                                                        level: req.body.level,
+                                                                    })
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -531,28 +572,23 @@ router.post('/make_paper', function (req, res, next) {
                                                                 });
                                                             }
                                                             else {
-                                                                let timestamp = new Date().getTime();
-                                                                let paper = new Paper({
-                                                                    user_id: user_id,
-                                                                    subject: subject_default,
-                                                                    tips: req.body.tips,
-                                                                    level: req.body.level,
-                                                                    data: paper_list,
-                                                                    date: timestamp,
-                                                                    filename: user_id + timestamp + ".docx"
-                                                                });
-                                                                paper.save(function (err, next) {
-                                                                    if (err) {
-                                                                        res.end('error', err);
-                                                                        return next();
-                                                                    }
-                                                                    createFile.create(type1_list, type2_list, type3_list, type4_list, type5_list, timestamp, user_id);
+
+                                                                total_paper.push(paper_list)
+                                                                if (total_paper.length == c_times - 1) {
+                                                                    let now_data = semblance(total_paper)
                                                                     res.status(200).send({
                                                                         message: "ok",
-                                                                        data: paper_list,
-                                                                        length: paper_list.length
-                                                                    });
-                                                                })
+                                                                        paper1: now_data[0],
+                                                                        paper2: now_data[1],
+                                                                        semblance: now_data[2],
+                                                                        user_id: user_id,
+                                                                        subject: subject_default,
+                                                                        tips: req.body.tips,
+                                                                        level: req.body.level,
+                                                                    })
+                                                                }
+
+
                                                             }
                                                         }
 
@@ -573,7 +609,7 @@ router.post('/make_paper', function (req, res, next) {
     }
 
 
-});
+})
 
 router.post('/semblance', function (req, res, next) {
     const user_id = req.session.user.user_id;
@@ -610,8 +646,8 @@ router.post('/semblance', function (req, res, next) {
                     paper_b.forEach(function (element) {
                         paper_b_arr.push(element._id)
                     })
-
-                    let sameLength = arrayIntersection(paper_a_arr, paper_b_arr)
+                    // console.log(paper_a_arr,paper_b_arr)
+                    let sameLength = Array.intersect(paper_a_arr, paper_b_arr)
 
                     res.status(200).send({
                         semblance: toPercent(sameLength.length / paper_a.length),
@@ -623,6 +659,47 @@ router.post('/semblance', function (req, res, next) {
         })
 
 
+})
+
+router.post('/make', function (req, res, next) {
+    const data = req.body
+    const data_temp =[data.paper1,data.paper2]
+    const user_id = req.session.user.user_id;
+    const subject_default = req.session.user.subject_default;
+    let complete=[]
+    for(i=0;i<2;i++){
+        let index=i;
+        let order="A"
+        if(index==1){
+            order="B"
+        }else{
+            order="A"
+        }
+        let papers = data_temp[index]
+        let timestamp = new Date().getTime();
+        let paper = new Paper({
+            user_id: user_id,
+            subject: subject_default,
+            tips: data.tips,
+            level: data.level,
+            data: papers,
+            date: timestamp,
+            filename: user_id + timestamp +order+ ".docx"
+        });
+        paper.save(function (err, next) {
+            if (err) {
+                res.end('error', err);
+                return next();
+            }
+            complete.push('ok')
+            createFile.create(papers, timestamp, user_id,order);
+
+        })
+    }
+    res.status(200).send({
+        message: "ok",
+        data: data,
+    });
 })
 
 //造数据

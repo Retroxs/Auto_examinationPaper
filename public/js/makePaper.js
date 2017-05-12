@@ -28,9 +28,33 @@ function createPaper(){
         data: JSON.stringify(paperRule),
         beforeSend: function (a) {
             console.log('start')
+            var layer= layui.layer
+            layer.load(0, {shade: false})
         },
         success: function (data) {
-            layer.alert('试卷生成成功')
+            let data_temp = data
+                $.ajax({
+                    url: '/api/make',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data_temp),
+                    beforeSend: function (a) {
+                        console.log('start')
+                        var layer= layui.layer
+                        layer.load(0, {shade: false})
+                    },
+                    success: function (data) {
+                        layer.alert('试卷AB卷已加入试卷库\n重复率为：'+data_temp.semblance)
+                        layer.closeAll('loading'); //关闭加载层
+
+                    },
+                    error: function (data) {
+                        layer.alert(data.responseText)
+                        layer.closeAll('loading'); //关闭加载层
+
+                    }
+                })
         },
         error: function (data) {
             layer.alert(data.responseText)

@@ -7,8 +7,26 @@ let path = require("path");
 let filePath = path.join(__dirname, '../public/tmp/paper_tmp');
 let officegen = require('officegen');
 
-exports.create = function (type1_list, type2_list, type3_list, type4_list, type5_list, time,id) {
-    // console.log(type1_list.length+','+type2_list.length+','+type3_list.length+','+type4_list.length+','+type5_list.length)
+exports.create = async function (data, time,id,order) {
+    const type1_list=[]
+    const type2_list=[]
+    const type3_list=[]
+    const type4_list=[]
+    const type5_list=[]
+    await data.forEach(function (element) {
+        if(element.type=="选择题"){
+            type1_list.push(element)
+        }else if(element.type=="填空题"){
+            type2_list.push(element)
+        }else if(element.type=="判断题"){
+            type3_list.push(element)
+        }else if(element.type=="简答题"){
+            type4_list.push(element)
+        }else if(element.type=="解答题"){
+            type5_list.push(element)
+        }
+    })
+
     let docx = officegen('docx')
     docx.on('error', function (err) {
         console.log(err);
@@ -25,6 +43,10 @@ exports.create = function (type1_list, type2_list, type3_list, type4_list, type5
 
         var pObj = docx.createListOfNumbers();
         pObj.addText(type1_list[i].level + ' ' + type1_list[i].type + ' ' + type1_list[i].tips + ' ' + type1_list[i].question);
+        for(let i=0;i<(type5_list[i].filepath).length;i++){
+            pObj.addImage (path.join(__dirname, (type1_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
+
+        }
 
     }
 
@@ -36,6 +58,10 @@ exports.create = function (type1_list, type2_list, type3_list, type4_list, type5
         var pObj = docx.createListOfNumbers();
 
         pObj.addText(type2_list[i].level + ' ' + type2_list[i].type + ' ' + type2_list[i].tips + ' ' + type2_list[i].question);
+        for(let i=0;i<(type5_list[i].filepath).length;i++){
+            pObj.addImage (path.join(__dirname, (type2_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
+
+        }
 
 
     }
@@ -48,6 +74,14 @@ exports.create = function (type1_list, type2_list, type3_list, type4_list, type5
         var pObj = docx.createListOfNumbers();
 
         pObj.addText(type3_list[i].level + ' ' + type3_list[i].type + ' ' + type3_list[i].tips + ' ' + type3_list[i].question);
+        for(let i=0;i<(type5_list[i].filepath).length;i++){
+            pObj.addImage (path.join(__dirname, (type5_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
+            for(let i=0;i<(type5_list[i].filepath).length;i++){
+                pObj.addImage (path.join(__dirname, (type3_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
+
+            }
+
+        }
 
 
     }
@@ -59,6 +93,10 @@ exports.create = function (type1_list, type2_list, type3_list, type4_list, type5
         var pObj = docx.createListOfNumbers();
 
         pObj.addText(type4_list[i].level + ' ' + type4_list[i].type + ' ' + type4_list[i].tips + ' ' + type4_list[i].question);
+        for(let i=0;i<(type5_list[i].filepath).length;i++){
+            pObj.addImage (path.join(__dirname, (type4_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
+
+        }
 
     }
 
@@ -69,7 +107,10 @@ exports.create = function (type1_list, type2_list, type3_list, type4_list, type5
         var pObj = docx.createListOfNumbers();
 
         pObj.addText(type5_list[i].level + ' ' + type5_list[i].type + ' ' + type5_list[i].tips + ' ' + type5_list[i].question);
-        pObj.addImage (path.join(__dirname, type5_list[i].filepath), { cx: 100, cy: 100 }  );
+        for(let i=0;i<(type5_list[i].filepath).length;i++){
+            pObj.addImage (path.join(__dirname, (type5_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
+
+        }
 
 
     }
@@ -133,7 +174,7 @@ exports.create = function (type1_list, type2_list, type3_list, type4_list, type5
         pObj.addText(type5_list[i].answer);
     }
 
-    let out = fs.createWriteStream(filePath + "/" + id + time + ".docx");
+    let out = fs.createWriteStream(filePath + "/" + id + time + order+".docx");
 
     out.on('error', function (err) {
         console.log(err);

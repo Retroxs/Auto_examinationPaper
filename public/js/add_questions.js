@@ -4,13 +4,22 @@
 
 function createQuestion() {
     var addQ_obj = {};
+    var pic_groups=$(".attachment")
+    var pic_group=[]
+    for(let i=0;i<pic_groups.length;i++){
+        if($(pic_groups[i]).val()){
+            pic_group.push("../uploads/"+$(pic_groups[i]).val())
+        }
+    }
+    addQ_obj.filepath=pic_group
+
     var tips = document.getElementById("tips");
     // var tips_index = tips.selectedIndex;
 
     var type = document.getElementById("type");
     var type_index = type.selectedIndex;
 
-    addQ_obj.filepath="../uploads/"+$("#attachment").val()
+    // addQ_obj.filepath="../uploads/"+$("#attachment").val()
     addQ_obj.subject = subject.value;
     addQ_obj.type = type.options[type_index].text;
     addQ_obj.tips = tips.value;
@@ -68,6 +77,7 @@ function updateQuestion(id) {
     addQ_obj.answer = $('#answer').val();
     addQ_obj.public = $("#isPublic").is(':checked');
     addQ_obj.filepath="../uploads/"+$("#attachment").val()
+
     if(addQ_obj.tips&&addQ_obj.question&&addQ_obj.answer){
         $.ajax({
             url: '/api/bank/'+id+'/update',
@@ -100,4 +110,31 @@ function updateQuestion(id) {
     }
 
 
+}
+
+
+function up() {
+    var formData = new FormData($('#createItem')[0]);
+    $.ajax({
+        type: "POST",
+        url: "/upload",
+        data: formData,
+        processData: false, 	//必须false才会自动加上正确的Content-Type
+        contentType: false,
+        beforeSend: function () {
+        },
+        success:  function (data) {
+            let pics = data.message
+              pics.forEach(function (element,index) {
+                  $($('.attachment')[index]).val(element.filename)
+            })
+        },
+        error: function (data) {
+            console.log('upload fail')
+        }
+    })
+
+}
+function del_upload(self) {
+    ($(self).prev()).val('')
 }

@@ -73,8 +73,31 @@ block content
                 label.layui-form-label 附件图片
                 .layui-input-block
                     input(name="fileImg" id='upfile' type='file')
+                    input(name="attachment" class='attachment' type='text' value= qInfo?fileName:'' readonly )
+                    button(onclick='del_upload(this)') 删除
+                .layui-input-block
+                    input(name="fileImg" class='upfile' type='file')
+                    input(name="attachment" class='attachment' type='text' value= qInfo ? fileName : '' readonly )
+                    button(onclick='del_upload(this)') 删除
+                .layui-input-block
+                    input(name="fileImg" class='upfile' type='file')
+                    input(name="attachment" class='attachment' type='text' value= qInfo ? fileName : '' readonly )
+                    button(onclick='del_upload(this)') 删除
+                .layui-input-block
+                    input(name="fileImg" class='upfile' type='file')
+                    input(name="attachment" class='attachment' type='text' value= qInfo ? fileName : '' readonly )
+                    button(onclick='del_upload(this)') 删除
+                .layui-input-block
+                    input(name="fileImg" class='upfile' type='file')
+                    input(name="attachment" class='attachment' type='text' value= qInfo ? fileName : '' readonly )
+                    button(onclick='del_upload(this)') 删除
+                .layui-input-block
+                    input(name="fileImg" class='upfile' type='file')
+                    input(name="attachment" class='attachment' type='text' value= qInfo ? fileName : '' readonly )
+                    button(onclick='del_upload(this)') 删除
+                .layui-input-block
                     input(type='button' value='上传' onclick="up()")
-                    input(name="attachment" id='attachment' type='text' value= qInfo?fileName:'' readonly )
+
             .layui-form-item.layui-form-text
                 label.layui-form-label 答案
                 .layui-input-block
@@ -111,7 +134,7 @@ block content
                 button.layui-btn.layui-btn-radius.layui-btn-normal(lay-submit lay-filter="formDemo" style="display:block;margin:0 auto" onclick='createQuestion()')  提交保存
             p.hidden#message #{message}
 block scripts
-    script(src='//cdn.bootcss.com/jquery/3.1.1/jquery.min.js')
+    script(src='/js/jquery-3.2.1.min.js')
     script(src='/js/add_questions.js')
     script.
         $(document).ready(function () {
@@ -119,24 +142,6 @@ block scripts
                 layer.alert($('#message').text())
             }
         })
-        function up() {
-            var formData = new FormData($("#createItem")[0]);
-            $.ajax({
-                type: "POST",
-                url: "/upload",
-                data: formData,
-                processData: false, 	//必须false才会自动加上正确的Content-Type
-                contentType: false,
-                beforeSend: function () {
-                },
-                success: function (data) {
-                    $('#attachment').val(data.message)
-                },
-                error: function (data) {
-                    $('#attachment').val('no')
-                }
-            })
 
-        }
 
 

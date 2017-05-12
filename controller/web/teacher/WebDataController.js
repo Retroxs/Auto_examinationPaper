@@ -57,9 +57,11 @@ router.get('/download/:filename', function (req, res) {
     let file = filePath + '/' + req.params.filename;
     res.download(file); // Set disposition and send it.
 });
-router.post('/upload', upload.single('fileImg'), function (req, res, next) {
-    if (req.file) {
-        res.status(200).send({message:req.file.filename});
+//上传
+router.post('/upload', upload.array('fileImg',6), function (req, res, next) {
+    if (req.files) {
+        console.log(req.files)
+        res.status(200).send({message:req.files});
     }
 });
 //删除试卷
@@ -69,7 +71,6 @@ router.get('/paper/:id/delete', function (req, res, next) {
             res.end('err', err);
             return next();
         }
-
         doc.remove();
         res.redirect('/paper-bank')
     })
