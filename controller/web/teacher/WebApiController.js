@@ -196,421 +196,6 @@ router.post('/bank/:id/update', function (req, res, next) {
     })
 });
 
-//出卷
-//Todo change main line to tips on base
-//is redo!
-router.post('/make_paper', function (req, res, next) {
-    const user_id = req.session.user.user_id;
-    // const user_id = '58bbf1b8fe3d19194b924a5e';
-    // const subject_default = '计算机学科基础';
-    const subject_default = req.session.user.subject_default;
-    let tips = req.body.tips; //用户指定的知识点[array]
-    let level = req.body.level; //用户指定的难度[string]
-    let type_items = Object.keys(req.body.type_items); //用户指定的题型{object}
-    let type_number = Object.values(req.body.type_items);
-    let tip = [];//最终筛选出的每道题目的知识点[array]
-    let type_num = [];//每个类型对应的题数[array]
-    let total_length = 0; //试卷的总长度[string]
-    let errorArr = [];//错误集合
-    let isContinue = [];
-    let reg = /^0.[1-9]+$/;
-    let total_paper = [];//试卷零时集合
-    let c_times = 5;
-    //计算每种题型的数量，以及试题的总长度
-    for (let i = 0; i < type_number.length; i++) {
-        total_length = total_length + type_number[i]
-    }
-
-    for (let item in req.body.type_items) {
-        let item1 = item;
-        Bank.count({user_id: user_id, type: item1, subject: subject_default}, function (err, docs) {
-            if (docs < req.body.type_items[item1]) {
-                isContinue.push(item1 + '题目不足');
-                type_num.push(req.body.type_items[item1]);
-                if (type_num.length === 5) {
-                    type_num = type_number;
-                    // console.log(total_length)
-                    for (let i = 0; i < c_times; i++) {
-                        makePaper(i)
-                    }
-                }
-            } else {
-                type_num.push(req.body.type_items[item1]);
-                if (type_num.length === 5) {
-                    type_num = type_number;
-                    // console.log(total_length)
-                    for (let i = 0; i < c_times; i++) {
-                        makePaper(i)
-                    }
-                }
-            }
-        })
-    }
-
-    function makePaper(cc_time) {
-        let type1_list = [],//选择
-            type2_list = [],//填空
-            type3_list = [],//判断
-            type4_list = [],//简答
-            type5_list = [],//解答
-            paper_list = [];//试卷
-        if (isContinue.length > 0) {
-            res.status(400).send({error: isContinue})
-        }
-        else if (tips.length == 0) {
-            res.status(400).send({error: '未勾选任何知识点'})
-        }
-        else if (reg.test(level) == false) {
-            res.status(400).send({error: '输入的难度指数不符合要求（0-1）'})
-        }
-        else if (total_length == 0) {
-            res.status(400).send({error: '题目总数不能为0'})
-        }
-        else {
-            //每个题型循环一次
-
-            for (let i = 0; i < type_items.length; i++) {
-                // console.log(type_items[i] + '：' + type_num[i])
-                Bank.find(
-                    {
-                        tips: {$in: tips},
-                        type: type_items[i],
-                        user_id: user_id,
-                        subject: subject_default
-                    },
-                    function (err, docs) {
-
-                        //该题目类型不包含指定的任一知识点
-                        if (docs.length === 0) {
-                            console.log(type_items[i] + '不包含所选的任一知识点');
-                            errorArr.push(type_items[i] + '不包含所选的任一知识点')
-                            let select_finally = [];
-                            select_finally.length = type_num[i];
-                            paper_list = paper_list.concat(select_finally);
-                            //出卷结束判定
-                            if (paper_list.length == total_length) {
-
-                                if (errorArr.length > 0) {
-                                    res.status(400).send({
-                                        error: errorArr
-                                    });
-                                }
-                                else {
-                                    total_paper.push(paper_list)
-                                    if (total_paper.length == c_times - 1) {
-                                        let now_data = semblance(total_paper)
-                                        res.status(200).send({
-                                            message: "ok",
-                                            paper1: now_data[0],
-                                            paper2: now_data[1],
-                                            semblance: now_data[2],
-                                            user_id: user_id,
-                                            subject: subject_default,
-                                            tips: req.body.tips,
-                                            level: req.body.level,
-                                        })
-                                    }
-                                }
-                            }
-                        }
-
-                        else {
-                            tip = calTips(docs, type_num[i]);//最终筛选出的知识点[知识点:知识点所需题目数量]
-
-                            // 每个题型中每个知识点每个题目筛选出的process
-                            for (let j = 0; j < tip.length; j++) {
-
-
-                                let tipTmp = tip;//由于闭包转换临时变量
-                                let tip_temp = (tipTmp[j].split(':'))[0];
-                                let tip_num = (tipTmp[j].split(':'))[1];
-                                let level_select = level_random(level);
-
-                                Bank.find(
-                                    {
-                                        tips: tip_temp,
-                                        type: type_items[i],
-                                        level: level_select,
-                                        user_id: user_id
-                                    },
-                                    function (err, docs) {
-                                        if (docs.length > 0 && docs.length >= tip_num) {
-
-                                            let select_finally = randArray(docs, tip_num);
-
-                                            switch (type_items[i]) {
-                                                case '选择题':
-                                                    type1_list = type1_list.concat(select_finally);
-                                                    break;
-                                                case '填空题':
-                                                    type2_list = type2_list.concat(select_finally);
-                                                    break;
-                                                case '判断题':
-                                                    type3_list = type3_list.concat(select_finally);
-                                                    break;
-                                                case '简答题':
-                                                    type4_list = type4_list.concat(select_finally);
-                                                    break;
-                                                case '解答题':
-                                                    type5_list = type5_list.concat(select_finally);
-                                                    break;
-                                            }
-
-                                            paper_list = paper_list.concat(select_finally);
-
-                                            //出卷结束判定
-                                            if (paper_list.length == total_length) {
-
-                                                if (errorArr.length > 0) {
-                                                    res.status(400).send({
-                                                        error: errorArr
-                                                    });
-                                                }
-                                                else {
-                                                    total_paper.push(paper_list)
-                                                    if (total_paper.length == c_times - 1) {
-                                                        let now_data = semblance(total_paper)
-                                                        res.status(200).send({
-                                                            message: "ok",
-                                                            paper1: now_data[0],
-                                                            paper2: now_data[1],
-                                                            semblance: now_data[2],
-                                                            user_id: user_id,
-                                                            subject: subject_default,
-                                                            tips: req.body.tips,
-                                                            level: req.body.level,
-                                                        })
-                                                    }
-                                                }
-                                            }
-
-                                        }
-
-
-                                        else if (docs.length > 0 && docs.length < tip_num) {
-                                            let choose_temp = docs;
-                                            switch (type_items[i]) {
-                                                case '选择题':
-                                                    type1_list = type1_list.concat(choose_temp);
-                                                    break;
-                                                case '填空题':
-                                                    type2_list = type2_list.concat(choose_temp);
-                                                    break;
-                                                case '判断题':
-                                                    type3_list = type3_list.concat(choose_temp);
-                                                    break;
-                                                case '简答题':
-                                                    type4_list = type4_list.concat(choose_temp);
-                                                    break;
-                                                case '解答题':
-                                                    type5_list = type5_list.concat(choose_temp);
-                                                    break;
-                                            }
-                                            paper_list = paper_list.concat(choose_temp);
-                                            Bank.find(
-                                                {
-                                                    tips: tip_temp,
-                                                    type: type_items[i],
-                                                    user_id: user_id,
-                                                    subject: subject_default
-                                                },
-                                                function (err, docs) {
-                                                    if (docs.length < (tip_num - choose_temp.length)) {
-                                                        console.log('错误2');
-                                                        errorArr.push(type_items[i] + '错误');
-                                                        let select_finally = [];
-                                                        select_finally.length = (tip_num - choose_temp.length)
-                                                        paper_list = paper_list.concat(select_finally);
-                                                        //出卷结束判定
-                                                        if (paper_list.length == total_length) {
-
-                                                            if (errorArr.length > 0) {
-                                                                res.status(400).send({
-                                                                    error: errorArr
-                                                                });
-                                                            }
-                                                            else {
-                                                                total_paper.push(paper_list)
-                                                                if (total_paper.length == c_times - 1) {
-                                                                    let now_data = semblance(total_paper)
-                                                                    res.status(200).send({
-                                                                        message: "ok",
-                                                                        paper1: now_data[0],
-                                                                        paper2: now_data[1],
-                                                                        semblance: now_data[2],
-                                                                        user_id: user_id,
-                                                                        subject: subject_default,
-                                                                        tips: req.body.tips,
-                                                                        level: req.body.level,
-                                                                    })
-                                                                }
-
-                                                            }
-                                                        }
-                                                    }
-                                                    else {
-                                                        let select_finally = randArray(docs, tip_num - choose_temp.length);
-                                                        switch (type_items[i]) {
-                                                            case '选择题':
-                                                                type1_list = type1_list.concat(select_finally);
-                                                                break;
-                                                            case '填空题':
-                                                                type2_list = type2_list.concat(select_finally);
-                                                                break;
-                                                            case '判断题':
-                                                                type3_list = type3_list.concat(select_finally);
-                                                                break;
-                                                            case '简答题':
-                                                                type4_list = type4_list.concat(select_finally);
-                                                                break;
-                                                            case '解答题':
-                                                                type5_list = type5_list.concat(select_finally);
-                                                                break;
-                                                        }
-                                                        paper_list = paper_list.concat(select_finally);
-                                                        //出卷结束判定
-                                                        if (paper_list.length == total_length) {
-
-                                                            if (errorArr.length > 0) {
-                                                                res.status(400).send({
-                                                                    error: errorArr
-                                                                });
-                                                            }
-                                                            else {
-                                                                total_paper.push(paper_list)
-                                                                if (total_paper.length == c_times - 1) {
-                                                                    let now_data = semblance(total_paper)
-                                                                    res.status(200).send({
-                                                                        message: "ok",
-                                                                        paper1: now_data[0],
-                                                                        paper2: now_data[1],
-                                                                        semblance: now_data[2],
-                                                                        user_id: user_id,
-                                                                        subject: subject_default,
-                                                                        tips: req.body.tips,
-                                                                        level: req.body.level,
-                                                                    })
-                                                                }
-
-                                                            }
-                                                        }
-
-                                                    }
-
-
-                                                })
-
-                                        }
-
-                                        else {
-                                            Bank.find(
-                                                {
-                                                    tips: tip_temp,
-                                                    type: type_items[i],
-                                                    user_id: user_id,
-                                                    subject: subject_default
-                                                },
-                                                function (err, docs) {
-                                                    if (docs.length == 0) {
-                                                        console.log('错误3');
-                                                        errorArr.push(type_items[i] + '错误3');
-                                                        let select_finally = [];
-                                                        select_finally.length = tip_num;
-                                                        paper_list = paper_list.concat(select_finally);
-                                                        //出卷结束判定
-                                                        if (paper_list.length == total_length) {
-
-                                                            if (errorArr.length > 0) {
-                                                                res.status(400).send({
-                                                                    error: errorArr
-                                                                });
-                                                            }
-                                                            else {
-                                                                total_paper.push(paper_list)
-                                                                if (total_paper.length == c_times - 1) {
-                                                                    let now_data = semblance(total_paper)
-                                                                    res.status(200).send({
-                                                                        message: "ok",
-                                                                        paper1: now_data[0],
-                                                                        paper2: now_data[1],
-                                                                        semblance: now_data[2],
-                                                                        user_id: user_id,
-                                                                        subject: subject_default,
-                                                                        tips: req.body.tips,
-                                                                        level: req.body.level,
-                                                                    })
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    else {
-                                                        let select_finally = randArray(docs, tip_num);
-                                                        switch (type_items[i]) {
-                                                            case '选择题':
-                                                                type1_list = type1_list.concat(select_finally);
-                                                                break;
-                                                            case '填空题':
-                                                                type2_list = type2_list.concat(select_finally);
-                                                                break;
-                                                            case '判断题':
-                                                                type3_list = type3_list.concat(select_finally);
-                                                                break;
-                                                            case '简答题':
-                                                                type4_list = type4_list.concat(select_finally);
-                                                                break;
-                                                            case '解答题':
-                                                                type5_list = type5_list.concat(select_finally);
-                                                                break;
-                                                        }
-                                                        paper_list = paper_list.concat(select_finally);
-                                                        //出卷结束判定
-                                                        if (paper_list.length == total_length) {
-
-                                                            if (errorArr.length > 0) {
-                                                                res.status(400).send({
-                                                                    error: errorArr
-                                                                });
-                                                            }
-                                                            else {
-
-                                                                total_paper.push(paper_list)
-                                                                if (total_paper.length == c_times - 1) {
-                                                                    let now_data = semblance(total_paper)
-                                                                    res.status(200).send({
-                                                                        message: "ok",
-                                                                        paper1: now_data[0],
-                                                                        paper2: now_data[1],
-                                                                        semblance: now_data[2],
-                                                                        user_id: user_id,
-                                                                        subject: subject_default,
-                                                                        tips: req.body.tips,
-                                                                        level: req.body.level,
-                                                                    })
-                                                                }
-
-
-                                                            }
-                                                        }
-
-                                                    }
-
-                                                })
-
-                                        }
-                                    })
-
-
-                            }
-                        }
-                    })
-
-            }
-        }
-    }
-
-
-})
-
 router.post('/semblance', function (req, res, next) {
     const user_id = req.session.user.user_id;
     // const user_id ='58bbf1b8fe3d19194b924a5e';
@@ -661,47 +246,6 @@ router.post('/semblance', function (req, res, next) {
 
 })
 
-router.post('/make', function (req, res, next) {
-    const data = req.body
-    const data_temp =[data.paper1,data.paper2]
-    const user_id = req.session.user.user_id;
-    const subject_default = req.session.user.subject_default;
-    let complete=[]
-    for(i=0;i<2;i++){
-        let index=i;
-        let order="A"
-        if(index==1){
-            order="B"
-        }else{
-            order="A"
-        }
-        let papers = data_temp[index]
-        let timestamp = new Date().getTime();
-        let paper = new Paper({
-            user_id: user_id,
-            subject: subject_default,
-            tips: data.tips,
-            level: data.level,
-            data: papers,
-            date: timestamp,
-            filename: user_id + timestamp +order+ ".docx"
-        });
-        paper.save(function (err, next) {
-            if (err) {
-                res.end('error', err);
-                return next();
-            }
-            complete.push('ok')
-            createFile.create(papers, timestamp, user_id,order);
-
-        })
-    }
-    res.status(200).send({
-        message: "ok",
-        data: data,
-    });
-})
-
 //造数据
 router.get('/addtestdata', function (req, res, next) {
     let data = Mock.mock({
@@ -729,5 +273,178 @@ router.get('/addtestdata', function (req, res, next) {
 
 });
 
+router.post('/make_paper', async function (req, res, next) {
+    const user_id = req.session.user.user_id;
+    // const user_id = '58bbf1b8fe3d19194b924a5e';
+    // const subject_default = '计算机学科基础';
+    const subject_default = req.session.user.subject_default;
+    const tips = req.body.tips; //用户指定的知识点[array]
+    const level = req.body.level; //用户指定的难度[string]
+    const type_items = req.body.type_items //用户指定的题型{object}
+    const reg = /^0.[1-9]+$/;
+    let paper_list = [];
+    let papers=[];
+    const loop=5;
+
+    if (tips.length == 0) {
+        res.status(400).send({error: '未勾选任何知识点'})
+    }
+
+    else if (reg.test(level) == false) {
+        res.status(400).send({error: '输入的难度指数不符合要求（0-1）'})
+    }
+
+    else {
+
+        //第1步：判断题目是否足够
+        for (let key in type_items) {
+            try {
+                const result = await Bank.count({user_id: user_id, type: key, subject: subject_default}).exec()
+                if (result < type_items[key]) {
+                    res.status(400).send({message: `${key} 数据库存量不足`});
+                    return
+                } else {
+                    // console.log(result)
+                }
+            } catch (err) {
+                res.status(400).send({message: err});
+                return
+            }
+        }
+
+        for(let i=0;i<5;i++) {
+            //每个题型循环一次
+            for (type in type_items) {
+                //第2步：判断是否包含所选的知识点
+                try {
+                    const result = await Bank.find({
+                        tips: {$in: tips},
+                        type: type,
+                        user_id: user_id,
+                        subject: subject_default
+                    });
+
+                    if (result.length === 0) {
+                        res.status(400).send({message: `${type}不包含任何知识点`});
+                    } else {
+                        const tip = calTips(result, type_items[type]);//最终筛选出的知识点[知识点:知识点所需题目数量]
+                        // console.log(tip)
+                        // 每个题型中每个知识点每个题目筛选出的process
+                        for (let tip_key in tip) {
+                            let level_select = level_random(level);
+
+                            //搜索条件(知识点，难度，题型)
+                            const result = await Bank.find(
+                                {
+                                    tips: tip_key,
+                                    type: type,
+                                    level: level_select,
+                                    user_id: user_id,
+                                    subject: subject_default
+                                })
+
+                            //数据库题目数量>=所需数量
+                            if (result.length > 0 && result.length >= tip[tip_key]) {
+                                let select_finally = randArray(result, tip[tip_key]);
+                                paper_list = paper_list.concat(select_finally);
+                            }
+
+                            //数据库题目数量>=所需数量
+                            else if (result.length > 0 && result.length < tip[tip_key]) {
+                                let choose_temp = result;
+
+                                //此时不考虑难度
+                                const result_temp = await Bank.find(
+                                    {
+                                        tips: tip_key,
+                                        type: type,
+                                        user_id: user_id,
+                                        subject: subject_default
+                                    })
+                                if (result_temp.length < (tip[tip_key] - choose_temp.length)) {
+                                    res.status(400).send({message: `${type}无法完成出题`});
+                                } else {
+                                    let select_finally = randArray(result_temp, (tip[tip_key] - choose_temp.length));
+                                    paper_list = paper_list.concat(select_finally).concat(choose_temp);
+                                }
+                            }
+
+                            //数据库中找不到
+                            else {
+                                const result_temp1 = await Bank.find(
+                                    {
+                                        tips: tip_key,
+                                        type: type,
+                                        user_id: user_id,
+                                        subject: subject_default
+                                    })
+                                if (result_temp1.length >= tip[tip_key]) {
+                                    let select_finally = randArray(result_temp1, tip[tip_key]);
+                                    paper_list = paper_list.concat(select_finally);
+                                } else {
+                                    res.status(400).send({message: `${type}中${tip_key}数量不足`});
+                                }
+                            }
+
+                        }
+                    }
+                } catch (err) {
+                    res.status(400).send({message: err});
+                }
+
+            }
+
+            papers.push(paper_list)
+            if(i===loop-1){
+                papers=semblance(papers)
+            }else{
+                paper_list=[]
+            }
+
+        }
+
+        for(let i =0;i<2;i++){
+            let timestamp = new Date().getTime();
+            let order=""
+            if(i==0){
+                order="A"
+            }else{
+                order="B"
+            }
+            let paper = new Paper({
+                user_id: user_id,
+                subject: subject_default,
+                tips: tips,
+                level: level,
+                data: papers[i],
+                date: timestamp,
+                filename: user_id + timestamp + order + ".docx"
+            });
+
+            try {
+                const save = await paper.save()
+                if(save){
+                    try {
+                        await createFile.create(papers[i], timestamp, user_id, order);
+                    }catch(err){
+                        res.status(400).send({message: err});
+                    }
+                    }
+            }
+            catch(err){
+                res.status(400).send({message: err});
+            }
+
+
+        }
+    }
+
+    res.send({message: 'success',
+        tips:tips,
+        level:level,
+        semblance: papers[2],
+        length: paper_list.length,
+        papers: [papers[0],papers[1]]})
+});
 
 module.exports = router;

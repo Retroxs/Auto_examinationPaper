@@ -7,7 +7,7 @@
  * @returns {Array}
  */
 exports.arrCheck=function arrCheck(arr) {
-    let newArr = [];
+    let newArr = {};
     for (let i = 0; i < arr.length; i++) {
         let temp = arr[i];
         let count = 0;
@@ -18,7 +18,7 @@ exports.arrCheck=function arrCheck(arr) {
             }
         }
         if (temp != -1) {
-            newArr.push(temp + ":" + count)
+            newArr[temp]=count
         }
     }
     return newArr;
