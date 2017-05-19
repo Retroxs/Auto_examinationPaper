@@ -33,9 +33,11 @@ function createPaper(){
         },
         success: function (data) {
             layer.alert('试卷AB卷已加入试卷库\n重复率为：'+data.semblance)
+            layer.closeAll('loading'); //关闭加载层
         },
         error: function (data) {
             layer.alert(data.responseText)
+            layer.closeAll('loading'); //关闭加载层
         }
     })
 }

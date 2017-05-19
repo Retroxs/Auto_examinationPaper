@@ -284,7 +284,7 @@ router.post('/make_paper', async function (req, res, next) {
     const reg = /^0.[1-9]+$/;
     let paper_list = [];
     let papers=[];
-    const loop=5;
+    const loop=1000;
 
     if (tips.length == 0) {
         res.status(400).send({error: '未勾选任何知识点'})
