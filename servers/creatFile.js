@@ -43,7 +43,7 @@ exports.create = async function (data, time,id,order) {
     for (let i = 0; i < type1_list.length; i++) {
 
         var pObj = docx.createListOfNumbers();
-        pObj.addText(type1_list[i].level + ' ' + type1_list[i].type + ' ' + type1_list[i].tips + ' ' + type1_list[i].question);
+        pObj.addText(type1_list[i].question);
         // for(let i=0;i<(type5_list[i].filepath).length;i++){
         //     pObj.addImage (path.join(__dirname, (type1_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
         // }
@@ -57,7 +57,7 @@ exports.create = async function (data, time,id,order) {
 
         var pObj = docx.createListOfNumbers();
 
-        pObj.addText(type2_list[i].level + ' ' + type2_list[i].type + ' ' + type2_list[i].tips + ' ' + type2_list[i].question);
+        pObj.addText(type2_list[i].question);
         // for(let i=0;i<(type5_list[i].filepath).length;i++){
         //     pObj.addImage (path.join(__dirname, (type2_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
         //
@@ -73,7 +73,7 @@ exports.create = async function (data, time,id,order) {
 
         var pObj = docx.createListOfNumbers();
 
-        pObj.addText(type3_list[i].level + ' ' + type3_list[i].type + ' ' + type3_list[i].tips + ' ' + type3_list[i].question);
+        pObj.addText(type3_list[i].question);
         // for(let i=0;i<(type5_list[i].filepath).length;i++){
         //         pObj.addImage (path.join(__dirname, (type3_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
         //
@@ -88,7 +88,7 @@ exports.create = async function (data, time,id,order) {
     for (let i = 0; i < type4_list.length; i++) {
         var pObj = docx.createListOfNumbers();
 
-        pObj.addText(type4_list[i].level + ' ' + type4_list[i].type + ' ' + type4_list[i].tips + ' ' + type4_list[i].question);
+        pObj.addText(type4_list[i].question);
         // for(let i=0;i<(type5_list[i].filepath).length;i++){
         //     pObj.addImage (path.join(__dirname, (type4_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
         //
@@ -102,7 +102,7 @@ exports.create = async function (data, time,id,order) {
     for (let i = 0; i < type5_list.length; i++) {
         var pObj = docx.createListOfNumbers();
 
-        pObj.addText(type5_list[i].level + ' ' + type5_list[i].type + ' ' + type5_list[i].tips + ' ' + type5_list[i].question);
+        pObj.addText(type5_list[i].question);
         // for(let i=0;i<(type5_list[i].filepath).length;i++){
         //     pObj.addImage (path.join(__dirname, (type5_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
         //
