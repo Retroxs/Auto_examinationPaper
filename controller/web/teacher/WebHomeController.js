@@ -106,8 +106,9 @@ router.get('/edit_question/:q_id',authToken,function (req,res) {
             if (err) {
                 res.end(err)
             }
-            var filename = ((doc[0].filepath).split('../uploads/'))[1];
-            res.render('index', {title: '编辑题目', qInfo: doc[0],subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips,fileName:filename});
+
+            // var filename = ((doc[0].filepath).split('../uploads/'))[1];
+            res.render('index', {title: '编辑题目', qInfo: doc[0],subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips});
         })
 
     })
