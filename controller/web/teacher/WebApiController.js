@@ -312,7 +312,7 @@ router.post('/make_paper', async function (req, res, next) {
             }
         }
 
-        for(let i=0;i<5;i++) {
+        for(let i=0;i<loop;i++) {
             //每个题型循环一次
             for (type in type_items) {
                 //第2步：判断是否包含所选的知识点
@@ -324,9 +324,13 @@ router.post('/make_paper', async function (req, res, next) {
                         subject: subject_default
                     });
 
-                    if (result.length === 0) {
+                    if (result.length === 0 && type_items[type]>0) {
                         res.status(400).send({message: `${type}不包含任何知识点`});
-                    } else {
+                    }
+                    else if(type_items[type]===0){
+                        // res.status(400).send({message: `${type}为0`});
+                    }
+                    else {
                         const tip = calTips(result, type_items[type]);//最终筛选出的知识点[知识点:知识点所需题目数量]
                         // console.log(tip)
                         // 每个题型中每个知识点每个题目筛选出的process
