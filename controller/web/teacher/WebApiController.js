@@ -159,6 +159,21 @@ router.get('/findQuestion/:q_id', function (req, res, next) {
 
 });
 
+router.get('/findquestion/key/:key', function (req, res, next) {
+    Bank.find({question: new RegExp(req.params.key)}, function (err, docs) {
+        if (err) {
+            res.end('err', err);
+            return next();
+        }
+        else{
+            res.status(200).send(docs);
+        }
+
+
+    })
+
+});
+
 //删除题目
 router.delete('/bank/:id/delete', function (req, res, next) {
 
@@ -275,8 +290,6 @@ router.get('/addtestdata', function (req, res, next) {
 
 router.post('/make_paper', async function (req, res, next) {
     const user_id = req.session.user.user_id;
-    // const user_id = '58bbf1b8fe3d19194b924a5e';
-    // const subject_default = '计算机学科基础';
     const subject_default = req.session.user.subject_default;
     const tips = req.body.tips; //用户指定的知识点[array]
     const level = req.body.level; //用户指定的难度[string]
@@ -431,12 +444,12 @@ router.post('/make_paper', async function (req, res, next) {
                     try {
                         await createFile.create(papers[i], timestamp, user_id, order);
                     }catch(err){
-                        res.status(400).send({message: err});
+                        res.status(400).send({message: '生成试卷出错'});
                     }
                     }
             }
             catch(err){
-                res.status(400).send({message: err});
+                res.status(400).send({message: '数据库链接错误'});
             }
 
 

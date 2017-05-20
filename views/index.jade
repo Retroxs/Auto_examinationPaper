@@ -22,30 +22,42 @@ block content
                                 option(value="2") 判断题
                                 option(value="3") 简答题
                                 option(value="4") 解答题
+                                option(value="5") 名词解释
                             else if qInfo.type === "填空题"
                                 option(value="0" ) 选择题
                                 option(value="1" selected) 填空题
                                 option(value="2") 判断题
                                 option(value="3") 简答题
                                 option(value="4") 解答题
+                                option(value="5") 名词解释
                             else if qInfo.type === "判断题"
                                 option(value="0" ) 选择题
                                 option(value="1") 填空题
                                 option(value="2" selected) 判断题
                                 option(value="3") 简答题
                                 option(value="4") 解答题
+                                option(value="5") 名词解释
                             else if qInfo.type === "简答题"
                                 option(value="0" ) 选择题
                                 option(value="1") 填空题
                                 option(value="2") 判断题
                                 option(value="3" selected) 简答题
                                 option(value="4") 解答题
+                                option(value="5") 名词解释
                             else if qInfo.type === "解答题"
                                 option(value="0" ) 选择题
                                 option(value="1") 填空题
                                 option(value="2") 判断题
                                 option(value="3") 简答题
                                 option(value="4" selected) 解答题
+                                option(value="5") 名词解释
+                            else if qInfo.type === "名词解释"
+                                option(value="0" ) 选择题
+                                option(value="1") 填空题
+                                option(value="2") 判断题
+                                option(value="3") 简答题
+                                option(value="4") 解答题
+                                option(value="5" selected) 名词解释
                     else
                         select(id='type')
                             option(value="0" selected) 选择题
@@ -53,6 +65,7 @@ block content
                             option(value="2") 判断题
                             option(value="3") 简答题
                             option(value="4") 解答题
+                            option(value="5") 名词解释
 
                 label.layui-form-label 知识点
                 .layui-input-inline

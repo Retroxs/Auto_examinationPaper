@@ -16,9 +16,12 @@ block content
                 label.layui-form-label 科目
                 .layui-input-inline
                     input.layui-input(id='subject' value= subject_default readonly='readonly')
+            .layui-form-item
+                .layui-input-inline
+                    input.layui-input()
             .layui-field-box
             each item in list
-                blockquote.layui-elem-quote.layui-quote-nm #{item.question}
+                blockquote.layui-elem-quote.layui-quote-nm [#{item.type}] #{item.question}
                     a.qt-delete(name="#{item._id}" onclick="delete_question(this)") 删除
                     a.qt-edit(href="/edit_question/#{item._id}") 编辑
                     a.qt-detail(id="#{item._id}" onclick="show_question(this)") 预览

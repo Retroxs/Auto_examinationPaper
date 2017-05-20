@@ -14,6 +14,7 @@ exports.create = async function (data, time,id,order) {
     const type3_list=[]
     const type4_list=[]
     const type5_list=[]
+    const type6_list=[]
     await data.forEach(function (element) {
         if(element.type=="选择题"){
             type1_list.push(element)
@@ -25,6 +26,8 @@ exports.create = async function (data, time,id,order) {
             type4_list.push(element)
         }else if(element.type=="解答题"){
             type5_list.push(element)
+        }else if(element.type=="名词解释"){
+            type6_list.push(element)
         }
     })
 
@@ -111,6 +114,21 @@ exports.create = async function (data, time,id,order) {
 
     }
 
+    var pObj = docx.createP({align: 'left'});
+    pObj.addText('名词解释', {font_face: 'Arial', font_size: 14});
+    pObj.addLineBreak();
+    for (let i = 0; i < type6_list.length; i++) {
+        var pObj = docx.createListOfNumbers();
+
+        pObj.addText(type6_list[i].question);
+        // for(let i=0;i<(type5_list[i].filepath).length;i++){
+        //     pObj.addImage (path.join(__dirname, (type5_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
+        //
+        // }
+
+
+    }
+
     var pObj = docx.createP({align: 'center'});
     pObj.addText(' 答案', {font_face: 'Arial', font_size: 40});
     pObj.addLineBreak();
@@ -168,6 +186,15 @@ exports.create = async function (data, time,id,order) {
         var pObj = docx.createListOfNumbers();
 
         pObj.addText(type5_list[i].answer);
+    }
+
+    var pObj = docx.createP({align: 'left'});
+    pObj.addText('名词解释', {font_face: 'Arial', font_size: 14});
+    pObj.addLineBreak();
+    for (let i = 0; i < type6_list.length; i++) {
+        var pObj = docx.createListOfNumbers();
+
+        pObj.addText(type6_list[i].answer);
     }
 
     let out = fs.createWriteStream(filePath + "/" + id + time + order+".docx");
