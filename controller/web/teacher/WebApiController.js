@@ -159,13 +159,50 @@ router.get('/findQuestion/:q_id', function (req, res, next) {
 
 });
 
+//公共题库 =》 自己题库
+router.get('/addtomybank/:id', async function (req, res, next) {
+    try {
+        const result = await Bank.find({_id: req.params.id})
+        let user_id = result[0].user_id;
+        user_id.push(req.session.user.user_id);
+        try {
+            await Bank.update({'_id': req.params.id}, {$set: {user_id: user_id}})
+            res.status(200).send({message:'加入成功'})
+        } catch (err) {
+            res.status(400).send({error: '数据库错误'})
+        }
+    } catch (err) {
+        res.status(400).send({error: '数据库错误'})
+    }
+});
+
+//移除加入的题目
+router.get('/movefrommybank/:id', async function (req, res, next) {
+    try {
+        const result = await Bank.find({_id: req.params.id})
+        let user_id = result[0].user_id;
+        const index =user_id.indexOf(req.session.user.user_id);
+        user_id.splice(index,1)
+
+        try {
+            await Bank.update({'_id': req.params.id}, {$set: {user_id: user_id}})
+            res.status(200).send({message:'移除成功'})
+        } catch (err) {
+            res.status(400).send({error: '数据库错误'})
+        }
+    } catch (err) {
+        res.status(400).send({error: '数据库错误'})
+    }
+});
+
+//模糊搜索
 router.get('/findquestion/key/:key', function (req, res, next) {
     Bank.find({question: new RegExp(req.params.key)}, function (err, docs) {
         if (err) {
             res.end('err', err);
             return next();
         }
-        else{
+        else {
             res.status(200).send(docs);
         }
 
@@ -181,10 +218,17 @@ router.delete('/bank/:id/delete', function (req, res, next) {
         if (err) {
             res.end('err', err);
             return next();
+        }else{
+            const user_id = doc.user_id
+            const index = user_id.indexOf(req.session.user.user_id)
+            if(index===0){
+                doc.remove();
+                res.status(200).send(doc);
+            }else{
+                res.status(400).send({message:'你不是这个题目的创建者'});
+            }
         }
 
-        doc.remove();
-        res.status(200).send(doc);
     })
 });
 
@@ -296,8 +340,8 @@ router.post('/make_paper', async function (req, res, next) {
     const type_items = req.body.type_items //用户指定的题型{object}
     const reg = /^0.[1-9]+$/;
     let paper_list = [];
-    let papers=[];
-    const loop=100;
+    let papers = [];
+    const loop = 100;
 
     if (tips.length == 0) {
         res.status(400).send({error: '未勾选任何知识点'})
@@ -325,7 +369,7 @@ router.post('/make_paper', async function (req, res, next) {
             }
         }
 
-        for(let i=0;i<loop;i++) {
+        for (let i = 0; i < loop; i++) {
             //每个题型循环一次
             for (type in type_items) {
                 //第2步：判断是否包含所选的知识点
@@ -337,10 +381,10 @@ router.post('/make_paper', async function (req, res, next) {
                         subject: subject_default
                     });
 
-                    if (result.length === 0 && type_items[type]>0) {
+                    if (result.length === 0 && type_items[type] > 0) {
                         res.status(400).send({message: `${type}不包含任何知识点`});
                     }
-                    else if(type_items[type]===0){
+                    else if (type_items[type] === 0) {
                         // res.status(400).send({message: `${type}为0`});
                     }
                     else {
@@ -412,21 +456,21 @@ router.post('/make_paper', async function (req, res, next) {
             }
 
             papers.push(paper_list)
-            if(i===loop-1){
-                papers=semblance(papers)
-            }else{
-                paper_list=[]
+            if (i === loop - 1) {
+                papers = semblance(papers)
+            } else {
+                paper_list = []
             }
 
         }
 
-        for(let i =0;i<2;i++){
+        for (let i = 0; i < 2; i++) {
             let timestamp = new Date().getTime();
-            let order=""
-            if(i==0){
-                order="A"
-            }else{
-                order="B"
+            let order = ""
+            if (i == 0) {
+                order = "A"
+            } else {
+                order = "B"
             }
             let paper = new Paper({
                 user_id: user_id,
@@ -440,15 +484,15 @@ router.post('/make_paper', async function (req, res, next) {
 
             try {
                 const save = await paper.save()
-                if(save){
+                if (save) {
                     try {
                         await createFile.create(papers[i], timestamp, user_id, order);
-                    }catch(err){
+                    } catch (err) {
                         res.status(400).send({message: '生成试卷出错'});
                     }
-                    }
+                }
             }
-            catch(err){
+            catch (err) {
                 res.status(400).send({message: '数据库链接错误'});
             }
 
@@ -456,12 +500,14 @@ router.post('/make_paper', async function (req, res, next) {
         }
     }
 
-    res.send({message: 'success',
-        tips:tips,
-        level:level,
+    res.send({
+        message: 'success',
+        tips: tips,
+        level: level,
         semblance: papers[2],
         length: paper_list.length,
-        papers: [papers[0],papers[1]]})
+        papers: [papers[0], papers[1]]
+    })
 });
 
 module.exports = router;

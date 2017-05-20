@@ -53,9 +53,52 @@ function delete_question(self) {
             location.reload()
         },
         error: function () {
+            layer.alert('你无权限删除此条题目')
+
+        }
+    })
+}
+
+function add(self) {
+    $.ajax({
+        url: '/api/addtomybank/'+self.id,
+        type: 'get',
+        dataType: 'json',
+        contentType: 'application/json',
+        beforeSend: function (a) {
+            // layer.load(1, {
+            //     shade: [0.1, '#fff'] //0.1透明度的白色背景
+            // });
+        },
+        success: function (qd) {
+            location.reload()
+        },
+        error: function () {
+            layer.alert('添加失败')
             console.log('delete failed');
 
         }
     })
 }
 
+function remove(self) {
+    $.ajax({
+        url: '/api/movefrommybank/'+self.id,
+        type: 'get',
+        dataType: 'json',
+        contentType: 'application/json',
+        beforeSend: function (a) {
+            // layer.load(1, {
+            //     shade: [0.1, '#fff'] //0.1透明度的白色背景
+            // });
+        },
+        success: function (qd) {
+            location.reload()
+        },
+        error: function () {
+            layer.alert('移除失败')
+            console.log('delete failed');
+
+        }
+    })
+}

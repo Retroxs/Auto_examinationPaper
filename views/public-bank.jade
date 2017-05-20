@@ -22,7 +22,10 @@ block content
                 blockquote.layui-elem-quote.layui-quote-nm
                     span  [#{item.type}] #{item.question}
                     a.qt-detail(id="#{item._id}" onclick="show_question(this)") 预览
-                    a.qt-detail(id="#{item._id}" onclick="show_question(this)" style='right:50px') 加入题库
+                    if((item.user_id).indexOf(user_id)===-1)
+                        a.qt-detail(id="#{item._id}" onclick='add(this)' style='right:50px') 加入题库
+                    else
+                        a.qt-detail(id="#{item._id}" onclick='remove(this)' style='right:50px') 取消加入
             #demo1(style="text-align:center")
 block scripts
     script(src='js/show_questions.js')

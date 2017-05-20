@@ -71,24 +71,40 @@ router.get('/banks-list', authToken, function (req, res) {
     let user_id = req.session.user.user_id;
     let count = 0;
     let page = req.query.page;
+    let question = req.query.question;
     let rows = 5;
     let query = Bank.find({});
     query.skip((page - 1) * rows);
     query.limit(rows);
     if (user_id) {
-        query.where('user_id', user_id).where('subject',req.session.user.subject_default).sort({_id:-1});
-    }
-    //计算分页数据
-    query.exec(function (err, rs) {
-        if (err) {
-            res.send(err);
-        } else {
-            // 计算数据总数
-            Bank.find({'user_id':user_id,'subject':req.session.user.subject_default},function (err, result) {
-                res.render('banks-list', {title: '试题中心', list: rs, total: Math.ceil(result.length / rows),subject:req.session.user.subject,subject_default:req.session.user.subject_default});
+        if(question) {
+            query.where('user_id', user_id).where('subject', req.session.user.subject_default).where('question', new RegExp(question)).sort({_id: -1});
+            //计算分页数据
+            query.exec(function (err, rs) {
+                if (err) {
+                    res.send(err);
+                } else {
+                    // 计算数据总数
+                    Bank.find({'user_id':user_id,'subject':req.session.user.subject_default,'question':new RegExp(question)},function (err, result) {
+                        res.render('banks-list', {title: '试题中心', list: rs, total: Math.ceil(result.length / rows),subject:req.session.user.subject,subject_default:req.session.user.subject_default});
+                    });
+                }
             });
-        }
-    });
+        }else{
+        query.where('user_id', user_id).where('subject',req.session.user.subject_default).sort({_id:-1});
+            //计算分页数据
+            query.exec(function (err, rs) {
+                if (err) {
+                    res.send(err);
+                } else {
+                    // 计算数据总数
+                    Bank.find({'user_id':user_id,'subject':req.session.user.subject_default},function (err, result) {
+                        res.render('banks-list', {title: '试题中心', list: rs, total: Math.ceil(result.length / rows),subject:req.session.user.subject,subject_default:req.session.user.subject_default});
+                    });
+                }
+            });
+    }}
+
 
 });
 
@@ -177,7 +193,7 @@ router.get('/public-bank', authToken, function (req, res) {
         } else {
             // 计算数据总数
                 Bank.find({'subject':req.session.user.subject_default,'public':true},function (err, result) {
-                res.render('public-bank', {title: '公开题库', list: rs, total: Math.ceil(result.length / rows),subject:req.session.user.subject,subject_default:req.session.user.subject_default});
+                res.render('public-bank', {title: '公开题库', list: rs, total: Math.ceil(result.length / rows),user_id:user_id,subject:req.session.user.subject,subject_default:req.session.user.subject_default});
             });
         }
     });
