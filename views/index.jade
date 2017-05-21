@@ -6,7 +6,7 @@ block content
     include  components/head
     include  components/side
     .content
-        blockquote.layui-elem-quote.layui-quote-nm 云题库-录入题目
+        blockquote.layui-elem-quote.layui-quote-nm 出卷易-录入题目
         form.layui-form.layui-form-pane(id="createItem" onsubmit='return false')
             .layui-form-item
                 label.layui-form-label 科目
@@ -86,27 +86,27 @@ block content
                 label.layui-form-label 附件图片
                 .layui-input-block
                     input(name="fileImg" id='upfile' type='file')
-                    input(name="attachment" class='attachment' type='text' value= qInfo?fileName:'' readonly )
+                    input(name="attachment" class='attachment' type='text' value= qInfo?qInfo.filepath[0]:'' readonly )
                     button(onclick='del_upload(this)') 删除
                 .layui-input-block
                     input(name="fileImg" class='upfile' type='file')
-                    input(name="attachment" class='attachment' type='text' value= qInfo ? fileName : '' readonly )
+                    input(name="attachment" class='attachment' type='text' value= qInfo ? qInfo.filepath[1] : '' readonly )
                     button(onclick='del_upload(this)') 删除
                 .layui-input-block
                     input(name="fileImg" class='upfile' type='file')
-                    input(name="attachment" class='attachment' type='text' value= qInfo ? fileName : '' readonly )
+                    input(name="attachment" class='attachment' type='text' value= qInfo ? qInfo.filepath[2] : '' readonly )
                     button(onclick='del_upload(this)') 删除
                 .layui-input-block
                     input(name="fileImg" class='upfile' type='file')
-                    input(name="attachment" class='attachment' type='text' value= qInfo ? fileName : '' readonly )
+                    input(name="attachment" class='attachment' type='text' value= qInfo ? qInfo.filepath[3] : '' readonly )
                     button(onclick='del_upload(this)') 删除
                 .layui-input-block
                     input(name="fileImg" class='upfile' type='file')
-                    input(name="attachment" class='attachment' type='text' value= qInfo ? fileName : '' readonly )
+                    input(name="attachment" class='attachment' type='text' value= qInfo ? qInfo.filepath[4] : '' readonly )
                     button(onclick='del_upload(this)') 删除
                 .layui-input-block
                     input(name="fileImg" class='upfile' type='file')
-                    input(name="attachment" class='attachment' type='text' value= qInfo ? fileName : '' readonly )
+                    input(name="attachment" class='attachment' type='text' value= qInfo ? qInfo.filepath[5] : '' readonly )
                     button(onclick='del_upload(this)') 删除
                 .layui-input-block
                     input(type='button' value='上传' onclick="up()")

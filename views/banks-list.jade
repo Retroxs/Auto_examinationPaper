@@ -8,7 +8,7 @@ block content
     include  components/side
     .content
         input(id="page" style="display:none" name= total)
-        blockquote.layui-elem-quote.layui-quote-nm 云题库-我的题库
+        blockquote.layui-elem-quote.layui-quote-nm 出卷易-我的题库
         fieldset.ayui-elem-field.layui-field-title
             legend 试题库
         form.layui-form.layui-form-pane
@@ -16,17 +16,18 @@ block content
                 label.layui-form-label 科目
                 .layui-input-inline
                     input.layui-input(id='subject' value= subject_default readonly='readonly')
-                label.layui-form-label 题型
-                .layui-input-inline
-                    input.layui-input(name='type')
-                label.layui-form-label 知识点
-                .layui-input-inline
-                    input.layui-input(name='tips')
-                label.layui-form-label 题目
-                .layui-input-inline
-                    input.layui-input(name='question')
-                .layui-input-inline
-                    button.layui-btn  搜索
+                .layui-form-item
+                    label.layui-form-label 题型
+                    .layui-input-inline(style='width:150px')
+                        input.layui-input(name='type' value=type ? type : '')
+                    label.layui-form-label 知识点
+                    .layui-input-inline(style='width:150px' )
+                        input.layui-input(name='tips' value=tips ? tips : '')
+                    label.layui-form-label 题目
+                    .layui-input-inline(style='width:150px')
+                        input.layui-input(name='question' value=question ? question : '')
+                    .layui-input-inline
+                        button.layui-btn  搜索
             .layui-field-box
             each item in list
                 blockquote.layui-elem-quote.layui-quote-nm [#{item.type}] #{item.question}
@@ -63,8 +64,8 @@ block scripts
                 }(),
                 jump: function (e, first) { //触发分页后的回调
                     if (!first) { //一定要加此判断，否则初始时会无限刷新
-                        if(getUrlParam('question')){
-                            location.href = '?page=' + e.curr+'&question='+getUrlParam('question');
+                        if (getUrlParam('question') || getUrlParam('type') || getUrlParam('tips')) {
+                            location.href = '?page=' + e.curr + '&question=' + getUrlParam('question') + '&type=' + getUrlParam('type') + '&tips=' + getUrlParam('tips');
                         }
                         else{
                             location.href = '?page=' + e.curr;

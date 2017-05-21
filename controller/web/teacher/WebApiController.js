@@ -296,6 +296,7 @@ router.post('/bank/:id/update', function (req, res, next) {
     })
 });
 
+//比较相似度
 router.post('/semblance', function (req, res, next) {
     const user_id = req.session.user.user_id;
     // const user_id ='58bbf1b8fe3d19194b924a5e';
@@ -551,14 +552,13 @@ router.post('/make_paper', async function (req, res, next) {
         papers: [papers[0], papers[1]]
     })
 });
+
 //导入
 router.post('/import', upload.single('csv'), function (req, res, next) {
-    console.log(req.file)
     if (req.file && ((req.file.originalname).split('.'))[1] === 'csv') {
         if (req.file.size <= (1048576 * 1)) {
             var stream = fs.createReadStream(req.file.path)
                 .pipe(iconv.decodeStream('GBK'))
-
             csv
                 .fromStream(stream, {headers: true})
                 .validate(function (data) {

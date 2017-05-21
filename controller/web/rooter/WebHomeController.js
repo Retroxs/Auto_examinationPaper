@@ -64,21 +64,41 @@ router.get('/update/:username',authToken,function (req, res) {
 router.get('/question-manage',authToken,function (req, res) {
     let count = 0;
     let page = req.query.page;
+    let question = req.query.question;
+    let type = req.query.type;
+    let tips = req.query.tips;
+    let subject = req.query.subject;
     let rows = 10;
     let query = Bank.find({});
     query.skip((page - 1) * rows);
     query.limit(rows);
-    //计算分页数据
-    query.exec(function (err, rs) {
-        if (err) {
-            res.send(err);
-        } else {
-            // 计算数据总数
-            Bank.find({},function (err, result) {
-                res.render('back/question-manage', {title: '公开题库', questions_info: rs, total: Math.ceil(result.length / rows)});
-            });
-        }
-    });
+    if(subject||question||type||tips){
+        query.where('subject', new RegExp(subject)).where('question', new RegExp(question)).where('type', new RegExp(type)).where('tips', new RegExp(tips)).sort({_id: -1});
+        //计算分页数据
+        query.exec(function (err, rs) {
+            if (err) {
+                res.send(err);
+            } else {
+                // 计算数据总数
+                Bank.find({subject:new RegExp(subject),question:new RegExp(question),type:new RegExp(type),tips:new RegExp(tips)},function (err, result) {
+                    res.render('back/question-manage', {subject:subject,question:question,type:type,tips:tips,title: '公开题库', questions_info: rs, total: Math.ceil(result.length / rows)});
+                });
+            }
+        });
+    }else{
+        //计算分页数据
+        query.exec(function (err, rs) {
+            if (err) {
+                res.send(err);
+            } else {
+                // 计算数据总数
+                Bank.find({},function (err, result) {
+                    res.render('back/question-manage', {title: '公开题库', questions_info: rs, total: Math.ceil(result.length / rows)});
+                });
+            }
+        });
+    }
+
 });
 
 //查找某一个题目

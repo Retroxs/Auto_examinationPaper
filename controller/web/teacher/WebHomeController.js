@@ -77,13 +77,15 @@ router.get('/banks-list', authToken, function (req, res) {
     let count = 0;
     let page = req.query.page;
     let question = req.query.question;
+    let type = req.query.type;
+    let tips = req.query.tips;
     let rows = 5;
     let query = Bank.find({});
     query.skip((page - 1) * rows);
     query.limit(rows);
     if (user_id) {
-        if (question) {
-            query.where('user_id', user_id).where('subject', req.session.user.subject_default).where('question', new RegExp(question)).sort({_id: -1});
+        if (question||type||tips) {
+            query.where('user_id', user_id).where('subject', req.session.user.subject_default).where('question', new RegExp(question)).where('type', new RegExp(type)).where('tips', new RegExp(tips)).sort({_id: -1});
             //计算分页数据
             query.exec(function (err, rs) {
                 if (err) {
@@ -93,7 +95,9 @@ router.get('/banks-list', authToken, function (req, res) {
                     Bank.find({
                         'user_id': user_id,
                         'subject': req.session.user.subject_default,
-                        'question': new RegExp(question)
+                        'question': new RegExp(question),
+                        'type':new RegExp(type),
+                        'tips':new RegExp(tips)
                     }, function (err, result) {
                         res.render('banks-list', {
                             title: '试题中心',
@@ -101,6 +105,7 @@ router.get('/banks-list', authToken, function (req, res) {
                             total: Math.ceil(result.length / rows),
                             subject: req.session.user.subject,
                             subject_default: req.session.user.subject_default
+                            ,question:question,type:type,tips:tips
                         });
                     });
                 }
@@ -148,6 +153,7 @@ router.get('/edit_question/:q_id', authToken, function (req, res) {
                 res.end(err)
             }
 
+            console.log(doc[0].filepath)
             // var filename = ((doc[0].filepath).split('../uploads/'))[1];
             res.render('index', {
                 title: '编辑题目',

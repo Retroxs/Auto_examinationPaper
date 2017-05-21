@@ -160,5 +160,21 @@ router.post('/update_qLevel/:q_id',authToken,function (req, res) {
         })
     })
 });
+//删除
+router.delete('/del/:id',authToken,function (req, res) {
+    if(req.session.user.role==='rooter'){
+        Bank.findOne({_id: req.params.id}, function (err, doc) {
+            if (err) {
+                res.end('err', err);
+                return next();
+            } else {
+                doc.remove();
+                res.status(200).send(doc);
+            }
+        })
+    }else{
+        res.status(400).send({message: '权限不足'});
+    }
+});
 
 module.exports = router;

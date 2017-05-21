@@ -10,7 +10,7 @@ block content
     nav.navbar.navbar-inverse(role="navigation" style="margin: 0;background-color: #323334")
         .container-fluid
             .navbar-header
-                a.navbar-brand(href="/back/dashboard" style="color:#fdfeff") 超级管理员管理系统
+                a.navbar-brand(href="/back/dashboard" style="color:#fdfeff") 出卷易
             ul.nav.navbar-nav.navbar-right
                 li.dropdown
                     a.dropdown-toggle(href='#' data-toggle="dropdown" style="color:#fff") 菜单
@@ -22,27 +22,61 @@ block content
                             a(href="/back/question-manage") 试题难度管理
                 li
                     a(href="/back/logout" style="color:#fff") 退出
+    form.layui-form.layui-form-pane
+        .layui-form-item
+            label.layui-form-label 学科
+            .layui-input-inline(style='width:100px')
+                input.layui-input(name='subject' value=subject? subject :'')
+            label.layui-form-label 题型
+            .layui-input-inline(style='width:100px')
+                input.layui-input(name='type' value=type? type :'')
+            label.layui-form-label 知识点
+            .layui-input-inline(style='width:150px')
+                input.layui-input(name='tips' value=tips ? tips : '')
+            label.layui-form-label 题目
+            .layui-input-inline(style='width:200px')
+                input.layui-input(name='question' value=question ? question : '')
+            .layui-input-inline
+                button.layui-btn  搜索
     table.table.table-bordered.table-hover.table-striped
         tr
-            th  学科
+            th(style='width:100px')  学科
+            th(style='width:100px')  题型
+            th(style='width:100px')  知识点
             th  题目
-            th  答案
+            th(style='width:30%')  答案
             th  难度
-            th  操作
+            th(style='width:100px')  操作
         each item in questions_info
             tr
                 th  #{item.subject}
+                th  #{item.type}
+                th  #{item.tips}
                 th  #{item.question}
                 th  #{item.answer}
                 th  #{item.level}
                 th
                     a(href='/back/update_qLevel/'+'#{item._id}') 修改
+                    |&nbsp;&nbsp;
+                    a(id='#{item.id}' onclick='del(this)') 删除
     #demo1(style="text-align:center")
 block scripts
     script(src='http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js')
     script(src='../js/show_questions.js')
     script.
+
             var total_page = document.getElementById("page").name;
+            function getUrlParam(variable) {
+                var query = window.location.search.substring(1);
+                var vars = query.split("&");
+                for (var i = 0; i < vars.length; i++) {
+                    var pair = vars[i].split("=");
+                    if (pair[0] == variable) {
+                        return pair[1];
+                    }
+                }
+                return (false);
+            }
             layui.use(['laypage', 'layer'], function () {
                 var laypage = layui.laypage,
                     layer = layui.layer;
@@ -56,8 +90,34 @@ block scripts
                     }(),
                     jump: function (e, first) { //触发分页后的回调
                         if (!first) { //一定要加此判断，否则初始时会无限刷新
-                            location.href = '?page=' + e.curr;
+                            if (getUrlParam('question')||getUrlParam('type')||getUrlParam('tips')||getUrlParam('subject')) {
+                                location.href = '?page=' + e.curr + '&question=' + getUrlParam('question')+'&type=' + getUrlParam('type')+'&tips=' + getUrlParam('tips')+'&subject=' + getUrlParam('subject');
+                            }else{
+                                location.href = '?page=' + e.curr;
+                            }
                         }
                     }
                 });
             })
+
+            function del(self) {
+                $.ajax({
+                    url: '/back/del/' + self.id,
+                    type: 'delete',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    beforeSend: function (a) {
+                        // layer.load(1, {
+                        //     shade: [0.1, '#fff'] //0.1透明度的白色背景
+                        // });
+                    },
+                    success: function (qd) {
+                        location.reload()
+                    },
+                    error: function () {
+                        layer.alert('删除失败')
+                        console.log('delete failed');
+
+                    }
+                })
+            }
