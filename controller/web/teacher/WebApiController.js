@@ -553,7 +553,8 @@ router.post('/make_paper', async function (req, res, next) {
 });
 //导入
 router.post('/import', upload.single('csv'), function (req, res, next) {
-    if (req.file && req.file.mimetype === 'text/csv') {
+    console.log(req.file)
+    if (req.file && ((req.file.originalname).split('.'))[1] === 'csv') {
         if (req.file.size <= (1048576 * 1)) {
             var stream = fs.createReadStream(req.file.path)
                 .pipe(iconv.decodeStream('GBK'))
