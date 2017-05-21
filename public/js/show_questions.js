@@ -102,3 +102,46 @@ function remove(self) {
         }
     })
 }
+
+
+function cancel(self) {
+    $.ajax({
+        url: '/api/cancelshare/'+self.id,
+        type: 'get',
+        dataType: 'json',
+        contentType: 'application/json',
+        beforeSend: function (a) {
+            // layer.load(1, {
+            //     shade: [0.1, '#fff'] //0.1透明度的白色背景
+            // });
+        },
+        success: function (qd) {
+            location.reload()
+        },
+        error: function () {
+            layer.alert('取消失败')
+            console.log('delete failed');
+
+        }
+    })
+}
+
+function edit(self) {
+    $.ajax({
+        url: '/api/edit_question/'+self.name,
+        type: 'get',
+        dataType: 'text',
+        contentType: 'application/json',
+        beforeSend: function (a) {
+            // layer.load(1, {
+            //     shade: [0.1, '#fff'] //0.1透明度的白色背景
+            // });
+        },
+        success: function (qd) {
+            window.location.href='/edit_question/'+self.name
+            },
+        error: function () {
+            layer.alert('你没有权限编辑此题目')
+        }
+    })
+}

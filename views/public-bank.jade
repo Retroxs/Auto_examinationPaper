@@ -25,6 +25,7 @@ block content
                     if((item.user_id).indexOf(user_id)===-1)
                         a.qt-detail(id="#{item._id}" onclick='add(this)' style='right:50px') 加入题库
                     else if((item.user_id).indexOf(user_id) === 0)
+                        a.qt-detail(id="#{item._id}" onclick='cancel(this)' style='right:50px') 取消共享
                     else
                         a.qt-detail(id="#{item._id}" onclick='remove(this)' style='right:50px') 取消加入
 

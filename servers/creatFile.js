@@ -7,26 +7,26 @@ let path = require("path");
 let filePath = path.join(__dirname, '../public/tmp/paper_tmp');
 let officegen = require('officegen');
 
-exports.create = async function (data, time,id,order) {
+exports.create = async function (data, time, id, order) {
     console.log('a')
-    const type1_list=[]
-    const type2_list=[]
-    const type3_list=[]
-    const type4_list=[]
-    const type5_list=[]
-    const type6_list=[]
+    const type1_list = []
+    const type2_list = []
+    const type3_list = []
+    const type4_list = []
+    const type5_list = []
+    const type6_list = []
     await data.forEach(function (element) {
-        if(element.type=="选择题"){
+        if (element.type == "选择题") {
             type1_list.push(element)
-        }else if(element.type=="填空题"){
+        } else if (element.type == "填空题") {
             type2_list.push(element)
-        }else if(element.type=="判断题"){
+        } else if (element.type == "判断题") {
             type3_list.push(element)
-        }else if(element.type=="简答题"){
+        } else if (element.type == "简答题") {
             type4_list.push(element)
-        }else if(element.type=="解答题"){
+        } else if (element.type == "解答题") {
             type5_list.push(element)
-        }else if(element.type=="名词解释"){
+        } else if (element.type == "名词解释") {
             type6_list.push(element)
         }
     })
@@ -37,7 +37,7 @@ exports.create = async function (data, time,id,order) {
     });
 
     var pObj = docx.createP({align: 'center'});
-    pObj.addText(' 苏州科技大学试卷'+order+'卷', {font_face: 'Arial', font_size: 40});
+    pObj.addText(' 苏州科技大学试卷' + order + '卷', {font_face: 'Arial', font_size: 40});
     pObj.addLineBreak();
 
     var pObj = docx.createP({align: 'left'});
@@ -47,12 +47,14 @@ exports.create = async function (data, time,id,order) {
 
         var pObj = docx.createListOfNumbers();
         pObj.addText(type1_list[i].question);
-        // for(let i=0;i<(type5_list[i].filepath).length;i++){
-        //     pObj.addImage (path.join(__dirname, (type1_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
-        // }
+        if ((type1_list[i].filepath).length>0) {
+            for(let j=0;j<(type1_list[i].filepath).length;j++){
+                pObj.addImage(path.join(__dirname, (type1_list[i].filepath)[j]), {cx: 100, cy: 100});
+            }
+
+        }
 
     }
-
     var pObj = docx.createP({align: 'left'});
     pObj.addText('填空题', {font_face: 'Arial', font_size: 14});
     pObj.addLineBreak();
@@ -61,10 +63,12 @@ exports.create = async function (data, time,id,order) {
         var pObj = docx.createListOfNumbers();
 
         pObj.addText(type2_list[i].question);
-        // for(let i=0;i<(type5_list[i].filepath).length;i++){
-        //     pObj.addImage (path.join(__dirname, (type2_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
-        //
-        // }
+        if ((type2_list[i].filepath).length>0) {
+            for(let j=0;j<(type2_list[i].filepath).length;j++){
+                pObj.addImage(path.join(__dirname, (type2_list[i].filepath)[j]), {cx: 100, cy: 100});
+            }
+
+        }
 
 
     }
@@ -77,11 +81,12 @@ exports.create = async function (data, time,id,order) {
         var pObj = docx.createListOfNumbers();
 
         pObj.addText(type3_list[i].question);
-        // for(let i=0;i<(type5_list[i].filepath).length;i++){
-        //         pObj.addImage (path.join(__dirname, (type3_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
-        //
-        // }
+        if ((type3_list[i].filepath).length>0) {
+            for(let j=0;j<(type3_list[i].filepath).length;j++){
+                pObj.addImage(path.join(__dirname, (type3_list[i].filepath)[j]), {cx: 100, cy: 100});
+            }
 
+        }
 
     }
 
@@ -92,10 +97,12 @@ exports.create = async function (data, time,id,order) {
         var pObj = docx.createListOfNumbers();
 
         pObj.addText(type4_list[i].question);
-        // for(let i=0;i<(type5_list[i].filepath).length;i++){
-        //     pObj.addImage (path.join(__dirname, (type4_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
-        //
-        // }
+        if ((type4_list[i].filepath).length>0) {
+            for(let j=0;j<(type4_list[i].filepath).length;j++){
+                pObj.addImage(path.join(__dirname, (type4_list[i].filepath)[j]), {cx: 100, cy: 100});
+            }
+
+        }
 
     }
 
@@ -106,10 +113,12 @@ exports.create = async function (data, time,id,order) {
         var pObj = docx.createListOfNumbers();
 
         pObj.addText(type5_list[i].question);
-        // for(let i=0;i<(type5_list[i].filepath).length;i++){
-        //     pObj.addImage (path.join(__dirname, (type5_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
-        //
-        // }
+        if ((type5_list[i].filepath).length>0) {
+            for(let j=0;j<(type5_list[i].filepath).length;j++){
+                pObj.addImage(path.join(__dirname, (type5_list[i].filepath)[j]), {cx: 100, cy: 100});
+            }
+
+        }
 
 
     }
@@ -121,10 +130,12 @@ exports.create = async function (data, time,id,order) {
         var pObj = docx.createListOfNumbers();
 
         pObj.addText(type6_list[i].question);
-        // for(let i=0;i<(type5_list[i].filepath).length;i++){
-        //     pObj.addImage (path.join(__dirname, (type5_list[i].filepath)[i]), { cx: 100, cy: 100 }  );
-        //
-        // }
+        if ((type6_list[i].filepath).length>0) {
+            for(let j=0;j<(type6_list[i].filepath).length;j++){
+                pObj.addImage(path.join(__dirname, (type6_list[i].filepath)[j]), {cx: 100, cy: 100});
+            }
+
+        }
 
 
     }
@@ -146,7 +157,7 @@ exports.create = async function (data, time,id,order) {
     }
 
     var pObj = docx.createP({align: 'left'});
-    pObj.addText('判断题', {font_face: 'Arial', font_size: 14});
+    pObj.addText('填空题', {font_face: 'Arial', font_size: 14});
     pObj.addLineBreak();
     for (let i = 0; i < type2_list.length; i++) {
 
@@ -158,7 +169,7 @@ exports.create = async function (data, time,id,order) {
     }
 
     var pObj = docx.createP({align: 'left'});
-    pObj.addText('填空题', {font_face: 'Arial', font_size: 14});
+    pObj.addText('判断题', {font_face: 'Arial', font_size: 14});
     pObj.addLineBreak();
     for (let i = 0; i < type3_list.length; i++) {
 
@@ -197,7 +208,7 @@ exports.create = async function (data, time,id,order) {
         pObj.addText(type6_list[i].answer);
     }
 
-    let out = fs.createWriteStream(filePath + "/" + id + time + order+".docx");
+    let out = fs.createWriteStream(filePath + "/" + id + time + order + ".docx");
 
     out.on('error', function (err) {
         console.log(err);

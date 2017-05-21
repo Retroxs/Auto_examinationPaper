@@ -22,7 +22,7 @@ router.use(session({
 
 //登录认证
 function authToken(req, res, next) {
-    if (!req.session.user||req.session.user.role!=='teacher') {
+    if (!req.session.user || req.session.user.role !== 'teacher') {
         res.redirect('/login')
     } else {
         next();
@@ -31,7 +31,7 @@ function authToken(req, res, next) {
 
 
 /* GET home page. */
-router.get('/',function (req,res,next) {
+router.get('/', function (req, res, next) {
     res.redirect('/home')
 });
 
@@ -53,15 +53,20 @@ router.get('/logout', function (req, res) {
 
 //主页
 router.get('/home', authToken, function (req, res) {
-    Bank.find({user_id:req.session.user.user_id},function (err,docs) {
-        if(err){
+    Bank.find({user_id: req.session.user.user_id}, function (err, docs) {
+        if (err) {
             res.end(err)
         }
         let M = docs.map(function (o) {
             return o.tips;
         });
         let allTips = Array.from(new Set(M));//对检索出的知识点进行去重
-        res.render('index', {title: '录入题目',subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips});
+        res.render('index', {
+            title: '录入题目',
+            subject: req.session.user.subject,
+            subject_default: req.session.user.subject_default,
+            allTips: allTips
+        });
 
     })
 });
@@ -77,7 +82,7 @@ router.get('/banks-list', authToken, function (req, res) {
     query.skip((page - 1) * rows);
     query.limit(rows);
     if (user_id) {
-        if(question) {
+        if (question) {
             query.where('user_id', user_id).where('subject', req.session.user.subject_default).where('question', new RegExp(question)).sort({_id: -1});
             //计算分页数据
             query.exec(function (err, rs) {
@@ -85,33 +90,53 @@ router.get('/banks-list', authToken, function (req, res) {
                     res.send(err);
                 } else {
                     // 计算数据总数
-                    Bank.find({'user_id':user_id,'subject':req.session.user.subject_default,'question':new RegExp(question)},function (err, result) {
-                        res.render('banks-list', {title: '试题中心', list: rs, total: Math.ceil(result.length / rows),subject:req.session.user.subject,subject_default:req.session.user.subject_default});
+                    Bank.find({
+                        'user_id': user_id,
+                        'subject': req.session.user.subject_default,
+                        'question': new RegExp(question)
+                    }, function (err, result) {
+                        res.render('banks-list', {
+                            title: '试题中心',
+                            list: rs,
+                            total: Math.ceil(result.length / rows),
+                            subject: req.session.user.subject,
+                            subject_default: req.session.user.subject_default
+                        });
                     });
                 }
             });
-        }else{
-        query.where('user_id', user_id).where('subject',req.session.user.subject_default).sort({_id:-1});
+        } else {
+            query.where('user_id', user_id).where('subject', req.session.user.subject_default).sort({_id: -1});
             //计算分页数据
             query.exec(function (err, rs) {
                 if (err) {
                     res.send(err);
                 } else {
                     // 计算数据总数
-                    Bank.find({'user_id':user_id,'subject':req.session.user.subject_default},function (err, result) {
-                        res.render('banks-list', {title: '试题中心', list: rs, total: Math.ceil(result.length / rows),subject:req.session.user.subject,subject_default:req.session.user.subject_default});
+                    Bank.find({
+                        'user_id': user_id,
+                        'subject': req.session.user.subject_default
+                    }, function (err, result) {
+                        res.render('banks-list', {
+                            title: '试题中心',
+                            list: rs,
+                            total: Math.ceil(result.length / rows),
+                            subject: req.session.user.subject,
+                            subject_default: req.session.user.subject_default
+                        });
                     });
                 }
             });
-    }}
+        }
+    }
 
 
 });
 
 //更新题目
-router.get('/edit_question/:q_id',authToken,function (req,res) {
-    Bank.find({user_id:req.session.user.user_id},function (err,docs) {
-        if(err){
+router.get('/edit_question/:q_id', authToken, function (req, res) {
+    Bank.find({user_id: req.session.user.user_id}, function (err, docs) {
+        if (err) {
             res.end(err)
         }
         let M = docs.map(function (o) {
@@ -124,7 +149,13 @@ router.get('/edit_question/:q_id',authToken,function (req,res) {
             }
 
             // var filename = ((doc[0].filepath).split('../uploads/'))[1];
-            res.render('index', {title: '编辑题目', qInfo: doc[0],subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips});
+            res.render('index', {
+                title: '编辑题目',
+                qInfo: doc[0],
+                subject: req.session.user.subject,
+                subject_default: req.session.user.subject_default,
+                allTips: allTips
+            });
         })
 
     })
@@ -134,15 +165,20 @@ router.get('/edit_question/:q_id',authToken,function (req,res) {
 
 //出卷页面
 router.get('/make-paper', authToken, function (req, res) {
-    Bank.find({user_id:req.session.user.user_id,subject:req.session.user.subject_default},function (err,docs) {
-        if(err){
+    Bank.find({user_id: req.session.user.user_id, subject: req.session.user.subject_default}, function (err, docs) {
+        if (err) {
             res.end(err)
         }
         let M = docs.map(function (o) {
             return o.tips;
         });
         let allTips = Array.from(new Set(M));//对检索出的知识点进行去重
-        res.render('make-paper', {title: '组卷中心',subject:req.session.user.subject,subject_default:req.session.user.subject_default,allTips:allTips});
+        res.render('make-paper', {
+            title: '组卷中心',
+            subject: req.session.user.subject,
+            subject_default: req.session.user.subject_default,
+            allTips: allTips
+        });
 
     })
 
@@ -158,7 +194,7 @@ router.get('/paper-bank', authToken, function (req, res) {
     query.skip((page - 1) * rows);
     query.limit(rows);
     if (user_id) {
-        query.where('user_id', user_id).where('subject',req.session.user.subject_default).sort({_id:-1});
+        query.where('user_id', user_id).where('subject', req.session.user.subject_default).sort({_id: -1});
     }
     //计算分页数据
     query.exec(function (err, rs) {
@@ -166,8 +202,14 @@ router.get('/paper-bank', authToken, function (req, res) {
             res.send(err);
         } else {
             // 计算数据总数
-            Paper.find({'user_id':user_id,'subject':req.session.user.subject_default},function (err, result) {
-                res.render('paper-bank', {title: '试卷中心', list: rs, total: Math.ceil(result.length / rows),subject:req.session.user.subject,subject_default:req.session.user.subject_default});
+            Paper.find({'user_id': user_id, 'subject': req.session.user.subject_default}, function (err, result) {
+                res.render('paper-bank', {
+                    title: '试卷中心',
+                    list: rs,
+                    total: Math.ceil(result.length / rows),
+                    subject: req.session.user.subject,
+                    subject_default: req.session.user.subject_default
+                });
             });
         }
     });
@@ -184,7 +226,7 @@ router.get('/public-bank', authToken, function (req, res) {
     query.skip((page - 1) * rows);
     query.limit(rows);
     if (user_id) {
-        query.where('subject',req.session.user.subject_default).where('public',true).sort({_id:-1});
+        query.where('subject', req.session.user.subject_default).where('public', true).sort({_id: -1});
     }
     //计算分页数据
     query.exec(function (err, rs) {
@@ -192,17 +234,33 @@ router.get('/public-bank', authToken, function (req, res) {
             res.send(err);
         } else {
             // 计算数据总数
-                Bank.find({'subject':req.session.user.subject_default,'public':true},function (err, result) {
-                res.render('public-bank', {title: '公开题库', list: rs, total: Math.ceil(result.length / rows),user_id:user_id,subject:req.session.user.subject,subject_default:req.session.user.subject_default});
+            Bank.find({'subject': req.session.user.subject_default, 'public': true}, function (err, result) {
+                res.render('public-bank', {
+                    title: '公开题库',
+                    list: rs,
+                    total: Math.ceil(result.length / rows),
+                    user_id: user_id,
+                    subject: req.session.user.subject,
+                    subject_default: req.session.user.subject_default
+                });
             });
         }
     });
 
 });
 
+//导入csv
+router.get('/import', authToken, function (req, res) {
+    res.render('csv', {
+        title: '导入CSV',
+        subject: req.session.user.subject,
+        subject_default: req.session.user.subject_default,
+    });
+
+});
 
 //上传
-router.get('/upload',function (req,res) {
+router.get('/upload', function (req, res) {
     res.render('upload');
 })
 module.exports = router;

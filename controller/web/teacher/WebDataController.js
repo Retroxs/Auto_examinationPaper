@@ -57,6 +57,12 @@ router.get('/download/:filename', function (req, res) {
     let file = filePath + '/' + req.params.filename;
     res.download(file); // Set disposition and send it.
 });
+//下载exampaper
+router.get('/csv/download', function (req, res) {
+    let file = path.join(__dirname, '../../../public/example/example.csv')
+    res.download(file); // Set disposition and send it.
+});
+
 //上传
 router.post('/upload', upload.array('fileImg',6), function (req, res, next) {
     if (req.files) {

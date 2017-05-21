@@ -1,0 +1,45 @@
+//
+   Created by HUI on 2017/5/20.
+extends components/layout
+block styles
+    link(rel='stylesheet',href='style/style.css')
+block content
+    include  components/head
+    include  components/side
+    .content
+        blockquote.layui-elem-quote
+            form#createItem
+                input(name='csv' type='file' accept="text/csv")
+                button(type='button' onclick='import_csv()') 导入
+        blockquote.layui-elem-quote
+            span 没有模版？
+                a(href='/csv/download' style='color:red') 点击下载
+block scripts
+    script.
+        function import_csv() {
+            var formData = new FormData($('#createItem')[0]);
+            $.ajax({
+                type: "POST",
+                url: "/api/import",
+                data: formData,
+                processData: false, 	//必须false才会自动加上正确的Content-Type
+                contentType: false,
+                beforeSend: function () {
+                    var layer = layui.layer
+                    layer.load(0, {
+                        shade: 0.3,
+                        scrollbar: false
+                    })
+                },
+                success: function (data) {
+                   layer.alert('导入成功')
+
+                    layer.closeAll('loading'); //关闭加载层
+                },
+                error: function (data) {
+                    layer.alert(data.responseJSON.message)
+                    layer.closeAll('loading'); //关闭加载层
+                }
+            })
+        }
+

@@ -14,6 +14,7 @@ const express = require('express')
     , multer = require('multer')
     , session = require('express-session')
     , cookieParser = require('cookie-parser')
+    , lineReader = require('line-reader')
     , User = mongoose.model('User')
     , Bank = mongoose.model('Bank')
     , Paper = mongoose.model('Paper')
@@ -22,6 +23,16 @@ const express = require('express')
     , arrCheck = require('../../../servers/utils/arrCheck').arrCheck
     , calTips = require('../../../servers/utils/calTips').calTips
     , level_random = require('../../../servers/utils/level_random').level_random
+
+const csv = require('fast-csv')
+const fs = require('fs');
+const iconv = require('iconv-lite');
+const upload = require('../../../servers/fileupload');
+const csv_validate = ['type','tips','question','answer','level'].sort().toString()
+let is_csv =false
+function csv_v(data) {
+    return ((Object.keys(data)).sort().toString() === csv_validate)
+}
 
 router.use(cookieParser());
 //设置服务器session
@@ -167,7 +178,7 @@ router.get('/addtomybank/:id', async function (req, res, next) {
         user_id.push(req.session.user.user_id);
         try {
             await Bank.update({'_id': req.params.id}, {$set: {user_id: user_id}})
-            res.status(200).send({message:'加入成功'})
+            res.status(200).send({message: '加入成功'})
         } catch (err) {
             res.status(400).send({error: '数据库错误'})
         }
@@ -181,15 +192,25 @@ router.get('/movefrommybank/:id', async function (req, res, next) {
     try {
         const result = await Bank.find({_id: req.params.id})
         let user_id = result[0].user_id;
-        const index =user_id.indexOf(req.session.user.user_id);
-        user_id.splice(index,1)
+        const index = user_id.indexOf(req.session.user.user_id);
+        user_id.splice(index, 1)
 
         try {
             await Bank.update({'_id': req.params.id}, {$set: {user_id: user_id}})
-            res.status(200).send({message:'移除成功'})
+            res.status(200).send({message: '移除成功'})
         } catch (err) {
             res.status(400).send({error: '数据库错误'})
         }
+    } catch (err) {
+        res.status(400).send({error: '数据库错误'})
+    }
+});
+
+//取消共享题目
+router.get('/cancelshare/:id', async function (req, res, next) {
+    try {
+        await Bank.update({'_id': req.params.id}, {$set: {public: false, user_id: [req.session.user.user_id]}})
+        res.status(200).send({message: '取消成功'})
     } catch (err) {
         res.status(400).send({error: '数据库错误'})
     }
@@ -218,14 +239,34 @@ router.delete('/bank/:id/delete', function (req, res, next) {
         if (err) {
             res.end('err', err);
             return next();
-        }else{
+        } else {
             const user_id = doc.user_id
             const index = user_id.indexOf(req.session.user.user_id)
-            if(index===0){
+            if (index === 0) {
                 doc.remove();
                 res.status(200).send(doc);
-            }else{
-                res.status(400).send({message:'你不是这个题目的创建者'});
+            } else {
+                res.status(400).send({message: '你不是这个题目的创建者'});
+            }
+        }
+
+    })
+});
+
+//删除题目(全县控制)
+router.get('/edit_question/:id', function (req, res, next) {
+
+    Bank.findOne({_id: req.params.id}, function (err, doc) {
+        if (err) {
+            res.end('err', err);
+            return next();
+        } else {
+            const user_id = doc.user_id;
+            const index = user_id.indexOf(req.session.user.user_id)
+            if (index === 0) {
+                res.status(200).send('ok');
+            } else {
+                res.status(400).send({message: '你不是这个题目的创建者'});
             }
         }
 
@@ -332,6 +373,7 @@ router.get('/addtestdata', function (req, res, next) {
 
 });
 
+//生成试卷
 router.post('/make_paper', async function (req, res, next) {
     const user_id = req.session.user.user_id;
     const subject_default = req.session.user.subject_default;
@@ -509,5 +551,57 @@ router.post('/make_paper', async function (req, res, next) {
         papers: [papers[0], papers[1]]
     })
 });
+//导入
+router.post('/import', upload.single('csv'), function (req, res, next) {
+    if (req.file && req.file.mimetype === 'text/csv') {
+        if (req.file.size <= (1048576 * 1)) {
+            var stream = fs.createReadStream(req.file.path)
+                .pipe(iconv.decodeStream('GBK'))
 
+            csv
+                .fromStream(stream, {headers: true})
+                .validate(function (data) {
+                    return csv_v(data)
+                })
+                .on("data-invalid", function (data) {
+                    // console.log(data)
+                })
+                .on("data", async function (data) {
+                    is_csv=true
+                    let bank = new Bank({
+                        user_id: req.session.user.user_id,
+                        subject: req.session.user.subject_default,
+                        type: data['type'],
+                        tips: data['tips'],
+                        level: data['level'],
+                        public: false,
+                        question: data['question'],
+                        answer: data['answer'],
+                        filepath: [],
+                    });
+                    try {
+                        await bank.save()
+                    } catch (err) {
+                        res.status(400).send({message: 'db error'});
+                    }
+                })
+                .on("end", function () {
+                    if (is_csv) {
+                        res.status(200).send({message: 'create success'});
+                    }
+                    else {
+                        res.status(400).send({message: 'key值不符合要求'});
+                    }
+                    is_csv =false
+                });
+
+        } else {
+            res.status(400).send({message: '文件大小超过限制'});
+        }
+    } else {
+        res.status(400).send({message: '格式错误'});
+    }
+
+
+})
 module.exports = router;
