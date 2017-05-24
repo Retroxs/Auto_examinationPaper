@@ -152,7 +152,6 @@ router.get('/edit_question/:q_id', authToken, function (req, res) {
             if (err) {
                 res.end(err)
             }
-
             console.log(doc[0].filepath)
             // var filename = ((doc[0].filepath).split('../uploads/'))[1];
             res.render('index', {

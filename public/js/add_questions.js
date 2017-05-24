@@ -64,11 +64,22 @@ function createQuestion() {
 
 function updateQuestion(id) {
     var addQ_obj = {};
+    var pic_groups=$(".attachment")
+    var pic_group=[]
+    for(let i=0;i<pic_groups.length;i++){
+        if($(pic_groups[i]).val()){
+            pic_group.push("../uploads/"+$(pic_groups[i]).val())
+        }
+    }
+    addQ_obj.filepath=pic_group
+
     var tips = document.getElementById("tips");
     // var tips_index = tips.selectedIndex;
 
     var type = document.getElementById("type");
     var type_index = type.selectedIndex;
+
+    // addQ_obj.filepath="../uploads/"+$("#attachment").val()
     addQ_obj.subject = subject.value;
     addQ_obj.type = type.options[type_index].text;
     addQ_obj.tips = tips.value;
@@ -76,8 +87,6 @@ function updateQuestion(id) {
     addQ_obj.question = $('#question').val();
     addQ_obj.answer = $('#answer').val();
     addQ_obj.public = $("#isPublic").is(':checked');
-    addQ_obj.filepath="../uploads/"+$("#attachment").val()
-
     if(addQ_obj.tips&&addQ_obj.question&&addQ_obj.answer){
         $.ajax({
             url: '/api/bank/'+id+'/update',
@@ -94,7 +103,7 @@ function updateQuestion(id) {
                 layer.open({
                     content: '修改成功',
                     yes: function (index, layero) {
-                        window.location.href='/home '
+                        history.go(-1)
                         layer.close(index); //如果设定了yes回调，需进行手工关闭
                     }
                 })
@@ -108,8 +117,6 @@ function updateQuestion(id) {
     else {
         layer.alert('请填写必要项')
     }
-
-
 }
 
 

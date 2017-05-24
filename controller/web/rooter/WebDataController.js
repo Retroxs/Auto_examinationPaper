@@ -149,6 +149,8 @@ router.post('/update_qLevel/:q_id',authToken,function (req, res) {
         }
         Bank.update({_id: req.params.q_id}, {
             $set: {
+                question:req.body.question,
+                answer:req.body.answer,
                 level: req.body.level,
             }
         }, function (err, next) {

@@ -28,8 +28,8 @@ const csv = require('fast-csv')
 const fs = require('fs');
 const iconv = require('iconv-lite');
 const upload = require('../../../servers/fileupload');
-const csv_validate = ['type','tips','question','answer','level'].sort().toString()
-let is_csv =false
+const csv_validate = ['type', 'tips', 'question', 'answer', 'level'].sort().toString()
+let is_csv = false
 function csv_v(data) {
     return ((Object.keys(data)).sort().toString() === csv_validate)
 }
@@ -526,13 +526,11 @@ router.post('/make_paper', async function (req, res, next) {
             });
 
             try {
-                const save = await paper.save()
-                if (save) {
-                    try {
-                        await createFile.create(papers[i], timestamp, user_id, order);
-                    } catch (err) {
-                        res.status(400).send({message: '生成试卷出错'});
-                    }
+                await paper.save();
+                try {
+                    await createFile.create(papers[i], timestamp, user_id, order);
+                } catch (err) {
+                    res.status(400).send({message: '生成试卷出错'});
                 }
             }
             catch (err) {
@@ -568,7 +566,7 @@ router.post('/import', upload.single('csv'), function (req, res, next) {
                     // console.log(data)
                 })
                 .on("data", async function (data) {
-                    is_csv=true
+                    is_csv = true
                     let bank = new Bank({
                         user_id: req.session.user.user_id,
                         subject: req.session.user.subject_default,
@@ -593,7 +591,7 @@ router.post('/import', upload.single('csv'), function (req, res, next) {
                     else {
                         res.status(400).send({message: 'key值不符合要求'});
                     }
-                    is_csv =false
+                    is_csv = false
                 });
 
         } else {

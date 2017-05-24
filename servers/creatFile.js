@@ -8,7 +8,6 @@ let filePath = path.join(__dirname, '../public/tmp/paper_tmp');
 let officegen = require('officegen');
 
 exports.create = async function (data, time, id, order) {
-    console.log('a')
     const type1_list = []
     const type2_list = []
     const type3_list = []

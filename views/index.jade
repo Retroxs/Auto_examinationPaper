@@ -142,7 +142,7 @@ block content
                     input(type="checkbox" name="public" lay-skin="switch" title="分享" id='isPublic' checked= qInfo ? qInfo.public : false )
             hr
             if qInfo
-                button.layui-btn.layui-btn-radius.layui-btn-normal(lay-submit lay-filter="formDemo" style="display:block;margin:0 auto" onclick='updateQuestion("#{qInfo.id}")')  提交保存
+                button.layui-btn.layui-btn-radius.layui-btn-normal(lay-submit lay-filter="formDemo" style="display:block;margin:0 auto" onclick='updateQuestion("#{qInfo.id}")')  更新保存
             else
                 button.layui-btn.layui-btn-radius.layui-btn-normal(lay-submit lay-filter="formDemo" style="display:block;margin:0 auto" onclick='createQuestion()')  提交保存
             p.hidden#message #{message}
