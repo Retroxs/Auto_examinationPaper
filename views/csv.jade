@@ -8,12 +8,19 @@ block content
     include  components/side
     .content
         blockquote.layui-elem-quote
+            p(style='font-size:24px') 1.导入
+        blockquote.layui-elem-quote.layui-quote-nm
             form#createItem
                 input(name='csv' type='file' accept="text/csv")
                 button(type='button' onclick='import_csv()') 导入
-        blockquote.layui-elem-quote
+        blockquote.layui-elem-quote.layui-quote-nm
             span 没有模版？
                 a(href='/csv/download' style='color:red') 点击下载
+        blockquote.layui-elem-quote
+            p(style='font-size:24px') 2.备份
+        blockquote.layui-elem-quote.layui-quote-nm
+            span 备份题库？
+                a(href='/api/export' style='color:red') 导出题库
 block scripts
     script.
         function import_csv() {

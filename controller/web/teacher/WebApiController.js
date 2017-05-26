@@ -26,9 +26,11 @@ const express = require('express')
 
 const csv = require('fast-csv')
 const fs = require('fs');
+var json2csv = require('json2csv');
+var csv_fields = ['type', 'tips', 'question', 'answer', 'level'];
 const iconv = require('iconv-lite');
 const upload = require('../../../servers/fileupload');
-const csv_validate = ['type', 'tips', 'question', 'answer', 'level'].sort().toString()
+const csv_validate =csv_fields.sort().toString()
 let is_csv = false
 function csv_v(data) {
     return ((Object.keys(data)).sort().toString() === csv_validate)
@@ -601,6 +603,29 @@ router.post('/import', upload.single('csv'), function (req, res, next) {
         res.status(400).send({message: '格式错误'});
     }
 
+
+})
+
+//导出
+router.get('/export',function (req,res) {
+    const user_id = req.session.user.user_id;
+    const subject_default = req.session.user.subject_default;
+    var fileName= "backup.csv";
+    res.set({
+        'Content-Type': 'application/vnd.ms-execl',
+        'Content-Disposition':  "attachment;filename="+fileName,
+        'Pragma':'no-cache',
+        'Expires': 0
+    });
+    Bank.find({user_id:user_id,subject:subject_default},{_id:0},function (err,doc) {
+        if(err){
+            res.status(400).send({message: '数据库链接错误'});
+        }else{
+            var outData = json2csv({ data: doc, fields: csv_fields });
+            res.send(outData);
+        }
+
+    })
 
 })
 module.exports = router;
