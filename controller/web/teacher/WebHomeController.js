@@ -264,6 +264,17 @@ router.get('/import', authToken, function (req, res) {
 
 });
 
+//修改密码
+router.get('/setpassword', authToken, function (req, res) {
+    res.render('password', {
+        title: '修改密码',
+        subject: req.session.user.subject,
+        subject_default: req.session.user.subject_default,
+    });
+
+});
+
+
 //上传
 router.get('/upload', function (req, res) {
     res.render('upload');

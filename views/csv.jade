@@ -16,11 +16,13 @@ block content
         blockquote.layui-elem-quote.layui-quote-nm
             span 没有模版？
                 a(href='/csv/download' style='color:red') 点击下载
+            span(style='color:red') &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(模版的头部不可更改，否则无法导入)
         blockquote.layui-elem-quote
             p(style='font-size:24px') 2.备份
         blockquote.layui-elem-quote.layui-quote-nm
             span 备份题库？
                 a(href='/api/export' style='color:red') 导出题库
+            span(style='color:red') &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(如遇到excel直接打开乱码的情况，请先用文本编辑器转GBK码)
 block scripts
     script.
         function import_csv() {

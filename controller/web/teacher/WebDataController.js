@@ -52,6 +52,46 @@ router.post('/login', function (req, res, next) {
     })
 });
 
+router.post('/setpassword', async function (req, res) {
+    const oldPwd = req.body.oldPwd
+    const newPwd = req.body.newPwd
+
+    User.findOne({username: req.session.user.username}, function (err, doc) {
+        if (err) {
+            res.end(err)
+        } else{
+            if(doc.password === oldPwd){
+                User.update({username: req.session.user.username}, {
+                    $set: {password:newPwd}
+                }, function (err, next) {
+                    if (err) {
+                        res.end(err);
+                        return next();
+                    }
+                    res.render('password', {
+                        title: '修改密码',
+                        subject: req.session.user.subject,
+                        subject_default: req.session.user.subject_default,
+                        message:'修改成功'
+                    });
+                })
+            }
+            else{
+                res.render('password', {
+                    title: '修改密码',
+                    subject: req.session.user.subject,
+                    subject_default: req.session.user.subject_default,
+                    message:'密码错误'
+                });
+            }
+
+        }
+
+    })
+
+
+});
+
 //下载试卷
 router.get('/download/:filename', function (req, res) {
     let file = filePath + '/' + req.params.filename;
