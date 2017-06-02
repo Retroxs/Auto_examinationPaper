@@ -4,6 +4,7 @@
 const express = require('express');
 const router = express.Router();
 const path = require("path");
+const fs = require("fs");
 const filePath = path.join(__dirname, '../../../public/tmp/paper_tmp')
 const mongoose = require('mongoose');
 const db = mongoose.connection;
@@ -118,6 +119,14 @@ router.get('/paper/:id/delete', function (req, res, next) {
             return next();
         }
         doc.remove();
+        fs.unlink(path.join(filePath,doc.filename),function (err) {
+            if(err){
+                console.log(err)
+
+            }else{
+                console.log('deleted')
+            }
+        });
         res.redirect('/paper-bank')
     })
 })
