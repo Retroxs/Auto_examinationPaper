@@ -428,6 +428,7 @@ router.post('/make_paper', async function (req, res, next) {
 
                     if (result.length === 0 && type_items[type] > 0) {
                         res.status(400).send({message: `${type}不包含任何知识点`});
+                        return
                     }
                     else if (type_items[type] === 0) {
                         // res.status(400).send({message: `${type}为0`});
@@ -469,6 +470,7 @@ router.post('/make_paper', async function (req, res, next) {
                                     })
                                 if (result_temp.length < (tip[tip_key] - choose_temp.length)) {
                                     res.status(400).send({message: `${type}无法完成出题`});
+                                    return
                                 } else {
                                     let select_finally = randArray(result_temp, (tip[tip_key] - choose_temp.length));
                                     paper_list = paper_list.concat(select_finally).concat(choose_temp);
@@ -489,6 +491,7 @@ router.post('/make_paper', async function (req, res, next) {
                                     paper_list = paper_list.concat(select_finally);
                                 } else {
                                     res.status(400).send({message: `${type}中${tip_key}数量不足`});
+                                    return
                                 }
                             }
 
@@ -496,6 +499,7 @@ router.post('/make_paper', async function (req, res, next) {
                     }
                 } catch (err) {
                     res.status(400).send({message: err});
+                    return
                 }
 
             }

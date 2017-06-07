@@ -33,14 +33,23 @@ function createPaper() {
                 shade: 0.3,
                 scrollbar: false
             })
+            layer.open({
+                type: 1,
+                closeBtn: 0, //不显示关闭按钮
+                anim: 2,
+                shadeClose: true, //开启遮罩关闭
+                content: '处理中，请稍后...'
+            });
         },
         success: function (data) {
             layer.alert('试卷AB卷已加入试卷库\n重复率为：' + data.semblance)
             layer.closeAll('loading'); //关闭加载层
+            layer.closeAll('page'); //关闭加载层
         },
         error: function (data) {
             layer.alert(data.responseText)
             layer.closeAll('loading'); //关闭加载层
+            layer.closeAll('page'); //关闭加载层
         }
     })
 }
