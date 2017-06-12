@@ -21,7 +21,7 @@ router.use(session({
 
 //登录认证
 function authToken(req, res, next) {
-    if (!req.session.user||req.session.user.role!=='rooter') {
+    if (!req.session.user || req.session.user.role !== 'rooter') {
         res.redirect('/back/login')
     } else {
         next();
@@ -34,7 +34,7 @@ router.post('/login', function (req, res, next) {
     let user_session = {
         username: username,
         password: password,
-        role:'rooter'
+        role: 'rooter'
     };
     if (username == 'root' && password == '123456') {
         req.session.user = user_session;
@@ -47,7 +47,7 @@ router.post('/login', function (req, res, next) {
 });
 
 //创建用户
-router.post('/createuser',authToken,function (req, res) {
+router.post('/createuser', authToken, function (req, res) {
     let register_info = {};
     register_info.username = req.body.username;
     register_info.password = req.body.password;
@@ -98,7 +98,7 @@ router.post('/createuser',authToken,function (req, res) {
 });
 
 //更新用户信息
-router.post('/update',authToken,function (req, res) {
+router.post('/update', authToken, function (req, res) {
     let register_info = {};
     register_info.username = req.body.username;
     register_info.password = req.body.password;
@@ -118,11 +118,11 @@ router.post('/update',authToken,function (req, res) {
             error.message = err.details[0].message;
             error.field = err.details[0].path;
             res.render('back/create_user', {userModify: register_info, error: error});
-        }else {
+        } else {
             User.find({username: register_info.username}, function (err, doc) {
                 if (err) {
                     res.end(err)
-                } else{
+                } else {
                     User.update({username: register_info.username}, {
                         $set: register_info
                     }, function (err, next) {
@@ -142,29 +142,28 @@ router.post('/update',authToken,function (req, res) {
 });
 
 //更新题目难度
-router.post('/update_qLevel/:q_id',authToken,function (req, res) {
-    Bank.find({_id: req.params.q_id}, function (err, doc) {
-        if (err) {
-            res.end(err)
-        }
-        Bank.update({_id: req.params.q_id}, {
+router.post('/update_qLevel/:q_id', authToken, async function (req, res) {
+    try {
+        await Bank.update({_id: req.params.q_id}, {
             $set: {
-                question:req.body.question,
-                answer:req.body.answer,
+                type: req.body.type,
+                question: req.body.question,
+                answer: req.body.answer,
                 level: req.body.level,
             }
-        }, function (err, next) {
-            if (err) {
-                res.end('err', err);
-                return next();
-            }
-            res.redirect('/back/question-manage')
         })
-    })
+
+        res.redirect('/back/question-manage')
+
+
+    } catch (err) {
+        res.end(err)
+    }
+
 });
 //删除
-router.delete('/del/:id',authToken,function (req, res) {
-    if(req.session.user.role==='rooter'){
+router.delete('/del/:id', authToken, function (req, res) {
+    if (req.session.user.role === 'rooter') {
         Bank.findOne({_id: req.params.id}, function (err, doc) {
             if (err) {
                 res.end('err', err);
@@ -174,7 +173,7 @@ router.delete('/del/:id',authToken,function (req, res) {
                 res.status(200).send(doc);
             }
         })
-    }else{
+    } else {
         res.status(400).send({message: '权限不足'});
     }
 });

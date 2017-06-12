@@ -231,7 +231,7 @@ router.get('/public-bank', authToken, function (req, res) {
     query.skip((page - 1) * rows);
     query.limit(rows);
     if (user_id) {
-        query.where('subject', req.session.user.subject_default).where('public', true).sort({_id: -1});
+        query.where('subject', req.session.user.subject_default).where('public', true).where("user_id.0",{"$ne":user_id}).sort({_id: -1});
     }
     //计算分页数据
     query.exec(function (err, rs) {
@@ -239,7 +239,7 @@ router.get('/public-bank', authToken, function (req, res) {
             res.send(err);
         } else {
             // 计算数据总数
-            Bank.find({'subject': req.session.user.subject_default, 'public': true}, function (err, result) {
+            Bank.find({'subject': req.session.user.subject_default, 'public': true,"user_id.0":{"$ne":user_id}}, function (err, result) {
                 res.render('public-bank', {
                     title: '公开题库',
                     list: rs,
@@ -253,7 +253,39 @@ router.get('/public-bank', authToken, function (req, res) {
     });
 
 });
+//自己分享
+router.get('/public-my', authToken, function (req, res) {
+    let user_id = req.session.user.user_id;
+    let count = 0;
+    let page = req.query.page;
+    let rows = 5;
+    let query = Bank.find({});
+    query.skip((page - 1) * rows);
+    query.limit(rows);
+    if (user_id) {
+        query.where('subject', req.session.user.subject_default).where('public', true).where('user_id.0',user_id).sort({_id: -1});
+    }
+    //计算分页数据
+    query.exec(function (err, rs) {
+        if (err) {
+            res.send(err);
+        } else {
+            // 计算数据总数
+            Bank.find({'subject': req.session.user.subject_default, 'public': true , 'user_id.0':user_id}, function (err, result) {
+                res.render('public-bank', {
+                    title: '公开题库',
+                    list: rs,
+                    total: Math.ceil(result.length / rows),
+                    user_id: user_id,
+                    subject: req.session.user.subject,
+                    subject_default: req.session.user.subject_default,
+                    share:0
+                });
+            });
+        }
+    });
 
+});
 //导入csv
 router.get('/import', authToken, function (req, res) {
     res.render('csv', {

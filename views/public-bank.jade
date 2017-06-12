@@ -17,6 +17,13 @@ block content
                 label.layui-form-label 科目
                 .layui-input-inline
                     input.layui-input(id='subject' value= subject_default readonly='readonly')
+            .layui-form-item
+                label.layui-form-label 仅自己
+                .layui-input-block
+                    if(share === 0)
+                        input(type="checkbox" checked name="open" lay-skin="switch" lay-filter="switchTest" lay-text="ON|OFF" )
+                    else
+                        input(type="checkbox" name="open" lay-skin="switch" lay-filter="switchTest" lay-text="ON|OFF" )
             .layui-field-box
             each item in list
                 blockquote.layui-elem-quote.layui-quote-nm
@@ -33,6 +40,15 @@ block content
 block scripts
     script(src='js/show_questions.js')
     script.
+        var form = layui.form();
+        form.on('switch(switchTest)', function (data) {
+            if(this.checked){
+                window.location.href="/public-my?page=1"
+            }else{
+                window.location.href = "/public-bank?page=1"
+
+            }
+        });
         var total_page = document.getElementById("page").name;
         layui.use(['laypage', 'layer'], function () {
             var laypage = layui.laypage,

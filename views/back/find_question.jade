@@ -17,6 +17,52 @@ block content
     form.layui-form.layui-form-pane(action='/back/update_qLevel/'+'#{qInfo._id}' method='post' style="width:30%;margin:0 auto")
         if(qInfo)
             .layui-form-item(pane)
+                label.layui-form-label 题型
+                .layui-input-block
+                    select( id='type' name="type")
+                        if qInfo.type === "选择题"
+                            option(value="选择题" ) 选择题
+                            option(value="填空题") 填空题
+                            option(value="判断题") 判断题
+                            option(value="简答题") 简答题
+                            option(value="解答题") 解答题
+                            option(value="名词解释") 名词解释
+                        else if qInfo.type === "填空题"
+                            option(value="选择题") 选择题
+                            option(value="填空题" selected) 填空题
+                            option(value="判断题") 判断题
+                            option(value="简答题") 简答题
+                            option(value="解答题") 解答题
+                            option(value="名词解释") 名词解释
+                        else if qInfo.type === "判断题"
+                            option(value="选择题") 选择题
+                            option(value="填空题") 填空题
+                            option(value="判断题" selected) 判断题
+                            option(value="简答题") 简答题
+                            option(value="解答题") 解答题
+                            option(value="名词解释") 名词解释
+                        else if qInfo.type === "简答题"
+                            option(value="选择题") 选择题
+                            option(value="填空题") 填空题
+                            option(value="判断题") 判断题
+                            option(value="简答题" selected) 简答题
+                            option(value="解答题") 解答题
+                            option(value="名词解释") 名词解释
+                        else if qInfo.type === "解答题"
+                            option(value="选择题") 选择题
+                            option(value="填空题") 填空题
+                            option(value="判断题") 判断题
+                            option(value="简答题") 简答题
+                            option(value="解答题" selected) 解答题
+                            option(value="名词解释") 名词解释
+                        else if qInfo.type === "名词解释"
+                            option(value="选择题" selected) 选择题
+                            option(value="填空题") 填空题
+                            option(value="判断题") 判断题
+                            option(value="简答题") 简答题
+                            option(value="解答题") 解答题
+                            option(value="名词解释" selected) 名词解释
+            .layui-form-item(pane)
                 label.layui-form-label 题目
                 .layui-input-block
                     textarea.layui-textarea(type="text" name='question') #{qInfo.question}
